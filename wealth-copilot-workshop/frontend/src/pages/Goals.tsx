@@ -78,7 +78,7 @@ function IndependencePanel({ x, goalProbability }: { x: Independence; goalProbab
         </div>
       </div>
       <p className="small muted" style={{ marginTop: 16 }}>
-        Et mindre mål kan være et godt mål, for eksempel en buffer som gir frihet til å jobbe mindre, ta permisjon eller bytte jobb.
+        Et mindre mål kan være et godt mål, for eksempel et tillegg til pensjonen eller en buffer som gir frihet til å jobbe mindre, ta permisjon eller bytte jobb.
         Men det betyr ikke at du kan slutte å jobbe. Flytt glidebryteren for forbruk under «Prøv selv» for å regne på full uavhengighet.
       </p>
     </Panel>

@@ -27,12 +27,12 @@ advisor or risk function can challenge and replace them in one place.
 Three personas matching the case studies were added to `data/generate.mjs` (`CUST-00101`
 to `CUST-00103`). They are appended after the 100 seeded customers and use their own
 seed, so the existing data is byte-for-byte unchanged. A new `data/goals.json` holds
-Maria's registered goal and the plan she agreed on when she registered it.
+the personas' registered goals and the plans they agreed on when they registered them.
 
 | Persona | Designed so that… |
 | --- | --- |
-| Anne Lie (52, Balanced) | A mixed portfolio with clear winners (Nordic equity fund, US healthcare) and one loser (Bergen Maritime), plus monthly transfers into her investment account. |
-| Jonas Berg (36, Moderate) | About 80% of his portfolio is technology shares and tech funds, much more than his profile suggests. |
+| Anne Lie (52, Balanced) | A mixed portfolio with clear winners (Nordic equity fund, US healthcare) and one loser (Bergen Maritime), plus monthly transfers into her investment account. Registered goal: "Pensjonstillegg fra 62" (pension supplement from 62), 2.2 MNOK by 2036. She is on plan. At a 4% withdrawal it pays about 7,300 NOK a month (31% of her spending), on top of public and occupational pension. |
+| Jonas Berg (36, Moderate) | About 80% of his portfolio is technology shares and tech funds, much more than his profile suggests. Registered goal: "Frihetsfond ved 50" (freedom fund at 50), 2.0 MNOK by 2040. He is about 25,000 NOK ahead of plan, but mostly because of risky tech gains (see case B). The fund pays about 6,700 NOK a month (25% of his spending). |
 | Maria Dahl (29, Growth) | She saves 7,000 NOK a month towards a "Frihetsfond ved 39" (freedom fund at 39) of 1.5 MNOK in today's money. The goal was registered 12 months ago. It is a financial buffer, **not** full financial independence: at a 4% withdrawal it pays about 5,000 NOK a month, around 21% of her spending. Full independence would need about 7 MNOK (25 × yearly spending), which is not realistic by 39 on her income. The Goals page shows this comparison. |
 
 ---
@@ -219,8 +219,8 @@ the lever. All amounts are in today's money (returns minus 2% assumed inflation)
 required monthly saving and "years needed at current pace" use the closed-form
 future-value formula with average returns.
 
-**Missing data:** Maria's goal is now registered in `goals.json`. For every other customer
-there is no goal, so the page starts from labelled estimates and says so. Transactions
+**Missing data:** Anne's, Jonas' and Maria's goals are registered in `goals.json`. For every
+other customer there is no goal, so the page starts from labelled estimates and says so. Transactions
 cover only 2 months, so monthly saving is a rough estimate. Tax, fees and income changes
 are not modelled.
 

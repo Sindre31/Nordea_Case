@@ -362,8 +362,8 @@ for (const persona of PERSONAS) {
   }
 }
 
-// Registered financial goals. Only Maria (case C) has one; for everyone else
-// the goal planner in the UI starts from clearly labelled assumptions.
+// Registered financial goals for the three personas. For everyone else the
+// goal planner in the UI starts from clearly labelled assumptions.
 const goals = [
   {
     goal_id: 'GOAL-0001',
@@ -379,6 +379,38 @@ const goals = [
     plan: {
       starting_amount: 120000,
       monthly_contribution: 7000,
+      assumed_annual_return_pct: 4,
+    },
+  },
+  {
+    goal_id: 'GOAL-0002',
+    customer_id: 'CUST-00101',
+    type: 'retirement',
+    // A supplement to public and occupational pension from 62, not full
+    // independence (that would be ~7 MNOK at Anne's spending).
+    name: 'Pensjonstillegg fra 62',
+    target_amount: 2200000,
+    target_date: '2036-09-01',
+    created_at: '2024-09-01',
+    plan: {
+      starting_amount: 500000,
+      monthly_contribution: 8000,
+      assumed_annual_return_pct: 3,
+    },
+  },
+  {
+    goal_id: 'GOAL-0003',
+    customer_id: 'CUST-00102',
+    type: 'other',
+    // A buffer that gives Jonas room to work less or change career at 50.
+    // He is ahead of plan, but mostly thanks to risky tech gains (case B).
+    name: 'Frihetsfond ved 50',
+    target_amount: 2000000,
+    target_date: '2040-09-01',
+    created_at: '2023-03-01',
+    plan: {
+      starting_amount: 200000,
+      monthly_contribution: 6000,
       assumed_annual_return_pct: 4,
     },
   },

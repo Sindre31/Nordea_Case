@@ -105,7 +105,7 @@ describe('Case C: goals and projection', () => {
   })
 
   it('labels estimates when no goal is registered', async () => {
-    const res = await request(app).post(`/customers/${JONAS}/goals/projection`).send({})
+    const res = await request(app).post(`/customers/${customers[0].customer_id}/goals/projection`).send({})
     expect(res.status).toBe(200)
     expect(res.body.goal).toBeNull()
     expect(res.body.data_quality.limitations[0]).toMatch(/ikke registrert noe mål/)
@@ -152,6 +152,15 @@ describe('Case C: goals and projection', () => {
     const both = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ monthly_spending: 10000, target_amount: 2000000 })
     expect(both.body.inputs.find((i: { key: string }) => i.key === 'target_amount').value).toBe(2000000)
     expect(both.body.inputs.find((i: { key: string }) => i.key === 'monthly_spending').explanation).toMatch(/Påvirker ikke målet/)
+  })
+
+  it('gives all three personas an honest, registered goal', async () => {
+    for (const [id, name] of [[ANNE, 'Pensjonstillegg fra 62'], [JONAS, 'Frihetsfond ved 50'], [MARIA, 'Frihetsfond ved 39']]) {
+      const res = await request(app).post(`/customers/${id}/goals/projection`).send({})
+      expect(res.body.goal.name).toBe(name)
+      expect(res.body.independence.goal_is_partial).toBe(true)
+      expect(res.body.plan_check).not.toBeNull()
+    }
   })
 
   it('compares a smaller goal with full financial independence', async () => {

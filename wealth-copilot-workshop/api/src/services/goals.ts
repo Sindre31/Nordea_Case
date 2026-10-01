@@ -31,13 +31,15 @@ export interface ProjectionInput {
   // Monthly spending. When set, the target becomes 25 x yearly spending
   // (unless the customer also sets the target amount directly).
   monthly_spending?: number
+  // Children (now or planned). Each raises spending and lowers saving.
+  children?: number
 }
 
 export interface ResolvedInput {
   key: keyof ProjectionInput
   label: string
   value: number
-  unit: 'NOK' | 'years' | '%' | 'NOK/month'
+  unit: 'NOK' | 'years' | '%' | 'NOK/month' | 'count'
   source: InputSource
   explanation: string
 }
@@ -127,6 +129,10 @@ export interface Independence {
 
 const WITHDRAWAL_RATE = 0.04
 
+// Rough net monthly cost per child after child benefit (barnetrygd). Real
+// costs vary a lot with age, childcare and choices - shown as an assumption.
+export const CHILD_COST_MONTHLY = 4000
+
 const SIMULATIONS = 2000
 const SEED = 20260906
 const TODAY = '2026-09-06'
@@ -139,6 +145,7 @@ export const INPUT_LIMITS: Record<keyof ProjectionInput, [number, number]> = {
   annual_return_pct: [-5, 15],
   annual_volatility_pct: [0, 40],
   monthly_spending: [0, 1000000],
+  children: [0, 6],
 }
 
 export function validateProjectionInput(body: unknown): { input: ProjectionInput } | { error: string } {
@@ -192,6 +199,27 @@ interface SimParams {
   volPct: number
   target: number
   initialShockPct?: number
+  // Monthly cost of children while they live at home (paid from saving).
+  childCost?: number
+}
+
+const CHILD_MONTHS = 18 * 12
+
+// Saving in month m: children are paid for out of saving for 18 years.
+function contributionAt(p: SimParams, m: number): number {
+  return Math.max(0, p.monthly - (m < CHILD_MONTHS ? p.childCost ?? 0 : 0))
+}
+
+// Target at month m: if children still live at home, also cover their
+// remaining costs until they move out.
+function targetAt(p: SimParams, m: number): number {
+  return p.target + (p.childCost ?? 0) * Math.max(0, CHILD_MONTHS - m)
+}
+
+function paidIn(p: SimParams, months: number): number {
+  let total = p.start
+  for (let m = 0; m < months; m += 1) total += contributionAt(p, m)
+  return total
 }
 
 function percentile(sorted: Float64Array, p: number): number {
@@ -209,7 +237,7 @@ function simulate(p: SimParams): { probability: number; timeline: YearPoint[]; f
   const timeline: YearPoint[] = [{ year: 0, p10: values[0], p50: values[0], p90: values[0], contributed: p.start }]
   for (let m = 0; m < months; m += 1) {
     for (let s = 0; s < SIMULATIONS; s += 1) {
-      values[s] = values[s] * Math.exp(drift + sigma * z[s * months + m]) + p.monthly
+      values[s] = values[s] * Math.exp(drift + sigma * z[s * months + m]) + contributionAt(p, m)
     }
     if ((m + 1) % 12 === 0 || m === months - 1) {
       const sorted = Float64Array.from(values).sort()
@@ -218,12 +246,13 @@ function simulate(p: SimParams): { probability: number; timeline: YearPoint[]; f
         p10: round(percentile(sorted, 0.1), 0),
         p50: round(percentile(sorted, 0.5), 0),
         p90: round(percentile(sorted, 0.9), 0),
-        contributed: round(p.start + p.monthly * (m + 1), 0),
+        contributed: round(paidIn(p, m + 1), 0),
       })
     }
   }
   const finals = Float64Array.from(values).sort()
-  const reached = finals.reduce((n, v) => n + (v >= p.target ? 1 : 0), 0)
+  const goal = targetAt(p, months)
+  const reached = finals.reduce((n, v) => n + (v >= goal ? 1 : 0), 0)
   return { probability: (reached / SIMULATIONS) * 100, timeline, finals }
 }
 
@@ -235,21 +264,23 @@ function futureValue(start: number, monthly: number, months: number, annualPct: 
 }
 
 // Average-return path with an optional one-off fall at a given month.
-function pathWithShock(start: number, monthly: number, months: number, annualPct: number, shockMonth: number | null, shockPct: number): number {
+function pathWithShock(p: SimParams, months: number, annualPct: number, shockMonth: number | null, shockPct: number): number {
   const r = Math.pow(1 + annualPct / 100, 1 / 12) - 1
-  let value = start
+  let value = p.start
   for (let m = 0; m < months; m += 1) {
     if (m === shockMonth) value *= 1 - shockPct / 100
-    value = value * (1 + r) + monthly
+    value = value * (1 + r) + contributionAt(p, m)
   }
   return value
 }
 
 // Years until the average-return path reaches the target (null if 50+).
 function yearsToTarget(p: SimParams): number | null {
-  const start = p.start * (1 + (p.initialShockPct ?? 0) / 100)
-  for (let m = 1; m <= 600; m += 1) {
-    if (futureValue(start, p.monthly, m, p.realReturnPct) >= p.target) return round(m / 12, 1)
+  const r = Math.pow(1 + p.realReturnPct / 100, 1 / 12) - 1
+  let value = p.start * (1 + (p.initialShockPct ?? 0) / 100)
+  for (let m = 0; m < 600; m += 1) {
+    value = value * (1 + r) + contributionAt(p, m)
+    if (value >= targetAt(p, m + 1)) return round((m + 1) / 12, 1)
   }
   return null
 }
@@ -320,17 +351,27 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
       : goal
         ? `Ditt nåværende forbruk, beregnet fra transaksjonene de siste ${months} månedene. Flytt glidebryteren for å regne målet ut fra forbruk i stedet for det registrerte målet.`
         : `Ditt nåværende forbruk, beregnet fra transaksjonene de siste ${months} månedene. Målet blir 25 × årlig forbruk.`
-  const monthlySpending = resolve('monthly_spending', 'Månedlig forbruk', 'NOK/month', [
+  const spendingInput = resolve('monthly_spending', 'Månedlig forbruk', 'NOK/month', [
     [input.monthly_spending, 'your_input', spendingExplanation],
     [savings.averageMonthlyExpenses, 'your_data', spendingExplanation],
   ])
+  const childEffect = (n: number) => `Hvert barn regnes som ${kr(CHILD_COST_MONTHLY)} mer i forbruk og ${kr(CHILD_COST_MONTHLY)} mindre å spare per måned (grovt anslag etter barnetrygd, varierer mye med alder og valg).`
+  const children = resolve('children', 'Barn (nå eller planlagt)', 'count', [
+    [input.children, 'your_input', input.children ? `${input.children} barn: forbruket øker med ${kr(input.children * CHILD_COST_MONTHLY)} og sparingen synker like mye per måned. ${childEffect(input.children)}` : `Ingen barn lagt inn. ${childEffect(0)}`],
+    [0, 'assumption', `Vi vet ikke om du har eller planlegger barn, så vi har regnet uten. ${childEffect(0)}`],
+  ])
+  const kidsCost = children * CHILD_COST_MONTHLY
+  // The independence target covers spending without children: they are
+  // assumed to have moved out by then (see targetAt for when they have not).
+  const monthlySpending = spendingInput
+  const withKids = ''
   const target = resolve('target_amount', 'Målbeløp', 'NOK', [
     [input.target_amount, 'your_input', 'Beløpet du har lagt inn.'],
-    [input.monthly_spending !== undefined ? independenceTarget(input.monthly_spending) : undefined, 'your_input',
-      `25 × det årlige forbruket du har valgt (${kr(input.monthly_spending ?? 0)} × 12 = ${kr((input.monthly_spending ?? 0) * 12)}), etter «4 %-regelen»: da kan du ta ut rundt 4 % i året.`],
+    [input.monthly_spending !== undefined ? independenceTarget(monthlySpending) : undefined, 'your_input',
+      `25 × det årlige forbruket du har valgt${withKids} (${kr(monthlySpending)} × 12 = ${kr(monthlySpending * 12)}), etter «4 %-regelen»: da kan du ta ut rundt 4 % i året.`],
     [goal?.target_amount, 'registered_goal', `Fra det registrerte målet ditt «${goal?.name}».`],
     [independenceTarget(monthlySpending), 'your_data',
-      `Anslag for økonomisk uavhengighet: 25 × det årlige forbruket ditt (${kr(monthlySpending * 12)}), etter «4 %-regelen»: da kan du ta ut rundt 4 % i året.`],
+      `Anslag for økonomisk uavhengighet: 25 × det årlige forbruket ditt${withKids} (${kr(monthlySpending * 12)}), etter «4 %-regelen»: da kan du ta ut rundt 4 % i året.`],
   ])
   const goalYears = goal ? Math.max(1, monthsBetween(TODAY, goal.target_date) / 12) : undefined
   const years = resolve('years', 'År til målet', 'years', [
@@ -339,11 +380,12 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
     [horizonUpperYears(customer?.investment_horizon), 'assumption',
       `Øvre del av investeringshorisonten din (${customer ? horizonName(customer.investment_horizon) : 'ukjent'}). Juster etter når du vil være økonomisk uavhengig.`],
   ])
-  const monthly = resolve('monthly_contribution', 'Månedlig sparing', 'NOK/month', [
+  const monthlyInput = resolve('monthly_contribution', 'Månedlig sparing', 'NOK/month', [
     [input.monthly_contribution, 'your_input', 'Det månedlige beløpet du har lagt inn.'],
     [monthlyInvesting > 0 ? monthlyInvesting : undefined, 'your_data', `Gjennomsnittlige månedlige overføringer til investeringer de siste ${months} månedene.`],
     [Math.max(0, savings.averageMonthlySavings), 'your_data', 'Gjennomsnittlig månedlig overskudd (inntekt minus forbruk).'],
   ])
+  const monthly = monthlyInput
   const start = resolve('starting_amount', 'Investert i dag', 'NOK', [
     [input.starting_amount, 'your_input', 'Startbeløpet du har lagt inn.'],
     [portfolio.total_value, 'your_data', 'Dagens markedsverdi av investeringene dine.'],
@@ -358,7 +400,7 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
   ])
   const real = nominal - ASSUMED_INFLATION_PCT
 
-  const base: SimParams = { start, monthly, years, realReturnPct: real, volPct: vol, target }
+  const base: SimParams = { start, monthly, years, realReturnPct: real, volPct: vol, target, childCost: kidsCost }
   const sim = simulate(base)
   const median = percentile(sim.finals, 0.5)
 
@@ -368,6 +410,12 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
     { id: 'wait-longer', label: 'Gi det 3 år ekstra', params: { ...base, years: years + 3 } },
     { id: 'early-crash', label: 'Markedet faller 25 % med en gang', params: { ...base, initialShockPct: -25 } },
     { id: 'lower-return', label: 'Avkastningen blir 2 prosentpoeng lavere hvert år', params: { ...base, realReturnPct: real - 2 } },
+    // Having (more) children is only offered as a lever where it is realistic.
+    ...((customer?.age ?? 99) <= 45 ? [1, 2] : []).map((n) => ({
+      id: `children-${n}`,
+      label: `${n === 1 ? 'Ett barn' : 'To barn'}${children > 0 ? ' til' : ''} (${kr(n * CHILD_COST_MONTHLY)} mindre å spare per måned i 18 år)`,
+      params: { ...base, childCost: kidsCost + n * CHILD_COST_MONTHLY },
+    })),
   ]
   const levers: Lever[] = leverDefs.map((l) => {
     const r = simulate(l.params)
@@ -382,7 +430,10 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
   })
 
   const totalMonths = Math.round(years * 12)
-  const required = requiredMonthly(start, target, totalMonths, real)
+  // Saving needed to reach the goal (plus any remaining child costs) with
+  // average returns, on top of what children take out of saving.
+  const childShare = (cost: number) => cost * Math.min(totalMonths, CHILD_MONTHS) / Math.max(1, totalMonths)
+  const required = requiredMonthly(start, targetAt(base, totalMonths), totalMonths, real) + childShare(kidsCost)
   const yearsNeeded = yearsToTarget(base)
 
   let planCheck: GoalProjection['plan_check'] = null
@@ -405,10 +456,7 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
   // --- Goal vs. full financial independence --------------------------------
   const fullTarget = independenceTarget(monthlySpending)
   const goalMonthlyIncome = (target * WITHDRAWAL_RATE) / 12
-  let fullYearsNeeded: number | null = null
-  for (let m = 1; m <= 600; m += 1) {
-    if (futureValue(start, monthly, m, real) >= fullTarget) { fullYearsNeeded = round(m / 12, 1); break }
-  }
+  const fullYearsNeeded = yearsToTarget({ ...base, target: fullTarget })
   const independence: Independence = {
     monthly_spending: round(monthlySpending, 0),
     target: fullTarget,
@@ -416,7 +464,7 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
     goal_monthly_income: round(goalMonthlyIncome, 0),
     coverage_pct: monthlySpending > 0 ? round(Math.min(100, (goalMonthlyIncome / monthlySpending) * 100), 0) : 100,
     probability_pct: round(simulate({ ...base, target: fullTarget }).probability, 0),
-    required_monthly_contribution: round(requiredMonthly(start, fullTarget, Math.round(years * 12), real), 0),
+    required_monthly_contribution: round(requiredMonthly(start, targetAt({ ...base, target: fullTarget }, totalMonths), totalMonths, real) + childShare(kidsCost), 0),
     years_needed_at_current_pace: fullYearsNeeded,
     goal_is_partial: target < fullTarget * 0.95,
   }
@@ -424,15 +472,15 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
   // --- How market development affects the goal ---------------------------
   const pessimistic = percentile(sim.finals, 0.1)
   const optimistic = percentile(sim.finals, 0.9)
-  const paidIn = start + monthly * totalMonths
-  const marketGrowth = median - paidIn
+  const paidInTotal = paidIn(base, totalMonths)
+  const marketGrowth = median - paidInTotal
   const valuePerPoint = futureValue(start, monthly, totalMonths, real + 1) - futureValue(start, monthly, totalMonths, real)
   const lateCrashMonth = Math.max(0, totalMonths - 12)
   const timing = {
     crash_pct: CRASH_PCT,
-    no_crash: round(pathWithShock(start, monthly, totalMonths, real, null, 0), 0),
-    crash_early: round(pathWithShock(start, monthly, totalMonths, real, 0, CRASH_PCT), 0),
-    crash_late: round(pathWithShock(start, monthly, totalMonths, real, lateCrashMonth, CRASH_PCT), 0),
+    no_crash: round(pathWithShock(base, totalMonths, real, null, 0), 0),
+    crash_early: round(pathWithShock(base, totalMonths, real, 0, CRASH_PCT), 0),
+    crash_late: round(pathWithShock(base, totalMonths, real, lateCrashMonth, CRASH_PCT), 0),
     late_crash_year: round(lateCrashMonth / 12, 1),
   }
   let recent: MarketImpact['recent'] = null
@@ -458,9 +506,9 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
     marketExplanation.push(`De siste ${recent.days} dagene ${dir} investeringene dine ${kr(recent.change_value)} på grunn av markedet alene. ${effect}. Korte svingninger betyr lite for et mål ${num(years)} år frem i tid.`)
   }
   if (marketGrowth > 0) {
-    marketExplanation.push(`I et typisk utfall på ${kr(median)} er ${kr(paidIn)} penger du selv betaler inn, og ${kr(marketGrowth)} (${pct((marketGrowth / median) * 100, 0)}) er avkastning fra markedet. Jo lengre tid, jo større del kommer fra markedet.`)
+    marketExplanation.push(`I et typisk utfall på ${kr(median)} er ${kr(paidInTotal)} penger du selv betaler inn, og ${kr(marketGrowth)} (${pct((marketGrowth / median) * 100, 0)}) er avkastning fra markedet. Jo lengre tid, jo større del kommer fra markedet.`)
   } else {
-    marketExplanation.push(`I et typisk utfall på ${kr(median)} betaler du inn ${kr(paidIn)} selv. Etter inflasjon gir markedet lite netto vekst med disse antakelsene, så sparingen din er det som driver målet.`)
+    marketExplanation.push(`I et typisk utfall på ${kr(median)} betaler du inn ${kr(paidInTotal)} selv. Etter inflasjon gir markedet lite netto vekst med disse antakelsene, så sparingen din er det som driver målet.`)
   }
   marketExplanation.push(`Forskjellen mellom et svakt og et sterkt marked er ${kr(optimistic - pessimistic)} på måldatoen. Det spennet kan du ikke styre, men du kan styre sparebeløp, tid og risikonivå.`)
   marketExplanation.push(`Hvert prosentpoeng høyere eller lavere årlig avkastning utgjør rundt ${kr(valuePerPoint)} på måldatoen.`)
@@ -472,7 +520,7 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
   const marketImpact: MarketImpact = {
     recent,
     composition: {
-      paid_in: round(paidIn, 0),
+      paid_in: round(paidInTotal, 0),
       market_growth: round(marketGrowth, 0),
       median: round(median, 0),
       market_share_pct: median > 0 ? round(Math.max(0, marketGrowth / median) * 100, 1) : 0,
@@ -492,6 +540,10 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
   }
   if (independence.goal_is_partial) {
     summary.push(`Merk: målbeløpet på ${kr(target)} gir rundt ${kr(goalMonthlyIncome)} i måneden hvis du tar ut 4 % i året. Det dekker ${independence.coverage_pct} % av forbruket ditt på ${kr(monthlySpending)}. Full økonomisk uavhengighet ville krevd rundt ${kr(fullTarget)}.`)
+  }
+  if (children > 0) {
+    const extra = kidsCost * Math.max(0, CHILD_MONTHS - totalMonths)
+    summary.push(`Med ${children} barn regner vi med ${kr(kidsCost)} mindre å spare per måned de neste 18 årene.${extra > 0 ? ` ${children === 1 ? 'Barnet bor' : 'Barna bor'} fortsatt hjemme når du skal nå målet, så du trenger i tillegg rundt ${kr(extra)} til utgiftene frem til ${children === 1 ? 'det flytter' : 'de flytter'} ut.` : ''}`)
   }
   summary.push(`I ${probability} % av ${SIMULATIONS.toLocaleString('nb-NO')} simulerte markedsforløp når du ${kr(target)} innen ${num(years)} år, så ${statusText[status]}.`)
   summary.push(`Et typisk utfall er ${kr(median)} (i dagens kroner). I et svakt marked kan det bli ${kr(percentile(sim.finals, 0.1))}, i et sterkt ${kr(percentile(sim.finals, 0.9))}.`)

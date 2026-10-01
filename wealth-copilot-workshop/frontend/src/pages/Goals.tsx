@@ -24,6 +24,7 @@ const STATUS = {
 } as const
 
 const years = (v: number) => `${formatNumber(v, 1)} år`
+const childrenText = (v: number) => (v === 0 ? 'Ingen barn' : `${v} barn`)
 
 const SLIDERS: { key: keyof ProjectionInput; min: number; max: number; step: number; format: (v: number) => string }[] = [
   { key: 'monthly_spending', min: 5000, max: 100000, step: 1000, format: (v) => `${formatCurrency(v)} / mnd.` },
@@ -31,12 +32,14 @@ const SLIDERS: { key: keyof ProjectionInput; min: number; max: number; step: num
   { key: 'years', min: 1, max: 40, step: 1, format: years },
   { key: 'monthly_contribution', min: 0, max: 40000, step: 500, format: (v) => `${formatCurrency(v)} / mnd.` },
   { key: 'annual_return_pct', min: 0, max: 10, step: 0.5, format: (v) => `${formatPct(v)} / år` },
+  { key: 'children', min: 0, max: 4, step: 1, format: childrenText },
 ]
 
 function formatInput(i: ResolvedInput): string {
   if (i.unit === 'NOK') return formatCurrency(i.value)
   if (i.unit === 'NOK/month') return `${formatCurrency(i.value)} / mnd.`
   if (i.unit === '%') return formatPct(i.value)
+  if (i.unit === 'count') return childrenText(i.value)
   return years(i.value)
 }
 

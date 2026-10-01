@@ -254,6 +254,7 @@ export interface ProjectionInput {
   annual_return_pct?: number
   annual_volatility_pct?: number
   monthly_spending?: number
+  children?: number
 }
 
 export type InputSource = 'your_input' | 'registered_goal' | 'your_data' | 'assumption'
@@ -262,7 +263,7 @@ export interface ResolvedInput {
   key: keyof ProjectionInput
   label: string
   value: number
-  unit: 'NOK' | 'years' | '%' | 'NOK/month'
+  unit: 'NOK' | 'years' | '%' | 'NOK/month' | 'count'
   source: InputSource
   explanation: string
 }

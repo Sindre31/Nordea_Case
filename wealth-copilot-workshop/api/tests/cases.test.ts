@@ -164,6 +164,29 @@ describe('Case C: goals and projection', () => {
     expect(res.body.summary[0]).toMatch(/Full økonomisk uavhengighet/)
   })
 
+  it('counts children as less saving for 18 years', async () => {
+    const none = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ target_amount: 1500000 })
+    const one = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ target_amount: 1500000, children: 1 })
+    expect(one.body.inputs.find((i: { key: string }) => i.key === 'children').source).toBe('your_input')
+    // Less saving: later and less likely.
+    expect(one.body.years_needed_at_current_pace).toBeGreaterThan(none.body.years_needed_at_current_pace)
+    expect(one.body.probability_pct).toBeLessThan(none.body.probability_pct)
+    // Children at home at the goal date add their remaining costs.
+    expect(one.body.summary.join(' ')).toMatch(/flytter ut/)
+    // What is paid in drops by 4 000 kr a month over the 10-year horizon.
+    expect(none.body.market_impact.composition.paid_in - one.body.market_impact.composition.paid_in).toBe(4000 * 120)
+  })
+
+  it('offers child levers to younger customers only', async () => {
+    const maria = await request(app).post(`/customers/${MARIA}/goals/projection`).send({})
+    const anne = await request(app).post(`/customers/${ANNE}/goals/projection`).send({})
+    const ids = (r: { body: { levers: { id: string }[] } }) => r.body.levers.map((l) => l.id)
+    expect(ids(maria)).toEqual(expect.arrayContaining(['children-1', 'children-2']))
+    expect(ids(anne)).not.toContain('children-1')
+    const child = maria.body.levers.find((l: { id: string }) => l.id === 'children-1')
+    expect(child.years_needed).toBeGreaterThan(maria.body.years_needed_at_current_pace)
+  })
+
   it('rejects invalid input', async () => {
     const res = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ years: -3 })
     expect(res.status).toBe(400)

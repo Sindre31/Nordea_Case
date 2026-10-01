@@ -149,14 +149,24 @@ how the market affects it, and which levers matter most.
    with average returns, and the chance within the horizon. The years stay informative
    even when the chance is near 0%. Today it takes 34.7 years. +1,000 NOK a month makes
    it 32.4 years, +3,000 makes it 28.8, an early 25% crash makes it 35.3, and returns
-   2 points lower make it 46.8.
-6. **Try it yourself:** sliders for monthly spending, target amount, years, monthly saving
-   and expected return. The projection re-runs live. Spending starts at her current
+   2 points lower make it 46.8. **Children** are included for customers aged 45 or
+   younger: one child makes it 42.5 years, and two children push it past 50 years.
+6. **Try it yourself:** sliders for monthly spending, target amount, years, monthly saving,
+   expected return and **children** (now or planned, 0–4). The projection re-runs live. Spending starts at her current
    spending and sets the target to 25 × yearly spending. Spending and target amount both
    decide the goal, so whichever slider she moved last wins and the other one goes back
    to its default. If she sets a target below full independence, the summary says what
    that amount pays per month and how much of her spending it covers.
 7. **How the market affects the goal:** a dedicated section, described below.
+
+**How children are modelled.** Each child is assumed to cost about 4,000 NOK a month net
+after child benefit (barnetrygd). This is a rough, labelled assumption, and real costs
+vary a lot with age, childcare and choices. The cost is paid out of saving for 18 years,
+while the child lives at home. After that, saving goes back to normal. The independence
+target itself does not grow, because children are assumed to have moved out by then. If a
+child still lives at home on the goal date, the remaining child costs until they move out
+are added to what is needed. For Maria with one child and a 10-year horizon, that is about
+384,000 NOK.
 
 The message for Maria is honest: independence within ten years is not realistic on her
 income and spending. The page shows what moves the date closest, and lets her explore
@@ -220,6 +230,7 @@ the UI shows it as a badge:
 | Monthly saving | Her input → average transfers to investments → average monthly surplus |
 | Invested today | Her input → current market value |
 | Return and swings | Her input → assumption for her risk profile |
+| Children | Her input → assumption: none (the bank does not know about planned children) |
 
 The API still supports registered goals with a plan (and then shows whether the customer
 is ahead of or behind it), but no customer has one in the demo data.

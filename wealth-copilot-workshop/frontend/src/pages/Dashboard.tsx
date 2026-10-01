@@ -33,11 +33,7 @@ export default function Dashboard() {
   const netWorth = bank + invested
   const hasInvestments = portfolio.total_value > 0
   const target = goal.inputs.find((i) => i.key === 'target_amount')?.value ?? 0
-  const planText = goal.plan_check
-    ? goal.plan_check.verdict === 'on_plan'
-      ? 'Du er i rute med planen.'
-      : `${formatCurrency(Math.abs(goal.plan_check.difference))} ${goal.plan_check.verdict === 'ahead' ? 'foran' : 'bak'} planen.`
-    : ''
+  const years = goal.inputs.find((i) => i.key === 'years')?.value ?? 0
 
   const features = [
     {
@@ -49,10 +45,8 @@ export default function Dashboard() {
       answer: hasInvestments ? `${risk.by_sector[0]?.label} står for ${formatPct(risk.by_sector[0]?.risk_contribution_pct ?? 0)} av svingningene. ${risk.alignment === 'above' ? 'Mer risiko enn profilen din.' : risk.alignment === 'below' ? 'Roligere enn profilen din.' : 'I tråd med profilen din.'}` : risk.summary[0],
     },
     {
-      to: '/goals', icon: <TargetIcon />, tag: 'Case C', question: 'Er jeg i rute til å nå målet mitt?',
-      answer: goal.goal
-        ? `${goal.probability_pct} % sjanse for å nå ${formatCurrency(target)} for «${goal.goal.name}». ${planText}`
-        : 'Du har ikke registrert noe mål ennå. Se hva sparingen din kan vokse til, og hva som skal til for å bli økonomisk uavhengig.',
+      to: '/goals', icon: <TargetIcon />, tag: 'Case C', question: 'Kan jeg bli økonomisk uavhengig?',
+      answer: `${goal.probability_pct} % sjanse for å nå ${formatCurrency(target)} (25 × årlig forbruk) innen ${formatNumber(years, 1)} år. Det krever rundt ${formatCurrency(goal.required_monthly_contribution)} i sparing per måned.`,
     },
   ]
 

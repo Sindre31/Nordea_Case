@@ -56,6 +56,8 @@ export interface Lever {
   probability_pct: number
   median_value: number
   delta_probability_pct: number
+  // Years until the target is reached with average returns (null = 50+).
+  years_needed: number | null
 }
 
 export interface GoalProjection {
@@ -243,12 +245,27 @@ function pathWithShock(start: number, monthly: number, months: number, annualPct
   return value
 }
 
+// Years until the average-return path reaches the target (null if 50+).
+function yearsToTarget(p: SimParams): number | null {
+  const start = p.start * (1 + (p.initialShockPct ?? 0) / 100)
+  for (let m = 1; m <= 600; m += 1) {
+    if (futureValue(start, p.monthly, m, p.realReturnPct) >= p.target) return round(m / 12, 1)
+  }
+  return null
+}
+
 function requiredMonthly(start: number, target: number, months: number, annualPct: number): number {
   const r = Math.pow(1 + annualPct / 100, 1 / 12) - 1
   const g = Math.pow(1 + r, months)
   const gap = target - start * g
   if (gap <= 0) return 0
   return Math.abs(r) < 1e-9 ? gap / months : (gap * r) / (g - 1)
+}
+
+// "5-10 years" -> 10, "20+ years" -> 20. Default 15 when unknown.
+function horizonUpperYears(horizon: string | undefined): number {
+  const numbers = (horizon ?? '').match(/\d+/g)?.map(Number) ?? []
+  return numbers.length ? Math.max(...numbers) : 15
 }
 
 function monthsBetween(from: string, to: string): number {
@@ -319,7 +336,8 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
   const years = resolve('years', 'År til målet', 'years', [
     [input.years, 'your_input', 'Tidshorisonten du har lagt inn.'],
     [goalYears, 'registered_goal', `Frem til måldatoen din ${goal ? dateName(goal.target_date) : ''}.`],
-    [15, 'assumption', `Ingen måldato er registrert. 15 år er en vanlig horisont for økonomisk uavhengighet (oppgitt investeringshorisont: ${customer ? horizonName(customer.investment_horizon) : 'ukjent'}).`],
+    [horizonUpperYears(customer?.investment_horizon), 'assumption',
+      `Øvre del av investeringshorisonten din (${customer ? horizonName(customer.investment_horizon) : 'ukjent'}). Juster etter når du vil være økonomisk uavhengig.`],
   ])
   const monthly = resolve('monthly_contribution', 'Månedlig sparing', 'NOK/month', [
     [input.monthly_contribution, 'your_input', 'Det månedlige beløpet du har lagt inn.'],
@@ -359,15 +377,13 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
       probability_pct: round(r.probability, 0),
       median_value: round(percentile(r.finals, 0.5), 0),
       delta_probability_pct: round(r.probability - sim.probability, 0),
+      years_needed: yearsToTarget(l.params),
     }
   })
 
   const totalMonths = Math.round(years * 12)
   const required = requiredMonthly(start, target, totalMonths, real)
-  let yearsNeeded: number | null = null
-  for (let m = 1; m <= 600; m += 1) {
-    if (futureValue(start, monthly, m, real) >= target) { yearsNeeded = round(m / 12, 1); break }
-  }
+  const yearsNeeded = yearsToTarget(base)
 
   let planCheck: GoalProjection['plan_check'] = null
   if (goal) {
@@ -475,7 +491,7 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
     unlikely: 'målet er lite sannsynlig uten endringer',
   }
   if (independence.goal_is_partial) {
-    summary.push(`Merk: ${kr(target)} gir rundt ${kr(goalMonthlyIncome)} i måneden hvis du tar ut 4 % i året. Det dekker ${independence.coverage_pct} % av forbruket ditt på ${kr(monthlySpending)}. Full økonomisk uavhengighet ville krevd rundt ${kr(fullTarget)}.`)
+    summary.push(`Merk: målbeløpet på ${kr(target)} gir rundt ${kr(goalMonthlyIncome)} i måneden hvis du tar ut 4 % i året. Det dekker ${independence.coverage_pct} % av forbruket ditt på ${kr(monthlySpending)}. Full økonomisk uavhengighet ville krevd rundt ${kr(fullTarget)}.`)
   }
   summary.push(`I ${probability} % av ${SIMULATIONS.toLocaleString('nb-NO')} simulerte markedsforløp når du ${kr(target)} innen ${num(years)} år, så ${statusText[status]}.`)
   summary.push(`Et typisk utfall er ${kr(median)} (i dagens kroner). I et svakt marked kan det bli ${kr(percentile(sim.finals, 0.1))}, i et sterkt ${kr(percentile(sim.finals, 0.9))}.`)
@@ -493,7 +509,7 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
     'Skatt, gebyrer og endringer i inntekt eller forbruk er ikke tatt med.',
     'Markedet kan oppføre seg annerledes enn før. Dette er et spenn av scenarioer, ikke en prognose eller et løfte.',
   ]
-  if (!goal) limitations.unshift('Du har ikke registrert noe mål, så målbeløp og tidshorisont er anslag du bør justere.')
+  if (!goal) limitations.unshift(`Målbeløpet bygger på forbruket ditt de siste ${months} månedene, og tidshorisonten på investeringshorisonten din. Juster begge etter din situasjon.`)
   if (portfolio.total_value === 0) limitations.unshift('Du har ingen investeringer ennå, så fremskrivingen starter fra null.')
 
   return {

@@ -26,14 +26,14 @@ advisor or risk function can challenge and replace them in one place.
 
 Three personas matching the case studies were added to `data/generate.mjs` (`CUST-00101`
 to `CUST-00103`). They are appended after the 100 seeded customers and use their own
-seed, so the existing data is byte-for-byte unchanged. A new `data/goals.json` holds
-the personas' registered goals and the plans they agreed on when they registered them.
+seed, so the existing data is byte-for-byte unchanged. `data/goals.json` is kept but empty:
+the goal planner uses full financial independence as everyone's target (see case C).
 
 | Persona | Designed so that… |
 | --- | --- |
-| Anne Lie (52, Balanced) | A mixed portfolio with clear winners (Nordic equity fund, US healthcare) and one loser (Bergen Maritime), plus monthly transfers into her investment account. Registered goal: "Pensjonstillegg fra 62" (pension supplement from 62), 2.2 MNOK by 2036. She is on plan. At a 4% withdrawal it pays about 7,300 NOK a month (31% of her spending), on top of public and occupational pension. |
-| Jonas Berg (36, Moderate) | About 80% of his portfolio is technology shares and tech funds, much more than his profile suggests. Registered goal: "Frihetsfond ved 50" (freedom fund at 50), 2.0 MNOK by 2040. He is about 25,000 NOK ahead of plan, but mostly because of risky tech gains (see case B). The fund pays about 6,700 NOK a month (25% of his spending). |
-| Maria Dahl (29, Growth) | She saves 7,000 NOK a month towards a "Frihetsfond ved 39" (freedom fund at 39) of 1.5 MNOK in today's money. The goal was registered 12 months ago. It is a financial buffer, **not** full financial independence: at a 4% withdrawal it pays about 5,000 NOK a month, around 21% of her spending. Full independence would need about 7 MNOK (25 × yearly spending), which is not realistic by 39 on her income. The Goals page shows this comparison. |
+| Anne Lie (52, Balanced) | A mixed portfolio with clear winners (Nordic equity fund, US healthcare) and one loser (Bergen Maritime), plus monthly transfers into her investment account. |
+| Jonas Berg (36, Moderate) | About 80% of his portfolio is technology shares and tech funds, much more than his profile suggests. |
+| Maria Dahl (29, Growth) | She saves 7,000 NOK a month and wants to be financially independent within ten years (her stated horizon is 5–10 years). At her spending of about 23,250 NOK a month, that means about 7 MNOK. |
 
 ---
 
@@ -126,61 +126,69 @@ forecasts. The model is educational and not a suitability assessment (MiFID II).
 
 ## C. Follow financial goals
 
-**What Maria should understand afterwards:** her chance of reaching her goal on today's
-plan, the realistic range of outcomes, whether she is ahead of or behind her own plan,
-and which levers matter most.
+**The goal is full financial independence.** For every customer, the target is 25 ×
+yearly spending, so that about 4% can be withdrawn each year (the "4% rule of thumb").
+Spending comes from the customer's own transactions. The customer adjusts the goal with
+sliders instead of registering a fixed goal amount.
 
-**What the feature shows**
+**What Maria should understand afterwards:** what financial independence costs at her
+spending, her chance of getting there on today's plan, the realistic range of outcomes,
+how the market affects it, and which levers matter most.
 
-1. **Chance to reach the goal** (26% on today's plan: "At risk") with weak, typical and
-   strong outcomes.
-2. **A fan chart** of 8 in 10 outcomes over time, with the typical path, what she pays
+**What the feature shows** (Maria's figures)
+
+1. **The goal:** 6.98 MNOK = 25 × her yearly spending of 279,085 NOK. At a 4% withdrawal
+   it pays about 23,267 NOK a month, which is her current spending.
+2. **Chance to reach it** within 10 years: 0% ("Unlikely without changes"). A typical
+   outcome is 1.27 MNOK, with 0.90 MNOK in a weak market and 1.85 MNOK in a strong one.
+3. **What it takes:** about 45,500 NOK a month in saving (more than her income of
+   37,500 NOK), or about 35 years at today's 7,000 NOK a month.
+4. **A fan chart** of 8 in 10 outcomes over time, with the typical path, what she pays
    in, and the goal line.
-3. **Versus plan:** where her registered plan said she would be today (210,329 NOK)
-   compared with what she has (203,852 NOK), so she is 6,477 NOK behind.
-4. **Levers:** +1,000/month gives 40% (+14 points), +3,000/month gives 66%, three more
-   years gives 62%, an early 25% crash gives 20%, and returns 2 points lower give 14%.
-5. **Try it yourself:** sliders for monthly spending, target, years, monthly saving and
-   expected return. The projection re-runs live. Spending starts at her current
-   spending from the transactions and sets the target to 25 × yearly spending.
-   Spending and target both decide the goal, so whichever slider she moved last wins
-   and the other one goes back to its default.
-6. **How the market affects the goal:** a dedicated section, described below.
-7. **Goal vs. full independence:** when the goal amount is clearly below 25 × yearly
-   spending, the page compares the two side by side. For Maria, 1.5 MNOK pays about
-   5,000 NOK a month (21% of her 23,257 NOK spending). Full independence would need
-   about 6.98 MNOK, which takes about 46,000 NOK a month in saving (more than her income)
-   or about 35 years at today's pace. This keeps a smaller goal from being mistaken
-   for being able to stop working.
+5. **Levers ("Hva betyr mest?"):** for each change, the years until the goal is reached
+   with average returns, and the chance within the horizon. The years stay informative
+   even when the chance is near 0%. Today it takes 34.7 years. +1,000 NOK a month makes
+   it 32.4 years, +3,000 makes it 28.8, an early 25% crash makes it 35.3, and returns
+   2 points lower make it 46.8.
+6. **Try it yourself:** sliders for monthly spending, target amount, years, monthly saving
+   and expected return. The projection re-runs live. Spending starts at her current
+   spending and sets the target to 25 × yearly spending. Spending and target amount both
+   decide the goal, so whichever slider she moved last wins and the other one goes back
+   to its default. If she sets a target below full independence, the summary says what
+   that amount pays per month and how much of her spending it covers.
+7. **How the market affects the goal:** a dedicated section, described below.
+
+The message for Maria is honest: independence within ten years is not realistic on her
+income and spending. The page shows what moves the date closest, and lets her explore
+what a lower spending level or a longer horizon would mean.
 
 ### How market development affects the goal
 
 Maria asks specifically how market development affects her goal. The market is the part
 of the outcome she cannot control, so the page separates it from what she can control
-(saving, time, risk level) and shows each market effect in kroner. All figures below are
-Maria's, from `market_impact` in `POST /customers/:id/goals/projection`.
+(saving, spending, time, risk level) and shows each market effect in kroner. All figures
+below are Maria's, from `market_impact` in `POST /customers/:id/goals/projection`.
 
 | Question | What the page shows | Maria |
 | --- | --- | --- |
-| What did the market just do to my goal? | The 90-day market change in her portfolio, and the goal re-simulated as if it had not happened | +8,593 NOK. The chance moved from 25% to 26%. |
-| How much of the result is the market? | The typical outcome split into money paid in and market growth | 1,036,852 NOK paid in + 212,761 NOK growth (17%) = 1,249,613 NOK |
-| How uncertain is it? | The gap between a weak market (1 in 10) and a strong one at the goal date | 914,274 NOK (905,529 vs. 1,819,803) |
-| How sensitive is it to returns? | Extra or missing kroner per percentage point of yearly return | about 82,583 NOK per point |
-| Does it matter when a fall comes? | The same 25% fall in the first year vs. the last year, with average returns otherwise | No fall: 1,317,310. Fall in year 1: 1,242,118. Fall in the final year: 1,009,365. |
+| What did the market just do to my goal? | The 90-day market change in her portfolio, and the goal re-simulated as if it had not happened | +8,593 NOK. No noticeable change in her chance. |
+| How much of the result is the market? | The typical outcome split into money paid in and market growth | 1,043,852 NOK paid in + 224,274 NOK growth (18%) = 1,268,126 NOK |
+| How uncertain is it? | The gap between a weak market (1 in 10) and a strong one at the goal date | 952,542 NOK (899,415 vs. 1,851,957) |
+| How sensitive is it to returns? | Extra or missing kroner per percentage point of yearly return | about 83,973 NOK per point |
+| Does it matter when a fall comes? | The same 25% fall in the first year vs. the last year, with average returns otherwise | No fall: 1,328,623. Fall in year 1: 1,253,185. Fall in the final year: 1,017,849. |
 
 The key messages, in the order the page tells them:
 
-1. **Short-term swings matter little for a ten-year goal.** The last 90 days moved
-   Maria's chance by a single percentage point. This counters the urge to react to
-   daily news.
+1. **Short-term swings matter little for a long-term goal.** The last 90 days did not
+   noticeably change Maria's chance. This counters the urge to react to daily news.
 2. **Most of the money is her own saving.** With a ten-year horizon and 4% real
-   return, the market adds about 17% of the typical outcome. Saving more is the most
+   return, the market adds about 18% of the typical outcome. Saving more is the most
    reliable lever. The longer the horizon, the larger the market's share.
-3. **The market creates a wide range.** The roughly 0.9 MNOK gap between a weak and a
+3. **The market creates a wide range.** The roughly 0.95 MNOK gap between a weak and a
    strong market is outside her control. This is why the page shows a range and a
    probability, never a single number.
 4. **Return assumptions matter.** One percentage point of yearly return is worth about
-   83,000 NOK at the goal date. This is why the return assumption is labelled, adjustable
+   84,000 NOK after ten years. This is why the return assumption is labelled, adjustable
    and never presented as a promise.
 5. **Timing matters (sequence risk).** A fall early in the period costs little: the
    balance is still small, and later savings buy cheaply. The same fall in the last year
@@ -207,31 +215,35 @@ the UI shows it as a badge:
 | Input | Source, in order of priority |
 | --- | --- |
 | Monthly spending | Her input → average monthly spending from her transactions |
-| Target amount | Her input → **25 × 12 × the spending she chose** → registered goal → 25 × 12 × her current spending (the "4% rule") |
-| Years | Her input → goal date → assumption: 15 years |
+| Target amount | Her input → 25 × 12 × the spending she chose → 25 × 12 × her current spending (the "4% rule") |
+| Years | Her input → upper end of her stated investment horizon (Maria: 5–10 years → 10) |
 | Monthly saving | Her input → average transfers to investments → average monthly surplus |
 | Invested today | Her input → current market value |
 | Return and swings | Her input → assumption for her risk profile |
 
+The API still supports registered goals with a plan (and then shows whether the customer
+is ahead of or behind it), but no customer has one in the demo data.
+
 **Method:** 2,000 simulated market paths with monthly lognormal returns and a **fixed
 random seed**, so the same inputs always give the same answer and levers differ only by
 the lever. All amounts are in today's money (returns minus 2% assumed inflation). The
-required monthly saving and "years needed at current pace" use the closed-form
-future-value formula with average returns.
+required monthly saving and "years needed" use the closed-form future-value formula with
+average returns.
 
-**Missing data:** Anne's, Jonas' and Maria's goals are registered in `goals.json`. For every
-other customer there is no goal, so the page starts from labelled estimates and says so. Transactions
-cover only 2 months, so monthly saving is a rough estimate. Tax, fees and income changes
-are not modelled.
+**Missing data:** spending is based on only 2 months of transactions, so the target is a
+rough estimate, and the horizon is an assumption. Both are labelled and adjustable. Tax,
+fees, pensions and income changes are not modelled. Public and occupational pension would
+in practice reduce how much a customer needs to cover from their own savings later in life.
 
-**Expected value and how to test it:** Maria gets a concrete answer ("save about 1,258
-NOK more per month") instead of a single misleading number. To test: check whether users
-correctly understand that 26% is *not* a promise (comprehension), and whether
-goal-setters adjust savings after using the levers (behaviour).
+**Expected value and how to test it:** Maria gets a concrete answer ("about 35 years at
+today's pace, about 45,500 NOK a month to do it in ten") instead of a vague hope, plus
+levers that show what moves the date. To test: check whether users correctly understand
+that the probability is *not* a promise (comprehension), and whether they adjust spending,
+saving or horizon after using the sliders (behaviour).
 
 **Risks:** a projection can be read as a promise. The page always shows a range, uses
-"scenarios" and "typical", never "will", and names the assumptions. A low probability can
-be demotivating, so the page pairs it with the levers that improve it.
+"scenarios" and "typical", never "will", and names the assumptions. A 0% chance can be
+demotivating, so the page pairs it with years to the goal and the levers that shorten it.
 
 ---
 

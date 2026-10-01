@@ -284,7 +284,7 @@ export interface GoalProjection {
     difference: number
     verdict: 'ahead' | 'behind' | 'on_plan'
   } | null
-  levers: { id: string; label: string; probability_pct: number; median_value: number; delta_probability_pct: number }[]
+  levers: { id: string; label: string; probability_pct: number; median_value: number; delta_probability_pct: number; years_needed: number | null }[]
   market_impact: MarketImpact
   independence: Independence
   summary: string[]

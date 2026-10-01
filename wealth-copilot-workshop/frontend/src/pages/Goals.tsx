@@ -2,12 +2,12 @@
 // scenarios with every assumption visible and adjustable.
 import { useEffect, useState } from 'react'
 import { fetchGoalProjection } from '../api/client'
-import type { Independence, InputSource, MarketImpact, ProjectionInput, ResolvedInput } from '../api/types'
+import type { InputSource, MarketImpact, ProjectionInput, ResolvedInput } from '../api/types'
 import { useCustomerContext } from '../context/CustomerContext'
 import { useCustomerData } from '../hooks/useCustomerData'
 import { FanChart, ProbabilityRing } from '../components/charts'
 import { ErrorState, Loading, MethodNote, PageHeading, Panel, Pill, Stat, Story } from '../components/ui'
-import { formatCurrency, formatDate, formatNumber, formatPct, formatSignedCurrency } from '../utils/format'
+import { formatCurrency, formatNumber, formatPct, formatSignedCurrency } from '../utils/format'
 
 const SOURCE_LABEL: Record<InputSource, string> = {
   your_input: 'Ditt valg',
@@ -38,51 +38,6 @@ function formatInput(i: ResolvedInput): string {
   if (i.unit === 'NOK/month') return `${formatCurrency(i.value)} / mnd.`
   if (i.unit === '%') return formatPct(i.value)
   return years(i.value)
-}
-
-// Goal vs. full financial independence, so a smaller goal is never mistaken
-// for being able to stop working.
-function IndependencePanel({ x, goalProbability }: { x: Independence; goalProbability: number }) {
-  return (
-    <Panel title="Ditt mål eller full økonomisk uavhengighet?"
-      subtitle="Hva målbeløpet faktisk gir, sammenlignet med å kunne leve av formuen. Beregnet med 4 % uttak per år.">
-      <div className="grid grid--2">
-        <div className="stat" style={{ boxShadow: 'none' }}>
-          <p className="stat__label">Ditt mål</p>
-          <p className="stat__value">{formatCurrency(x.goal_target)}</p>
-          <div className="kv" style={{ marginTop: 8 }}>
-            <div className="kv__row"><span>Gir per måned</span><strong>≈ {formatCurrency(x.goal_monthly_income)}</strong></div>
-            <div className="kv__row"><span>Dekker av forbruket ditt</span><strong>{x.coverage_pct} %</strong></div>
-            <div className="kv__row"><span>Sjanse for å nå det</span><strong>{goalProbability} %</strong></div>
-          </div>
-        </div>
-        <div className="stat" style={{ boxShadow: 'none' }}>
-          <p className="stat__label">Full økonomisk uavhengighet (25 × årlig forbruk)</p>
-          <p className="stat__value">{formatCurrency(x.target)}</p>
-          <div className="kv" style={{ marginTop: 8 }}>
-            <div className="kv__row"><span>Gir per måned</span><strong>≈ {formatCurrency(x.monthly_spending)}</strong></div>
-            <div className="kv__row"><span>Nødvendig sparing per måned</span><strong>{formatCurrency(x.required_monthly_contribution)}</strong></div>
-            <div className="kv__row"><span>Med dagens sparing</span><strong>{x.years_needed_at_current_pace ? `ca. ${years(x.years_needed_at_current_pace)}` : 'over 50 år'}</strong></div>
-            <div className="kv__row"><span>Sjanse innen måldatoen</span><strong>{x.probability_pct} %</strong></div>
-          </div>
-        </div>
-      </div>
-      <div style={{ marginTop: 20 }}>
-        <div className="split" role="img" aria-label={`Målet dekker ${x.coverage_pct} % av forbruket`}>
-          <span style={{ width: `${x.coverage_pct}%`, background: 'var(--series-1)' }} />
-          <span style={{ width: `${100 - x.coverage_pct}%`, background: 'var(--surface-3)' }} />
-        </div>
-        <div className="legend">
-          <span className="legend__item"><span className="swatch" style={{ background: 'var(--series-1)' }} />Dekket av målet: {formatCurrency(x.goal_monthly_income)} / mnd.</span>
-          <span className="legend__item"><span className="swatch" style={{ background: 'var(--surface-3)', border: '1px solid var(--border-strong)' }} />Resten av forbruket: {formatCurrency(Math.max(0, x.monthly_spending - x.goal_monthly_income))} / mnd.</span>
-        </div>
-      </div>
-      <p className="small muted" style={{ marginTop: 16 }}>
-        Et mindre mål kan være et godt mål, for eksempel et tillegg til pensjonen eller en buffer som gir frihet til å jobbe mindre, ta permisjon eller bytte jobb.
-        Men det betyr ikke at du kan slutte å jobbe. Flytt glidebryteren for forbruk under «Prøv selv» for å regne på full uavhengighet.
-      </p>
-    </Panel>
-  )
 }
 
 // "How market development affects the goal": the part of the outcome the
@@ -188,8 +143,8 @@ export default function Goals() {
   const { data: g, loading, error } = useCustomerData((id) => fetchGoalProjection(id, debounced), [JSON.stringify(debounced)])
 
   const heading = (
-    <PageHeading eyebrow="Case C · Følg målene dine" title="Er jeg i rute til å nå målet mitt?"
-      lead="Et spenn av mulige utfall, ikke et løfte. Flytt på glidebryterne for å se hva som betyr mest for å nå målet." />
+    <PageHeading eyebrow="Case C · Følg målene dine" title="Kan jeg bli økonomisk uavhengig?"
+      lead="Målet er å kunne leve av formuen: 25 × årlig forbruk, slik at du kan ta ut rundt 4 % i året. Du ser et spenn av mulige utfall, ikke et løfte. Juster forbruk, tid og sparing under «Prøv selv»." />
   )
 
   if (loading && !g) return <Loading />
@@ -197,24 +152,24 @@ export default function Goals() {
   if (!g) return null
 
   const status = STATUS[g.status]
-  const target = g.inputs.find((i) => i.key === 'target_amount')?.value ?? 0
+  const targetInput = g.inputs.find((i) => i.key === 'target_amount')
+  const target = targetInput?.value ?? 0
   const horizon = g.inputs.find((i) => i.key === 'years')?.value ?? 0
   const monthly = g.inputs.find((i) => i.key === 'monthly_contribution')?.value ?? 0
   const start = g.inputs.find((i) => i.key === 'starting_amount')
-  const maxLever = Math.max(1, ...g.levers.map((l) => l.probability_pct))
+  const maxYears = Math.max(1, ...[g.years_needed_at_current_pace, ...g.levers.map((l) => l.years_needed)].map((y) => y ?? 50))
   const dirty = Object.keys(overrides).length > 0
-  const plan = g.plan_check
 
   return (
     <div className="page" style={{ opacity: loading ? 0.75 : 1, transition: 'opacity .2s' }}>
       {heading}
 
       <div className="grid grid--main-side">
-        <Panel title={g.goal?.name ?? `Økonomisk uavhengighet for ${selectedCustomer?.first_name ?? 'deg'} (anslag)`}
-          subtitle={g.goal ? `Registrert ${formatDate(g.goal.created_at)} · måldato ${formatDate(g.goal.target_date)}` : 'Ingen mål er registrert ennå. Vi har tatt utgangspunkt i forbruket ditt og merket alle anslag.'}
+        <Panel title={`Økonomisk uavhengighet for ${selectedCustomer?.first_name ?? 'deg'}`}
+          subtitle={targetInput?.explanation}
           action={<Pill tone={status.tone}>{status.label}</Pill>}>
           <div className="row" style={{ gap: 28, alignItems: 'center' }}>
-            <ProbabilityRing value={g.probability_pct} caption="sjanse for å nå det" />
+            <ProbabilityRing value={g.probability_pct} caption="sjanse for å nå målet" />
             <div style={{ flex: 1, minWidth: 220 }} className="kv">
               <div className="kv__row"><span>Mål</span><strong>{formatCurrency(target)}</strong></div>
               <div className="kv__row"><span>Svakt marked (1 av 10)</span><span>{formatCurrency(g.outcomes.pessimistic)}</span></div>
@@ -225,15 +180,8 @@ export default function Goals() {
         </Panel>
 
         <div className="grid">
-          {plan ? (
-            <Stat label={`Mot planen din fra for ${plan.months_since_start} måneder siden`}
-              value={<span className={plan.difference >= 0 ? 'delta--pos' : 'delta--neg'}>
-                {plan.verdict === 'on_plan' ? 'I rute' : `${formatSignedCurrency(plan.difference)} ${plan.verdict === 'ahead' ? 'foran' : 'bak'}`}
-              </span>}
-              sub={`Planen forventet ${formatCurrency(plan.planned_value_today)} nå. Du har ${formatCurrency(plan.actual_value_today)}.`} />
-          ) : (
-            <Stat label="Mot plan" value="Ingen plan ennå" sub="Registrer et mål for å følge med på om du ligger foran eller bak." />
-          )}
+          <Stat label="Målet gir per måned (4 % uttak)" value={`≈ ${formatCurrency(g.independence.goal_monthly_income)}`}
+            sub={`${g.independence.coverage_pct} % av forbruket ditt på ${formatCurrency(g.independence.monthly_spending)} / mnd.`} />
           <Stat label="Nødvendig sparing per måned (gjennomsnittlig avkastning)" value={formatCurrency(g.required_monthly_contribution)}
             sub={g.required_monthly_contribution > monthly ? `${formatCurrency(g.required_monthly_contribution - monthly)} mer enn i dag` : 'Du sparer nok i dag'} />
           <Stat label="Med dagens tempo når du målet om"
@@ -243,8 +191,6 @@ export default function Goals() {
       </div>
 
       <Story lines={g.summary} />
-
-      {g.independence.goal_is_partial && <IndependencePanel x={g.independence} goalProbability={g.probability_pct} />}
 
       <div className="grid grid--main-side">
         <Panel title="Dine mulige fremtider" subtitle="I dagens kroner, justert for inflasjon">
@@ -265,23 +211,26 @@ export default function Goals() {
 
       <MarketImpactPanel m={g.market_impact} target={target} />
 
-      <Panel title="Hva betyr mest?" subtitle="Sjansen for å nå målet hvis én ting endres og alt annet er likt">
+      <Panel title="Hva betyr mest?" subtitle={`Hvis én ting endres og alt annet er likt: hvor lang tid det tar å nå målet med gjennomsnittlig avkastning, og sjansen for å nå det innen ${years(horizon)}. Kortere stolpe er bedre.`}>
         <div>
-          <div className="lever">
-            <strong>Dagens plan</strong>
-            <span className="lever__bar"><span style={{ width: `${(g.probability_pct / maxLever) * 100}%`, background: 'var(--neutral-mark)' }} /></span>
-            <strong style={{ textAlign: 'right' }}>{g.probability_pct} %</strong>
-          </div>
-          {g.levers.map((l) => (
-            <div key={l.id} className="lever">
-              <span>{l.label}</span>
-              <span className="lever__bar" aria-hidden="true"><span style={{ width: `${(l.probability_pct / maxLever) * 100}%`, background: l.delta_probability_pct < 0 ? 'var(--series-7)' : undefined }} /></span>
-              <span style={{ textAlign: 'right' }}>
-                <strong>{l.probability_pct} %</strong>{' '}
-                <span className={`small ${l.delta_probability_pct >= 0 ? 'delta--pos' : 'delta--neg'}`}>({l.delta_probability_pct >= 0 ? '+' : ''}{l.delta_probability_pct})</span>
-              </span>
-            </div>
-          ))}
+          {[{ id: 'today', label: 'Dagens plan', probability_pct: g.probability_pct, delta_probability_pct: 0, years_needed: g.years_needed_at_current_pace }, ...g.levers].map((l) => {
+            const base = g.years_needed_at_current_pace
+            const tone = l.id === 'today' ? 'var(--neutral-mark)'
+              : l.years_needed !== null && base !== null && l.years_needed < base ? 'var(--series-1)'
+                : l.years_needed === base ? 'var(--neutral-mark)' : 'var(--series-7)'
+            return (
+              <div key={l.id} className="lever" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(80px, 30%) 96px 110px' }}>
+                {l.id === 'today' ? <strong>{l.label}</strong> : <span>{l.label}</span>}
+                <span className="lever__bar" aria-hidden="true"><span style={{ width: `${((l.years_needed ?? 50) / maxYears) * 100}%`, background: tone }} /></span>
+                <strong style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>{l.years_needed !== null ? years(l.years_needed) : '50+ år'}</strong>
+                <span style={{ textAlign: 'right', whiteSpace: 'nowrap' }} className="small">
+                  {l.probability_pct} % sjanse{l.id !== 'today' && l.delta_probability_pct !== 0 && (
+                    <span className={l.delta_probability_pct > 0 ? 'delta--pos' : 'delta--neg'}> ({l.delta_probability_pct > 0 ? '+' : ''}{l.delta_probability_pct})</span>
+                  )}
+                </span>
+              </div>
+            )
+          })}
         </div>
       </Panel>
 

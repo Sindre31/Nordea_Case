@@ -79,36 +79,39 @@ describe('Case B: GET /customers/:id/risk/explain', () => {
 })
 
 describe('Case C: goals and projection', () => {
-  it('returns Maria\'s registered goal', async () => {
-    const res = await request(app).get(`/customers/${MARIA}/goals`)
-    expect(res.status).toBe(200)
-    expect(res.body.goals).toHaveLength(1)
-  })
-
-  it('projects a range of outcomes and compares with the plan', async () => {
+  it('uses full financial independence as the default goal', async () => {
+    const goals = await request(app).get(`/customers/${MARIA}/goals`)
+    expect(goals.body.goals).toHaveLength(0)
     const res = await request(app).post(`/customers/${MARIA}/goals/projection`).send({})
     expect(res.status).toBe(200)
+    const spending = res.body.inputs.find((i: { key: string }) => i.key === 'monthly_spending').value
+    const target = res.body.inputs.find((i: { key: string }) => i.key === 'target_amount')
+    expect(target.source).toBe('your_data')
+    expect(target.value).toBe(Math.round((spending * 12 * 25) / 10000) * 10000)
+    expect(res.body.independence.goal_is_partial).toBe(false)
+    expect(res.body.plan_check).toBeNull()
     const { pessimistic, median, optimistic } = res.body.outcomes
     expect(pessimistic).toBeLessThan(median)
     expect(median).toBeLessThan(optimistic)
-    expect(res.body.plan_check.verdict).toMatch(/ahead|behind|on_plan/)
-    expect(res.body.inputs.find((i: { key: string }) => i.key === 'target_amount').source).toBe('registered_goal')
+  })
+
+  it('defaults the horizon to the upper end of the investment horizon', async () => {
+    // Maria's stated horizon is 5-10 years, matching "independent within ten years".
+    const res = await request(app).post(`/customers/${MARIA}/goals/projection`).send({})
+    const years = res.body.inputs.find((i: { key: string }) => i.key === 'years')
+    expect(years.value).toBe(10)
+    expect(years.source).toBe('assumption')
+    expect(res.body.data_quality.limitations[0]).toMatch(/forbruket ditt/)
   })
 
   it('is deterministic and responds to levers', async () => {
-    const a = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ monthly_contribution: 7000 })
-    const b = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ monthly_contribution: 7000 })
-    const more = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ monthly_contribution: 12000 })
+    const body = { target_amount: 1500000, monthly_contribution: 7000 }
+    const a = await request(app).post(`/customers/${MARIA}/goals/projection`).send(body)
+    const b = await request(app).post(`/customers/${MARIA}/goals/projection`).send(body)
+    const more = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ ...body, monthly_contribution: 12000 })
     expect(a.body.probability_pct).toBe(b.body.probability_pct)
     expect(more.body.probability_pct).toBeGreaterThan(a.body.probability_pct)
     expect(a.body.inputs.find((i: { key: string }) => i.key === 'monthly_contribution').source).toBe('your_input')
-  })
-
-  it('labels estimates when no goal is registered', async () => {
-    const res = await request(app).post(`/customers/${customers[0].customer_id}/goals/projection`).send({})
-    expect(res.status).toBe(200)
-    expect(res.body.goal).toBeNull()
-    expect(res.body.data_quality.limitations[0]).toMatch(/ikke registrert noe mål/)
   })
 
   it('explains how the market affects the goal', async () => {
@@ -146,34 +149,19 @@ describe('Case C: goals and projection', () => {
     expect(lower.body.probability_pct).toBeGreaterThanOrEqual(chosen.body.probability_pct)
   })
 
-  it('lets chosen spending replace a registered goal, and a chosen target win over spending', async () => {
-    const fromSpending = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ monthly_spending: 10000 })
-    expect(fromSpending.body.inputs.find((i: { key: string }) => i.key === 'target_amount').value).toBe(3000000)
+  it('lets a chosen target win over spending', async () => {
     const both = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ monthly_spending: 10000, target_amount: 2000000 })
     expect(both.body.inputs.find((i: { key: string }) => i.key === 'target_amount').value).toBe(2000000)
     expect(both.body.inputs.find((i: { key: string }) => i.key === 'monthly_spending').explanation).toMatch(/Påvirker ikke målet/)
   })
 
-  it('gives all three personas an honest, registered goal', async () => {
-    for (const [id, name] of [[ANNE, 'Pensjonstillegg fra 62'], [JONAS, 'Frihetsfond ved 50'], [MARIA, 'Frihetsfond ved 39']]) {
-      const res = await request(app).post(`/customers/${id}/goals/projection`).send({})
-      expect(res.body.goal.name).toBe(name)
-      expect(res.body.independence.goal_is_partial).toBe(true)
-      expect(res.body.plan_check).not.toBeNull()
-    }
-  })
-
-  it('compares a smaller goal with full financial independence', async () => {
-    const res = await request(app).post(`/customers/${MARIA}/goals/projection`).send({})
+  it('shows what a lower chosen target covers compared with full independence', async () => {
+    const res = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ target_amount: 1500000 })
     const x = res.body.independence
     expect(x.goal_is_partial).toBe(true)
     expect(x.goal_monthly_income).toBe(1500000 * 0.04 / 12)
-    expect(x.target).toBeGreaterThan(x.goal_target)
     expect(x.coverage_pct).toBeLessThan(100)
     expect(res.body.summary[0]).toMatch(/Full økonomisk uavhengighet/)
-    // When the target is set from spending, the goal IS full independence.
-    const full = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ monthly_spending: 23000 })
-    expect(full.body.independence.goal_is_partial).toBe(false)
   })
 
   it('rejects invalid input', async () => {

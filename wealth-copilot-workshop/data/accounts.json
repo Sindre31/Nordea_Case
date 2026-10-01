@@ -1,0 +1,2242 @@
+[
+  {
+    "account_id": "ACC-000001",
+    "customer_id": "CUST-00001",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 35308.8
+  },
+  {
+    "account_id": "ACC-000002",
+    "customer_id": "CUST-00001",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 122097.4
+  },
+  {
+    "account_id": "ACC-000003",
+    "customer_id": "CUST-00001",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 67444.82
+  },
+  {
+    "account_id": "ACC-000004",
+    "customer_id": "CUST-00001",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 18579.58
+  },
+  {
+    "account_id": "ACC-000005",
+    "customer_id": "CUST-00002",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 43622.18
+  },
+  {
+    "account_id": "ACC-000006",
+    "customer_id": "CUST-00002",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 323491.04
+  },
+  {
+    "account_id": "ACC-000007",
+    "customer_id": "CUST-00002",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 337464.83
+  },
+  {
+    "account_id": "ACC-000008",
+    "customer_id": "CUST-00003",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 69646.4
+  },
+  {
+    "account_id": "ACC-000009",
+    "customer_id": "CUST-00003",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 97360.74
+  },
+  {
+    "account_id": "ACC-000010",
+    "customer_id": "CUST-00003",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 318621.66
+  },
+  {
+    "account_id": "ACC-000011",
+    "customer_id": "CUST-00004",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 12076.19
+  },
+  {
+    "account_id": "ACC-000012",
+    "customer_id": "CUST-00004",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 493825.02
+  },
+  {
+    "account_id": "ACC-000013",
+    "customer_id": "CUST-00004",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 23383.85
+  },
+  {
+    "account_id": "ACC-000014",
+    "customer_id": "CUST-00004",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 22382.22
+  },
+  {
+    "account_id": "ACC-000015",
+    "customer_id": "CUST-00005",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 68146.23
+  },
+  {
+    "account_id": "ACC-000016",
+    "customer_id": "CUST-00005",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 160809.58
+  },
+  {
+    "account_id": "ACC-000017",
+    "customer_id": "CUST-00005",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 180427.69
+  },
+  {
+    "account_id": "ACC-000018",
+    "customer_id": "CUST-00005",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 240100.64
+  },
+  {
+    "account_id": "ACC-000019",
+    "customer_id": "CUST-00006",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 83297.41
+  },
+  {
+    "account_id": "ACC-000020",
+    "customer_id": "CUST-00006",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 11419.7
+  },
+  {
+    "account_id": "ACC-000021",
+    "customer_id": "CUST-00007",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 46393.29
+  },
+  {
+    "account_id": "ACC-000022",
+    "customer_id": "CUST-00007",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 184183.98
+  },
+  {
+    "account_id": "ACC-000023",
+    "customer_id": "CUST-00007",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 60286.91
+  },
+  {
+    "account_id": "ACC-000024",
+    "customer_id": "CUST-00007",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 186544.48
+  },
+  {
+    "account_id": "ACC-000025",
+    "customer_id": "CUST-00008",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 27168.29
+  },
+  {
+    "account_id": "ACC-000026",
+    "customer_id": "CUST-00008",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 477326.28
+  },
+  {
+    "account_id": "ACC-000027",
+    "customer_id": "CUST-00009",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 43984.44
+  },
+  {
+    "account_id": "ACC-000028",
+    "customer_id": "CUST-00010",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 73207.35
+  },
+  {
+    "account_id": "ACC-000029",
+    "customer_id": "CUST-00010",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 134927.59
+  },
+  {
+    "account_id": "ACC-000030",
+    "customer_id": "CUST-00010",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 117583.64
+  },
+  {
+    "account_id": "ACC-000031",
+    "customer_id": "CUST-00011",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 26496.69
+  },
+  {
+    "account_id": "ACC-000032",
+    "customer_id": "CUST-00012",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 83198.68
+  },
+  {
+    "account_id": "ACC-000033",
+    "customer_id": "CUST-00012",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 519112.37
+  },
+  {
+    "account_id": "ACC-000034",
+    "customer_id": "CUST-00012",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 56027.48
+  },
+  {
+    "account_id": "ACC-000035",
+    "customer_id": "CUST-00012",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 26931.77
+  },
+  {
+    "account_id": "ACC-000036",
+    "customer_id": "CUST-00013",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 84981.11
+  },
+  {
+    "account_id": "ACC-000037",
+    "customer_id": "CUST-00013",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 488911.73
+  },
+  {
+    "account_id": "ACC-000038",
+    "customer_id": "CUST-00014",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 84509.71
+  },
+  {
+    "account_id": "ACC-000039",
+    "customer_id": "CUST-00014",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 559851.88
+  },
+  {
+    "account_id": "ACC-000040",
+    "customer_id": "CUST-00014",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 172668.44
+  },
+  {
+    "account_id": "ACC-000041",
+    "customer_id": "CUST-00014",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 188237.2
+  },
+  {
+    "account_id": "ACC-000042",
+    "customer_id": "CUST-00015",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 7389.46
+  },
+  {
+    "account_id": "ACC-000043",
+    "customer_id": "CUST-00015",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 138080.43
+  },
+  {
+    "account_id": "ACC-000044",
+    "customer_id": "CUST-00015",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 27975.03
+  },
+  {
+    "account_id": "ACC-000045",
+    "customer_id": "CUST-00016",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 21923.42
+  },
+  {
+    "account_id": "ACC-000046",
+    "customer_id": "CUST-00016",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 200420.26
+  },
+  {
+    "account_id": "ACC-000047",
+    "customer_id": "CUST-00016",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 85773.63
+  },
+  {
+    "account_id": "ACC-000048",
+    "customer_id": "CUST-00016",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 125037.47
+  },
+  {
+    "account_id": "ACC-000049",
+    "customer_id": "CUST-00017",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 82535.03
+  },
+  {
+    "account_id": "ACC-000050",
+    "customer_id": "CUST-00017",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 221346.29
+  },
+  {
+    "account_id": "ACC-000051",
+    "customer_id": "CUST-00018",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 22270.87
+  },
+  {
+    "account_id": "ACC-000052",
+    "customer_id": "CUST-00018",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 118881.51
+  },
+  {
+    "account_id": "ACC-000053",
+    "customer_id": "CUST-00018",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 267752.77
+  },
+  {
+    "account_id": "ACC-000054",
+    "customer_id": "CUST-00019",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 68977.9
+  },
+  {
+    "account_id": "ACC-000055",
+    "customer_id": "CUST-00019",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 455061.38
+  },
+  {
+    "account_id": "ACC-000056",
+    "customer_id": "CUST-00019",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 261671.69
+  },
+  {
+    "account_id": "ACC-000057",
+    "customer_id": "CUST-00020",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 37366.94
+  },
+  {
+    "account_id": "ACC-000058",
+    "customer_id": "CUST-00020",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 624244.19
+  },
+  {
+    "account_id": "ACC-000059",
+    "customer_id": "CUST-00020",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 170264.01
+  },
+  {
+    "account_id": "ACC-000060",
+    "customer_id": "CUST-00021",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 31300.68
+  },
+  {
+    "account_id": "ACC-000061",
+    "customer_id": "CUST-00022",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 18897.43
+  },
+  {
+    "account_id": "ACC-000062",
+    "customer_id": "CUST-00022",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 335146.06
+  },
+  {
+    "account_id": "ACC-000063",
+    "customer_id": "CUST-00022",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 178366.75
+  },
+  {
+    "account_id": "ACC-000064",
+    "customer_id": "CUST-00023",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 9161.37
+  },
+  {
+    "account_id": "ACC-000065",
+    "customer_id": "CUST-00023",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 404331.42
+  },
+  {
+    "account_id": "ACC-000066",
+    "customer_id": "CUST-00023",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 73939.52
+  },
+  {
+    "account_id": "ACC-000067",
+    "customer_id": "CUST-00024",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 74773.82
+  },
+  {
+    "account_id": "ACC-000068",
+    "customer_id": "CUST-00024",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 58927.41
+  },
+  {
+    "account_id": "ACC-000069",
+    "customer_id": "CUST-00024",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 163631.3
+  },
+  {
+    "account_id": "ACC-000070",
+    "customer_id": "CUST-00024",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 135883.73
+  },
+  {
+    "account_id": "ACC-000071",
+    "customer_id": "CUST-00025",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 76860.52
+  },
+  {
+    "account_id": "ACC-000072",
+    "customer_id": "CUST-00025",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 328252.27
+  },
+  {
+    "account_id": "ACC-000073",
+    "customer_id": "CUST-00025",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 173993.48
+  },
+  {
+    "account_id": "ACC-000074",
+    "customer_id": "CUST-00025",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 93041.66
+  },
+  {
+    "account_id": "ACC-000075",
+    "customer_id": "CUST-00026",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 59757.51
+  },
+  {
+    "account_id": "ACC-000076",
+    "customer_id": "CUST-00026",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 317718.51
+  },
+  {
+    "account_id": "ACC-000077",
+    "customer_id": "CUST-00026",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 80043.85
+  },
+  {
+    "account_id": "ACC-000078",
+    "customer_id": "CUST-00027",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 76481.96
+  },
+  {
+    "account_id": "ACC-000079",
+    "customer_id": "CUST-00027",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 427098.98
+  },
+  {
+    "account_id": "ACC-000080",
+    "customer_id": "CUST-00027",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 117093.57
+  },
+  {
+    "account_id": "ACC-000081",
+    "customer_id": "CUST-00027",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 25665.19
+  },
+  {
+    "account_id": "ACC-000082",
+    "customer_id": "CUST-00028",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 30428.27
+  },
+  {
+    "account_id": "ACC-000083",
+    "customer_id": "CUST-00028",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 150261.82
+  },
+  {
+    "account_id": "ACC-000084",
+    "customer_id": "CUST-00028",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 66515.35
+  },
+  {
+    "account_id": "ACC-000085",
+    "customer_id": "CUST-00028",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 31467.25
+  },
+  {
+    "account_id": "ACC-000086",
+    "customer_id": "CUST-00029",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 40272.58
+  },
+  {
+    "account_id": "ACC-000087",
+    "customer_id": "CUST-00029",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 326970.71
+  },
+  {
+    "account_id": "ACC-000088",
+    "customer_id": "CUST-00029",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 142894.27
+  },
+  {
+    "account_id": "ACC-000089",
+    "customer_id": "CUST-00030",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 26847.95
+  },
+  {
+    "account_id": "ACC-000090",
+    "customer_id": "CUST-00030",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 287705.23
+  },
+  {
+    "account_id": "ACC-000091",
+    "customer_id": "CUST-00031",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 55031.3
+  },
+  {
+    "account_id": "ACC-000092",
+    "customer_id": "CUST-00031",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 415703.55
+  },
+  {
+    "account_id": "ACC-000093",
+    "customer_id": "CUST-00031",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 63152.44
+  },
+  {
+    "account_id": "ACC-000094",
+    "customer_id": "CUST-00031",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 57015.33
+  },
+  {
+    "account_id": "ACC-000095",
+    "customer_id": "CUST-00032",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 70804.93
+  },
+  {
+    "account_id": "ACC-000096",
+    "customer_id": "CUST-00032",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 402280.13
+  },
+  {
+    "account_id": "ACC-000097",
+    "customer_id": "CUST-00032",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 80518.66
+  },
+  {
+    "account_id": "ACC-000098",
+    "customer_id": "CUST-00032",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 9973.68
+  },
+  {
+    "account_id": "ACC-000099",
+    "customer_id": "CUST-00033",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 43722.38
+  },
+  {
+    "account_id": "ACC-000100",
+    "customer_id": "CUST-00033",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 247646.8
+  },
+  {
+    "account_id": "ACC-000101",
+    "customer_id": "CUST-00033",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 123960.14
+  },
+  {
+    "account_id": "ACC-000102",
+    "customer_id": "CUST-00033",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 128918.67
+  },
+  {
+    "account_id": "ACC-000103",
+    "customer_id": "CUST-00034",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 23355
+  },
+  {
+    "account_id": "ACC-000104",
+    "customer_id": "CUST-00034",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 214750.65
+  },
+  {
+    "account_id": "ACC-000105",
+    "customer_id": "CUST-00034",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 126052.28
+  },
+  {
+    "account_id": "ACC-000106",
+    "customer_id": "CUST-00034",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 33239.02
+  },
+  {
+    "account_id": "ACC-000107",
+    "customer_id": "CUST-00035",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 70754.8
+  },
+  {
+    "account_id": "ACC-000108",
+    "customer_id": "CUST-00035",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 302825.49
+  },
+  {
+    "account_id": "ACC-000109",
+    "customer_id": "CUST-00035",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 71856.92
+  },
+  {
+    "account_id": "ACC-000110",
+    "customer_id": "CUST-00035",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 6927.82
+  },
+  {
+    "account_id": "ACC-000111",
+    "customer_id": "CUST-00036",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 70953.67
+  },
+  {
+    "account_id": "ACC-000112",
+    "customer_id": "CUST-00036",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 369116.77
+  },
+  {
+    "account_id": "ACC-000113",
+    "customer_id": "CUST-00036",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 207670.46
+  },
+  {
+    "account_id": "ACC-000114",
+    "customer_id": "CUST-00036",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 28401.98
+  },
+  {
+    "account_id": "ACC-000115",
+    "customer_id": "CUST-00037",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 70795.32
+  },
+  {
+    "account_id": "ACC-000116",
+    "customer_id": "CUST-00037",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 259065.12
+  },
+  {
+    "account_id": "ACC-000117",
+    "customer_id": "CUST-00037",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 371923.3
+  },
+  {
+    "account_id": "ACC-000118",
+    "customer_id": "CUST-00038",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 79639.47
+  },
+  {
+    "account_id": "ACC-000119",
+    "customer_id": "CUST-00038",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 522716.71
+  },
+  {
+    "account_id": "ACC-000120",
+    "customer_id": "CUST-00038",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 137545.01
+  },
+  {
+    "account_id": "ACC-000121",
+    "customer_id": "CUST-00038",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 124057.91
+  },
+  {
+    "account_id": "ACC-000122",
+    "customer_id": "CUST-00039",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 77856.18
+  },
+  {
+    "account_id": "ACC-000123",
+    "customer_id": "CUST-00039",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 319627.26
+  },
+  {
+    "account_id": "ACC-000124",
+    "customer_id": "CUST-00039",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 300976.72
+  },
+  {
+    "account_id": "ACC-000125",
+    "customer_id": "CUST-00040",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 53026.01
+  },
+  {
+    "account_id": "ACC-000126",
+    "customer_id": "CUST-00040",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 149390.11
+  },
+  {
+    "account_id": "ACC-000127",
+    "customer_id": "CUST-00041",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 74922.26
+  },
+  {
+    "account_id": "ACC-000128",
+    "customer_id": "CUST-00041",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 17973.79
+  },
+  {
+    "account_id": "ACC-000129",
+    "customer_id": "CUST-00041",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 195286.35
+  },
+  {
+    "account_id": "ACC-000130",
+    "customer_id": "CUST-00041",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 202880.03
+  },
+  {
+    "account_id": "ACC-000131",
+    "customer_id": "CUST-00042",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 8399.71
+  },
+  {
+    "account_id": "ACC-000132",
+    "customer_id": "CUST-00042",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 189645.16
+  },
+  {
+    "account_id": "ACC-000133",
+    "customer_id": "CUST-00043",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 52967.48
+  },
+  {
+    "account_id": "ACC-000134",
+    "customer_id": "CUST-00043",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 607768.02
+  },
+  {
+    "account_id": "ACC-000135",
+    "customer_id": "CUST-00043",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 200428.08
+  },
+  {
+    "account_id": "ACC-000136",
+    "customer_id": "CUST-00043",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 125934.92
+  },
+  {
+    "account_id": "ACC-000137",
+    "customer_id": "CUST-00044",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 68423.15
+  },
+  {
+    "account_id": "ACC-000138",
+    "customer_id": "CUST-00044",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 553523.62
+  },
+  {
+    "account_id": "ACC-000139",
+    "customer_id": "CUST-00044",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 127244.91
+  },
+  {
+    "account_id": "ACC-000140",
+    "customer_id": "CUST-00044",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 131489.17
+  },
+  {
+    "account_id": "ACC-000141",
+    "customer_id": "CUST-00045",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 21396.99
+  },
+  {
+    "account_id": "ACC-000142",
+    "customer_id": "CUST-00045",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 364238.77
+  },
+  {
+    "account_id": "ACC-000143",
+    "customer_id": "CUST-00045",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 70082.58
+  },
+  {
+    "account_id": "ACC-000144",
+    "customer_id": "CUST-00046",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 63883.67
+  },
+  {
+    "account_id": "ACC-000145",
+    "customer_id": "CUST-00046",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 111624.53
+  },
+  {
+    "account_id": "ACC-000146",
+    "customer_id": "CUST-00046",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 152557.15
+  },
+  {
+    "account_id": "ACC-000147",
+    "customer_id": "CUST-00047",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 9116.6
+  },
+  {
+    "account_id": "ACC-000148",
+    "customer_id": "CUST-00047",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 59441.94
+  },
+  {
+    "account_id": "ACC-000149",
+    "customer_id": "CUST-00047",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 90088.94
+  },
+  {
+    "account_id": "ACC-000150",
+    "customer_id": "CUST-00047",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 30003.66
+  },
+  {
+    "account_id": "ACC-000151",
+    "customer_id": "CUST-00048",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 63873.81
+  },
+  {
+    "account_id": "ACC-000152",
+    "customer_id": "CUST-00048",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 189975.52
+  },
+  {
+    "account_id": "ACC-000153",
+    "customer_id": "CUST-00048",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 151248.81
+  },
+  {
+    "account_id": "ACC-000154",
+    "customer_id": "CUST-00049",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 84103.37
+  },
+  {
+    "account_id": "ACC-000155",
+    "customer_id": "CUST-00049",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 63866.56
+  },
+  {
+    "account_id": "ACC-000156",
+    "customer_id": "CUST-00049",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 133665.23
+  },
+  {
+    "account_id": "ACC-000157",
+    "customer_id": "CUST-00049",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 161311.84
+  },
+  {
+    "account_id": "ACC-000158",
+    "customer_id": "CUST-00050",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 62998.38
+  },
+  {
+    "account_id": "ACC-000159",
+    "customer_id": "CUST-00050",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 255151.23
+  },
+  {
+    "account_id": "ACC-000160",
+    "customer_id": "CUST-00050",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 142094.06
+  },
+  {
+    "account_id": "ACC-000161",
+    "customer_id": "CUST-00051",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 13446.76
+  },
+  {
+    "account_id": "ACC-000162",
+    "customer_id": "CUST-00051",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 293900.63
+  },
+  {
+    "account_id": "ACC-000163",
+    "customer_id": "CUST-00052",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 36762.42
+  },
+  {
+    "account_id": "ACC-000164",
+    "customer_id": "CUST-00052",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 75000.6
+  },
+  {
+    "account_id": "ACC-000165",
+    "customer_id": "CUST-00052",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 172245.06
+  },
+  {
+    "account_id": "ACC-000166",
+    "customer_id": "CUST-00053",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 41448.63
+  },
+  {
+    "account_id": "ACC-000167",
+    "customer_id": "CUST-00053",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 274740.6
+  },
+  {
+    "account_id": "ACC-000168",
+    "customer_id": "CUST-00053",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 376753.37
+  },
+  {
+    "account_id": "ACC-000169",
+    "customer_id": "CUST-00054",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 18554.07
+  },
+  {
+    "account_id": "ACC-000170",
+    "customer_id": "CUST-00055",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 38760.43
+  },
+  {
+    "account_id": "ACC-000171",
+    "customer_id": "CUST-00055",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 457475.78
+  },
+  {
+    "account_id": "ACC-000172",
+    "customer_id": "CUST-00055",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 244630.68
+  },
+  {
+    "account_id": "ACC-000173",
+    "customer_id": "CUST-00056",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 79085.63
+  },
+  {
+    "account_id": "ACC-000174",
+    "customer_id": "CUST-00056",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 611307.68
+  },
+  {
+    "account_id": "ACC-000175",
+    "customer_id": "CUST-00056",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 99273.93
+  },
+  {
+    "account_id": "ACC-000176",
+    "customer_id": "CUST-00056",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 14399.15
+  },
+  {
+    "account_id": "ACC-000177",
+    "customer_id": "CUST-00057",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 36266.81
+  },
+  {
+    "account_id": "ACC-000178",
+    "customer_id": "CUST-00057",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 336629.08
+  },
+  {
+    "account_id": "ACC-000179",
+    "customer_id": "CUST-00058",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 40686.97
+  },
+  {
+    "account_id": "ACC-000180",
+    "customer_id": "CUST-00058",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 106793.14
+  },
+  {
+    "account_id": "ACC-000181",
+    "customer_id": "CUST-00058",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 97288.83
+  },
+  {
+    "account_id": "ACC-000182",
+    "customer_id": "CUST-00058",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 108688.68
+  },
+  {
+    "account_id": "ACC-000183",
+    "customer_id": "CUST-00059",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 65878.58
+  },
+  {
+    "account_id": "ACC-000184",
+    "customer_id": "CUST-00059",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 482958.32
+  },
+  {
+    "account_id": "ACC-000185",
+    "customer_id": "CUST-00059",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 108962.31
+  },
+  {
+    "account_id": "ACC-000186",
+    "customer_id": "CUST-00060",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 75366.32
+  },
+  {
+    "account_id": "ACC-000187",
+    "customer_id": "CUST-00060",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 520722.12
+  },
+  {
+    "account_id": "ACC-000188",
+    "customer_id": "CUST-00060",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 35501.22
+  },
+  {
+    "account_id": "ACC-000189",
+    "customer_id": "CUST-00061",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 67488.67
+  },
+  {
+    "account_id": "ACC-000190",
+    "customer_id": "CUST-00061",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 131429.9
+  },
+  {
+    "account_id": "ACC-000191",
+    "customer_id": "CUST-00061",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 289938.47
+  },
+  {
+    "account_id": "ACC-000192",
+    "customer_id": "CUST-00062",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 81465.85
+  },
+  {
+    "account_id": "ACC-000193",
+    "customer_id": "CUST-00062",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 620974.17
+  },
+  {
+    "account_id": "ACC-000194",
+    "customer_id": "CUST-00062",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 120351.95
+  },
+  {
+    "account_id": "ACC-000195",
+    "customer_id": "CUST-00063",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 49368.25
+  },
+  {
+    "account_id": "ACC-000196",
+    "customer_id": "CUST-00063",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 110945.07
+  },
+  {
+    "account_id": "ACC-000197",
+    "customer_id": "CUST-00063",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 163842.79
+  },
+  {
+    "account_id": "ACC-000198",
+    "customer_id": "CUST-00064",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 81937.32
+  },
+  {
+    "account_id": "ACC-000199",
+    "customer_id": "CUST-00064",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 203609.21
+  },
+  {
+    "account_id": "ACC-000200",
+    "customer_id": "CUST-00064",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 67022.26
+  },
+  {
+    "account_id": "ACC-000201",
+    "customer_id": "CUST-00064",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 136658.76
+  },
+  {
+    "account_id": "ACC-000202",
+    "customer_id": "CUST-00065",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 27927.18
+  },
+  {
+    "account_id": "ACC-000203",
+    "customer_id": "CUST-00065",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 642956.12
+  },
+  {
+    "account_id": "ACC-000204",
+    "customer_id": "CUST-00065",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 31688.75
+  },
+  {
+    "account_id": "ACC-000205",
+    "customer_id": "CUST-00065",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 10877.99
+  },
+  {
+    "account_id": "ACC-000206",
+    "customer_id": "CUST-00066",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 79053.16
+  },
+  {
+    "account_id": "ACC-000207",
+    "customer_id": "CUST-00066",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 353615.65
+  },
+  {
+    "account_id": "ACC-000208",
+    "customer_id": "CUST-00066",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 77581.68
+  },
+  {
+    "account_id": "ACC-000209",
+    "customer_id": "CUST-00066",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 127834.18
+  },
+  {
+    "account_id": "ACC-000210",
+    "customer_id": "CUST-00067",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 48466.02
+  },
+  {
+    "account_id": "ACC-000211",
+    "customer_id": "CUST-00067",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 41596.63
+  },
+  {
+    "account_id": "ACC-000212",
+    "customer_id": "CUST-00067",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 91062.61
+  },
+  {
+    "account_id": "ACC-000213",
+    "customer_id": "CUST-00068",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 67096.42
+  },
+  {
+    "account_id": "ACC-000214",
+    "customer_id": "CUST-00068",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 334974.72
+  },
+  {
+    "account_id": "ACC-000215",
+    "customer_id": "CUST-00068",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 77767.48
+  },
+  {
+    "account_id": "ACC-000216",
+    "customer_id": "CUST-00069",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 50330.96
+  },
+  {
+    "account_id": "ACC-000217",
+    "customer_id": "CUST-00069",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 128261.73
+  },
+  {
+    "account_id": "ACC-000218",
+    "customer_id": "CUST-00070",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 7769.42
+  },
+  {
+    "account_id": "ACC-000219",
+    "customer_id": "CUST-00070",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 569844.43
+  },
+  {
+    "account_id": "ACC-000220",
+    "customer_id": "CUST-00070",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 121807.17
+  },
+  {
+    "account_id": "ACC-000221",
+    "customer_id": "CUST-00070",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 108297.94
+  },
+  {
+    "account_id": "ACC-000222",
+    "customer_id": "CUST-00071",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 81342.51
+  },
+  {
+    "account_id": "ACC-000223",
+    "customer_id": "CUST-00071",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 128370.97
+  },
+  {
+    "account_id": "ACC-000224",
+    "customer_id": "CUST-00071",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 73801.53
+  },
+  {
+    "account_id": "ACC-000225",
+    "customer_id": "CUST-00071",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 55831.42
+  },
+  {
+    "account_id": "ACC-000226",
+    "customer_id": "CUST-00072",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 84500.47
+  },
+  {
+    "account_id": "ACC-000227",
+    "customer_id": "CUST-00072",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 244624.54
+  },
+  {
+    "account_id": "ACC-000228",
+    "customer_id": "CUST-00072",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 147545.61
+  },
+  {
+    "account_id": "ACC-000229",
+    "customer_id": "CUST-00072",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 59243.55
+  },
+  {
+    "account_id": "ACC-000230",
+    "customer_id": "CUST-00073",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 82305.08
+  },
+  {
+    "account_id": "ACC-000231",
+    "customer_id": "CUST-00073",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 215266.05
+  },
+  {
+    "account_id": "ACC-000232",
+    "customer_id": "CUST-00073",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 396827.67
+  },
+  {
+    "account_id": "ACC-000233",
+    "customer_id": "CUST-00074",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 46641.68
+  },
+  {
+    "account_id": "ACC-000234",
+    "customer_id": "CUST-00074",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 94285.99
+  },
+  {
+    "account_id": "ACC-000235",
+    "customer_id": "CUST-00074",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 220525.91
+  },
+  {
+    "account_id": "ACC-000236",
+    "customer_id": "CUST-00075",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 68203.72
+  },
+  {
+    "account_id": "ACC-000237",
+    "customer_id": "CUST-00075",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 57494.57
+  },
+  {
+    "account_id": "ACC-000238",
+    "customer_id": "CUST-00075",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 188601.44
+  },
+  {
+    "account_id": "ACC-000239",
+    "customer_id": "CUST-00076",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 60219.06
+  },
+  {
+    "account_id": "ACC-000240",
+    "customer_id": "CUST-00076",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 489132
+  },
+  {
+    "account_id": "ACC-000241",
+    "customer_id": "CUST-00076",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 121774.75
+  },
+  {
+    "account_id": "ACC-000242",
+    "customer_id": "CUST-00076",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 220942.57
+  },
+  {
+    "account_id": "ACC-000243",
+    "customer_id": "CUST-00077",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 30046.87
+  },
+  {
+    "account_id": "ACC-000244",
+    "customer_id": "CUST-00077",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 455685.1
+  },
+  {
+    "account_id": "ACC-000245",
+    "customer_id": "CUST-00077",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 36534.75
+  },
+  {
+    "account_id": "ACC-000246",
+    "customer_id": "CUST-00077",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 8274.41
+  },
+  {
+    "account_id": "ACC-000247",
+    "customer_id": "CUST-00078",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 52784.36
+  },
+  {
+    "account_id": "ACC-000248",
+    "customer_id": "CUST-00078",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 465567.82
+  },
+  {
+    "account_id": "ACC-000249",
+    "customer_id": "CUST-00078",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 136194.05
+  },
+  {
+    "account_id": "ACC-000250",
+    "customer_id": "CUST-00079",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 42753.32
+  },
+  {
+    "account_id": "ACC-000251",
+    "customer_id": "CUST-00079",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 69017.89
+  },
+  {
+    "account_id": "ACC-000252",
+    "customer_id": "CUST-00080",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 66538.37
+  },
+  {
+    "account_id": "ACC-000253",
+    "customer_id": "CUST-00080",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 355056.09
+  },
+  {
+    "account_id": "ACC-000254",
+    "customer_id": "CUST-00080",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 97267.66
+  },
+  {
+    "account_id": "ACC-000255",
+    "customer_id": "CUST-00081",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 63121.86
+  },
+  {
+    "account_id": "ACC-000256",
+    "customer_id": "CUST-00081",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 642049.07
+  },
+  {
+    "account_id": "ACC-000257",
+    "customer_id": "CUST-00081",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 169211.53
+  },
+  {
+    "account_id": "ACC-000258",
+    "customer_id": "CUST-00082",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 76623.67
+  },
+  {
+    "account_id": "ACC-000259",
+    "customer_id": "CUST-00082",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 415480.04
+  },
+  {
+    "account_id": "ACC-000260",
+    "customer_id": "CUST-00083",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 37537.11
+  },
+  {
+    "account_id": "ACC-000261",
+    "customer_id": "CUST-00083",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 435454.96
+  },
+  {
+    "account_id": "ACC-000262",
+    "customer_id": "CUST-00083",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 166039.04
+  },
+  {
+    "account_id": "ACC-000263",
+    "customer_id": "CUST-00083",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 99157.39
+  },
+  {
+    "account_id": "ACC-000264",
+    "customer_id": "CUST-00084",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 76651.53
+  },
+  {
+    "account_id": "ACC-000265",
+    "customer_id": "CUST-00084",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 573767.67
+  },
+  {
+    "account_id": "ACC-000266",
+    "customer_id": "CUST-00084",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 252818.46
+  },
+  {
+    "account_id": "ACC-000267",
+    "customer_id": "CUST-00085",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 79775.02
+  },
+  {
+    "account_id": "ACC-000268",
+    "customer_id": "CUST-00085",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 600060.26
+  },
+  {
+    "account_id": "ACC-000269",
+    "customer_id": "CUST-00085",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 340872.49
+  },
+  {
+    "account_id": "ACC-000270",
+    "customer_id": "CUST-00086",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 62717.92
+  },
+  {
+    "account_id": "ACC-000271",
+    "customer_id": "CUST-00086",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 529439.23
+  },
+  {
+    "account_id": "ACC-000272",
+    "customer_id": "CUST-00086",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 290594.3
+  },
+  {
+    "account_id": "ACC-000273",
+    "customer_id": "CUST-00087",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 27701.81
+  },
+  {
+    "account_id": "ACC-000274",
+    "customer_id": "CUST-00087",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 545086.91
+  },
+  {
+    "account_id": "ACC-000275",
+    "customer_id": "CUST-00087",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 155270.09
+  },
+  {
+    "account_id": "ACC-000276",
+    "customer_id": "CUST-00088",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 53805.37
+  },
+  {
+    "account_id": "ACC-000277",
+    "customer_id": "CUST-00088",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 444304.97
+  },
+  {
+    "account_id": "ACC-000278",
+    "customer_id": "CUST-00088",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 30829.48
+  },
+  {
+    "account_id": "ACC-000279",
+    "customer_id": "CUST-00088",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 52187.19
+  },
+  {
+    "account_id": "ACC-000280",
+    "customer_id": "CUST-00089",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 17751.07
+  },
+  {
+    "account_id": "ACC-000281",
+    "customer_id": "CUST-00089",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 64439.36
+  },
+  {
+    "account_id": "ACC-000282",
+    "customer_id": "CUST-00089",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 21754.72
+  },
+  {
+    "account_id": "ACC-000283",
+    "customer_id": "CUST-00089",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 73658.91
+  },
+  {
+    "account_id": "ACC-000284",
+    "customer_id": "CUST-00090",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 13493.38
+  },
+  {
+    "account_id": "ACC-000285",
+    "customer_id": "CUST-00090",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 28006.57
+  },
+  {
+    "account_id": "ACC-000286",
+    "customer_id": "CUST-00090",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 131805.07
+  },
+  {
+    "account_id": "ACC-000287",
+    "customer_id": "CUST-00090",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 157720.45
+  },
+  {
+    "account_id": "ACC-000288",
+    "customer_id": "CUST-00091",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 23457.39
+  },
+  {
+    "account_id": "ACC-000289",
+    "customer_id": "CUST-00091",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 172494.25
+  },
+  {
+    "account_id": "ACC-000290",
+    "customer_id": "CUST-00091",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 111270.2
+  },
+  {
+    "account_id": "ACC-000291",
+    "customer_id": "CUST-00092",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 58296.18
+  },
+  {
+    "account_id": "ACC-000292",
+    "customer_id": "CUST-00092",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 255490.64
+  },
+  {
+    "account_id": "ACC-000293",
+    "customer_id": "CUST-00092",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 99477.41
+  },
+  {
+    "account_id": "ACC-000294",
+    "customer_id": "CUST-00092",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 92023.29
+  },
+  {
+    "account_id": "ACC-000295",
+    "customer_id": "CUST-00093",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 80852.79
+  },
+  {
+    "account_id": "ACC-000296",
+    "customer_id": "CUST-00093",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 41349.59
+  },
+  {
+    "account_id": "ACC-000297",
+    "customer_id": "CUST-00094",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 22849.19
+  },
+  {
+    "account_id": "ACC-000298",
+    "customer_id": "CUST-00094",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 363036.57
+  },
+  {
+    "account_id": "ACC-000299",
+    "customer_id": "CUST-00094",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 106789.35
+  },
+  {
+    "account_id": "ACC-000300",
+    "customer_id": "CUST-00095",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 9516.96
+  },
+  {
+    "account_id": "ACC-000301",
+    "customer_id": "CUST-00095",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 288836.26
+  },
+  {
+    "account_id": "ACC-000302",
+    "customer_id": "CUST-00095",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 95508.04
+  },
+  {
+    "account_id": "ACC-000303",
+    "customer_id": "CUST-00096",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 59237.99
+  },
+  {
+    "account_id": "ACC-000304",
+    "customer_id": "CUST-00096",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 413453.38
+  },
+  {
+    "account_id": "ACC-000305",
+    "customer_id": "CUST-00096",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 138162.4
+  },
+  {
+    "account_id": "ACC-000306",
+    "customer_id": "CUST-00096",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 95882.33
+  },
+  {
+    "account_id": "ACC-000307",
+    "customer_id": "CUST-00097",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 23591.36
+  },
+  {
+    "account_id": "ACC-000308",
+    "customer_id": "CUST-00097",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 474688.87
+  },
+  {
+    "account_id": "ACC-000309",
+    "customer_id": "CUST-00097",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 51682.81
+  },
+  {
+    "account_id": "ACC-000310",
+    "customer_id": "CUST-00098",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 44779.56
+  },
+  {
+    "account_id": "ACC-000311",
+    "customer_id": "CUST-00098",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 496007.53
+  },
+  {
+    "account_id": "ACC-000312",
+    "customer_id": "CUST-00098",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 178381.65
+  },
+  {
+    "account_id": "ACC-000313",
+    "customer_id": "CUST-00098",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 118767.56
+  },
+  {
+    "account_id": "ACC-000314",
+    "customer_id": "CUST-00099",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 19708.53
+  },
+  {
+    "account_id": "ACC-000315",
+    "customer_id": "CUST-00099",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 585678.9
+  },
+  {
+    "account_id": "ACC-000316",
+    "customer_id": "CUST-00099",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 214505.39
+  },
+  {
+    "account_id": "ACC-000317",
+    "customer_id": "CUST-00100",
+    "account_type": "Current Account",
+    "currency": "NOK",
+    "balance": 29947.37
+  },
+  {
+    "account_id": "ACC-000318",
+    "customer_id": "CUST-00100",
+    "account_type": "Savings",
+    "currency": "NOK",
+    "balance": 54714.73
+  },
+  {
+    "account_id": "ACC-000319",
+    "customer_id": "CUST-00100",
+    "account_type": "Investment Account",
+    "currency": "NOK",
+    "balance": 340200.72
+  },
+  {
+    "account_id": "ACC-000320",
+    "customer_id": "CUST-00100",
+    "account_type": "Pension",
+    "currency": "NOK",
+    "balance": 60722.57
+  }
+]

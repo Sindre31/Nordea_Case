@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: wealth-copilot-api
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run generate-data && npm run build
+    startCommand: node api/dist/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"

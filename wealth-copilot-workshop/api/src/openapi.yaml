@@ -1,0 +1,625 @@
+openapi: 3.0.3
+info:
+  title: Wealth Copilot API
+  version: 1.0.0
+  description: |
+    REST API for the "Build the Wealth Copilot" workshop demo.
+
+    All data returned by this API is 100% synthetic / fictional. It does not
+    represent real customers, real accounts, real transactions or real
+    investment products. This API is an educational prototype, not a real
+    banking or investment product.
+  contact:
+    name: Wealth Copilot workshop
+tags:
+  - name: System
+    description: Health and infrastructure endpoints
+  - name: Reference data
+    description: Instruments and holdings across the whole fictional universe
+  - name: Customers
+    description: Customer profile and derived financial data
+  - name: Wealth Copilot
+    description: Deterministic, rule-based chat assistant over a customer's own data
+
+paths:
+  /health:
+    get:
+      tags: [System]
+      summary: Health check
+      responses:
+        "200":
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+
+  /instruments:
+    get:
+      tags: [Reference data]
+      summary: List all unique instruments in the fictional universe
+      description: >
+        Returns one row per ticker (equities, ETFs, mutual funds, bonds and
+        cash), regardless of how many customers hold it. This is reference
+        data, not customer holdings - see /holdings for that.
+      responses:
+        "200":
+          description: List of instruments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  instruments:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Instrument"
+
+  /holdings:
+    get:
+      tags: [Reference data]
+      summary: List all holdings across all customers
+      description: >
+        Flattened list of every customer's investment positions. The same
+        ticker can appear multiple times - once per customer who owns it.
+      responses:
+        "200":
+          description: List of holdings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  holdings:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Investment"
+
+  /customers:
+    get:
+      tags: [Customers]
+      summary: List all fictional customers
+      responses:
+        "200":
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  customers:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Customer"
+
+  /customers/{customerId}:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
+    get:
+      tags: [Customers]
+      summary: Get a single customer profile
+      responses:
+        "200":
+          description: Customer profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /customers/{customerId}/accounts:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
+    get:
+      tags: [Customers]
+      summary: Get a customer's accounts
+      responses:
+        "200":
+          description: Customer accounts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customer_id:
+                    type: string
+                  accounts:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Account"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /customers/{customerId}/transactions:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
+    get:
+      tags: [Customers]
+      summary: Get a customer's transactions
+      responses:
+        "200":
+          description: Customer transactions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customer_id:
+                    type: string
+                  count:
+                    type: integer
+                  transactions:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Transaction"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /customers/{customerId}/investments:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
+    get:
+      tags: [Customers]
+      summary: Get a customer's raw investment holdings
+      responses:
+        "200":
+          description: Customer investments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customer_id:
+                    type: string
+                  investments:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Investment"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /customers/{customerId}/portfolio:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
+    get:
+      tags: [Customers]
+      summary: Get derived portfolio valuation and allocation
+      description: >
+        Calculates total value, cash percentage, unrealized gain/loss,
+        allocation by asset type / geography / sector, and largest holdings.
+      responses:
+        "200":
+          description: Portfolio summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortfolioSummary"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /customers/{customerId}/performance:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
+    get:
+      tags: [Customers]
+      summary: Get historical portfolio performance
+      description: >
+        Reconstructs an illustrative historical value series by replaying
+        today's holding quantities against historical market prices.
+      responses:
+        "200":
+          description: Performance series
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceSummary"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /customers/{customerId}/risk:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
+    get:
+      tags: [Customers]
+      summary: Get an illustrative demo risk score
+      description: >
+        Educational/demo risk model only. NOT a real investment suitability
+        assessment. See the `disclaimer` field in the response.
+      responses:
+        "200":
+          description: Risk summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RiskSummary"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /customers/{customerId}/insights:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
+    get:
+      tags: [Customers]
+      summary: Get deterministic, rule-based financial insights
+      responses:
+        "200":
+          description: Insights summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsightsSummary"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /customers/{customerId}/copilot:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
+    post:
+      tags: [Wealth Copilot]
+      summary: Ask the Wealth Copilot a question about this customer's finances
+      description: >
+        Deterministic, rule-based chat engine - no external AI API key
+        required. Matches the message against a small set of known intents
+        (performance, risk, diversification, savings, largest risks) and
+        falls back to a generic data-driven answer otherwise.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                  example: How has my portfolio performed?
+      responses:
+        "200":
+          description: Copilot reply
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CopilotReply"
+        "400":
+          description: Missing or empty message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+components:
+  parameters:
+    CustomerId:
+      name: customerId
+      in: path
+      required: true
+      description: Fictional customer identifier, e.g. CUST-00001
+      schema:
+        type: string
+        example: CUST-00001
+
+  responses:
+    NotFound:
+      description: Customer not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        service:
+          type: string
+          example: wealth-copilot-api
+        timestamp:
+          type: string
+          format: date-time
+
+    Customer:
+      type: object
+      properties:
+        customer_id:
+          type: string
+          example: CUST-00001
+        first_name:
+          type: string
+        last_name:
+          type: string
+        age:
+          type: integer
+        country:
+          type: string
+        risk_profile:
+          type: string
+          example: Moderate
+        investment_horizon:
+          type: string
+          example: 10-20 years
+        annual_income:
+          type: number
+        customer_since:
+          type: string
+          format: date
+
+    Account:
+      type: object
+      description: >
+        Customer account. For Investment Account and Pension, balance is derived
+        from the market value of the investment positions assigned to this account.
+      properties:
+        account_id:
+          type: string
+        customer_id:
+          type: string
+        account_type:
+          type: string
+          enum: [Current Account, Savings, Investment Account, Pension]
+        currency:
+          type: string
+        balance:
+          type: number
+          description: Account balance in the account currency.
+
+    Transaction:
+      type: object
+      properties:
+        transaction_id:
+          type: string
+        customer_id:
+          type: string
+        account_id:
+          type: string
+        date:
+          type: string
+          format: date
+        type:
+          type: string
+          enum: [credit, debit, transfer]
+        category:
+          type: string
+        description:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+
+    Investment:
+      type: object
+      description: A customer position in an instrument, assigned to one account.
+      properties:
+        investment_id:
+          type: string
+        customer_id:
+          type: string
+        account_id:
+          type: string
+          description: Account that holds this investment position.
+        asset_type:
+          type: string
+          enum: [Equity, ETF, Mutual Fund, Bond, Cash]
+        ticker:
+          type: string
+        name:
+          type: string
+        quantity:
+          type: number
+        purchase_price:
+          type: number
+        current_price:
+          type: number
+        currency:
+          type: string
+        sector:
+          type: string
+        geography:
+          type: string
+
+    Instrument:
+      type: object
+      properties:
+        ticker:
+          type: string
+        name:
+          type: string
+        asset_type:
+          type: string
+        sector:
+          type: string
+        geography:
+          type: string
+        current_price:
+          type: number
+        currency:
+          type: string
+
+    AllocationSlice:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: number
+        percentage:
+          type: number
+
+    HoldingSummary:
+      type: object
+      properties:
+        investment_id:
+          type: string
+        account_id:
+          type: string
+          description: Account that holds this investment position.
+        ticker:
+          type: string
+        name:
+          type: string
+        asset_type:
+          type: string
+        quantity:
+          type: number
+        current_price:
+          type: number
+        market_value:
+          type: number
+        unrealized_gain_loss:
+          type: number
+        unrealized_gain_loss_pct:
+          type: number
+        weight_pct:
+          type: number
+
+    PortfolioSummary:
+      type: object
+      properties:
+        customer_id:
+          type: string
+        total_value:
+          type: number
+        cash_value:
+          type: number
+        cash_percentage:
+          type: number
+        unrealized_gain_loss:
+          type: number
+        unrealized_gain_loss_pct:
+          type: number
+        allocation_by_asset_type:
+          type: array
+          items:
+            $ref: "#/components/schemas/AllocationSlice"
+        allocation_by_geography:
+          type: array
+          items:
+            $ref: "#/components/schemas/AllocationSlice"
+        allocation_by_sector:
+          type: array
+          items:
+            $ref: "#/components/schemas/AllocationSlice"
+        largest_holdings:
+          type: array
+          items:
+            $ref: "#/components/schemas/HoldingSummary"
+        holding_count:
+          type: integer
+
+    PerformancePoint:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        value:
+          type: number
+
+    PerformanceSummary:
+      type: object
+      properties:
+        customer_id:
+          type: string
+        series:
+          type: array
+          items:
+            $ref: "#/components/schemas/PerformancePoint"
+        period_return_pct:
+          type: number
+        start_value:
+          type: number
+        end_value:
+          type: number
+
+    RiskSummary:
+      type: object
+      properties:
+        customer_id:
+          type: string
+        risk_score:
+          type: number
+          minimum: 0
+          maximum: 100
+        risk_category:
+          type: string
+          enum: [Low, Medium, High]
+        factors:
+          type: object
+          properties:
+            asset_allocation_score:
+              type: number
+            concentration_score:
+              type: number
+            geography_score:
+              type: number
+            volatility_score:
+              type: number
+        customer_risk_profile:
+          type: string
+        risk_profile_alignment:
+          type: string
+          enum: [Aligned, More conservative than profile, More aggressive than profile]
+        disclaimer:
+          type: string
+          example: Educational/demo risk model only. Not a real investment suitability assessment.
+
+    Insight:
+      type: object
+      properties:
+        id:
+          type: string
+        severity:
+          type: string
+          enum: [info, notice, warning]
+        title:
+          type: string
+        detail:
+          type: string
+
+    InsightsSummary:
+      type: object
+      properties:
+        customer_id:
+          type: string
+        insights:
+          type: array
+          items:
+            $ref: "#/components/schemas/Insight"
+        savings:
+          type: object
+          properties:
+            averageMonthlyIncome:
+              type: number
+            averageMonthlyExpenses:
+              type: number
+            averageMonthlySavings:
+              type: number
+            savingsRatePct:
+              type: number
+
+    CopilotReply:
+      type: object
+      properties:
+        answer:
+          type: string
+        matched_intent:
+          type: string
+          example: performance

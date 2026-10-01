@@ -3,7 +3,8 @@ import { useCustomerData } from '../hooks/useCustomerData'
 import AllocationPieChart from '../components/AllocationPieChart'
 import PerformanceChart from '../components/PerformanceChart'
 import { ErrorState, Loading, PageHeading, Panel, Stat } from '../components/ui'
-import { formatCurrency, formatSignedCurrency } from '../utils/format'
+import { formatCurrency, formatPct, formatSignedCurrency } from '../utils/format'
+import { assetTypeName, geographyName, instrumentName, sectorName } from '../utils/labels'
 
 export default function Portfolio() {
   const { data, loading, error } = useCustomerData((id) => Promise.all([fetchPortfolio(id), fetchPerformance(id), fetchInvestments(id)]))
@@ -22,34 +23,34 @@ export default function Portfolio() {
 
   return (
     <div className="page">
-      <PageHeading eyebrow="Your investments" title="Portfolio" lead="Everything you own across your investment and pension accounts." />
+      <PageHeading eyebrow="Dine investeringer" title="Portefølje" lead="Alt du eier på investerings- og pensjonskontoene dine." />
       <div className="grid grid--4">
-        <Stat label="Total value" value={formatCurrency(total)} />
-        <Stat label="Unrealised gain" value={<span className={portfolio.unrealized_gain_loss >= 0 ? 'delta--pos' : 'delta--neg'}>{formatSignedCurrency(portfolio.unrealized_gain_loss)}</span>} sub={`${portfolio.unrealized_gain_loss_pct}%`} />
-        <Stat label="Cash" value={formatCurrency(portfolio.cash_value)} sub={`${portfolio.cash_percentage}% of portfolio`} />
-        <Stat label="Holdings" value={portfolio.holding_count} />
+        <Stat label="Samlet verdi" value={formatCurrency(total)} />
+        <Stat label="Urealisert gevinst" value={<span className={portfolio.unrealized_gain_loss >= 0 ? 'delta--pos' : 'delta--neg'}>{formatSignedCurrency(portfolio.unrealized_gain_loss)}</span>} sub={formatPct(portfolio.unrealized_gain_loss_pct, 1, true)} />
+        <Stat label="Kontanter" value={formatCurrency(portfolio.cash_value)} sub={`${formatPct(portfolio.cash_percentage)} av porteføljen`} />
+        <Stat label="Beholdninger" value={portfolio.holding_count} />
       </div>
-      <Panel title="Value over time" subtitle="Today's holdings valued at historical prices">
+      <Panel title="Verdiutvikling" subtitle="Dagens beholdninger verdsatt til historiske kurser">
         <PerformanceChart series={performance.series} />
       </Panel>
       <div className="grid grid--3">
-        <AllocationPieChart data={portfolio.allocation_by_asset_type} title="By asset type" />
-        <AllocationPieChart data={portfolio.allocation_by_geography} title="By region" />
-        <AllocationPieChart data={portfolio.allocation_by_sector} title="By sector" />
+        <AllocationPieChart data={portfolio.allocation_by_asset_type} title="Etter aktivaklasse" labelOf={assetTypeName} />
+        <AllocationPieChart data={portfolio.allocation_by_geography} title="Etter region" labelOf={geographyName} />
+        <AllocationPieChart data={portfolio.allocation_by_sector} title="Etter sektor" labelOf={sectorName} />
       </div>
-      <Panel title="All holdings">
-        {holdings.length === 0 ? <p className="state">No holdings to display.</p> : (
+      <Panel title="Alle beholdninger">
+        {holdings.length === 0 ? <p className="state">Ingen beholdninger å vise.</p> : (
           <div className="table-wrap">
             <table className="table">
-              <thead><tr><th>Investment</th><th>Type</th><th className="num">Value</th><th className="num">Weight</th><th className="num">Gain / loss</th></tr></thead>
+              <thead><tr><th>Investering</th><th>Type</th><th className="num">Verdi</th><th className="num">Andel</th><th className="num">Gevinst / tap</th></tr></thead>
               <tbody>
                 {holdings.map((h) => (
                   <tr key={h.investment_id}>
-                    <td>{h.name}<div className="ticker">{h.ticker} &middot; {h.sector} &middot; {h.geography}</div></td>
-                    <td>{h.asset_type}</td>
+                    <td>{instrumentName(h.name)}<div className="ticker">{h.ticker} &middot; {sectorName(h.sector)} &middot; {geographyName(h.geography)}</div></td>
+                    <td>{assetTypeName(h.asset_type)}</td>
                     <td className="num">{formatCurrency(h.value)}</td>
-                    <td className="num">{h.weight.toFixed(1)}%</td>
-                    <td className={`num ${h.gain >= 0 ? 'delta--pos' : 'delta--neg'}`}>{formatSignedCurrency(h.gain)} ({h.gainPct.toFixed(1)}%)</td>
+                    <td className="num">{formatPct(h.weight)}</td>
+                    <td className={`num ${h.gain >= 0 ? 'delta--pos' : 'delta--neg'}`}>{formatSignedCurrency(h.gain)} ({formatPct(h.gainPct, 1, true)})</td>
                   </tr>
                 ))}
               </tbody>

@@ -6,7 +6,7 @@
 // later without needing to touch this deterministic core.
 import { calculatePortfolio, calculatePerformance } from './portfolio.js'
 import { explainRisk } from './riskBreakdown.js'
-import { sectorLabel } from './assumptions.js'
+import { geographyName, kr, pct, profileName, sectorName } from './locale.js'
 import { getTransactionsFor } from '../data.js'
 
 export interface Insight {
@@ -65,8 +65,8 @@ export function generateInsights(customerId: string): InsightsSummary {
     insights.push({
       id: 'sector-concentration',
       severity: 'warning',
-      title: 'High concentration in one sector',
-      detail: `${topSector.percentage}% of your portfolio is invested in ${sectorLabel(topSector.label)}. Consider whether this concentration matches your risk tolerance.`,
+      title: 'Høy konsentrasjon i én sektor',
+      detail: `${pct(topSector.percentage)} av porteføljen din er investert i ${sectorName(topSector.label).toLowerCase()}. Vurder om denne konsentrasjonen passer med risikotoleransen din.`,
     })
   }
 
@@ -75,8 +75,8 @@ export function generateInsights(customerId: string): InsightsSummary {
     insights.push({
       id: 'geography-concentration',
       severity: 'notice',
-      title: 'High geographic concentration',
-      detail: `${topGeography.percentage}% of your portfolio is invested in ${topGeography.label}. Diversifying across regions can reduce country-specific risk.`,
+      title: 'Høy geografisk konsentrasjon',
+      detail: `${pct(topGeography.percentage)} av porteføljen din er investert i ${geographyName(topGeography.label)}. Spredning på flere regioner kan redusere landspesifikk risiko.`,
     })
   }
 
@@ -86,8 +86,8 @@ export function generateInsights(customerId: string): InsightsSummary {
     insights.push({
       id: 'risk-profile-mismatch',
       severity: risk.alignment === 'above' ? 'warning' : 'notice',
-      title: risk.alignment === 'above' ? 'Your portfolio swings more than your risk profile' : 'Your portfolio is calmer than your risk profile',
-      detail: `Your investments typically swing about ${risk.portfolio_volatility_pct}% a year, while a "${risk.risk_profile}" profile suggests ${risk.profile_band_pct.min}-${risk.profile_band_pct.max}%. ${risk.by_sector[0] ? `${risk.by_sector[0].label} accounts for ${risk.by_sector[0].risk_contribution_pct}% of the swings. ` : ''}It may be worth reviewing your allocation with an advisor.`,
+      title: risk.alignment === 'above' ? 'Porteføljen svinger mer enn risikoprofilen din' : 'Porteføljen er roligere enn risikoprofilen din',
+      detail: `Investeringene dine svinger typisk rundt ${pct(risk.portfolio_volatility_pct)} i året, mens profilen «${profileName(risk.risk_profile)}» tilsier ${risk.profile_band_pct.min}–${risk.profile_band_pct.max} %. ${risk.by_sector[0] ? `${risk.by_sector[0].label} står for ${pct(risk.by_sector[0].risk_contribution_pct)} av svingningene. ` : ''}Det kan være lurt å gå gjennom fordelingen med en rådgiver.`,
     })
   }
 
@@ -95,26 +95,26 @@ export function generateInsights(customerId: string): InsightsSummary {
     insights.push({
       id: 'high-cash-allocation',
       severity: 'notice',
-      title: 'Unusually high cash allocation',
-      detail: `${portfolio.cash_percentage}% of your portfolio is held in cash. Over the long term this may limit growth potential relative to your investment horizon.`,
+      title: 'Uvanlig høy kontantandel',
+      detail: `${pct(portfolio.cash_percentage)} av porteføljen din står i kontanter. Over tid kan det begrense vekstpotensialet sett opp mot investeringshorisonten din.`,
     })
   }
 
   if (Math.abs(performance.period_return_pct) >= 5) {
-    const direction = performance.period_return_pct > 0 ? 'increased' : 'decreased'
+    const direction = performance.period_return_pct > 0 ? 'steget' : 'falt'
     insights.push({
       id: 'performance-change',
       severity: performance.period_return_pct > 0 ? 'info' : 'warning',
-      title: 'Significant portfolio performance change',
-      detail: `Your portfolio value has ${direction} by ${Math.abs(performance.period_return_pct)}% over the observed period.`,
+      title: 'Stor endring i porteføljens verdi',
+      detail: `Verdien av porteføljen din har ${direction} med ${pct(Math.abs(performance.period_return_pct))} i perioden vi har data for.`,
     })
   }
 
   insights.push({
     id: 'savings-rate',
     severity: savings.savingsRatePct >= 15 ? 'info' : 'notice',
-    title: 'Monthly savings rate',
-    detail: `On average you save ${savings.averageMonthlySavings.toLocaleString('en-US')} NOK per month, a savings rate of ${savings.savingsRatePct}% of income.`,
+    title: 'Månedlig sparerate',
+    detail: `I snitt sparer du ${kr(savings.averageMonthlySavings)} per måned, en sparerate på ${pct(savings.savingsRatePct)} av inntekten.`,
   })
 
   return { customer_id: customerId, insights, savings }

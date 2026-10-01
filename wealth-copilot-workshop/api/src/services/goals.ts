@@ -16,6 +16,7 @@ import type { Goal } from '../types.js'
 import { calculatePortfolio } from './portfolio.js'
 import { calculateMonthlySavings } from './insights.js'
 import { ASSUMED_INFLATION_PCT, profileAssumption, round } from './assumptions.js'
+import { dateName, horizonName, kr, num, pct, profileName } from './locale.js'
 
 export type InputSource = 'your_input' | 'registered_goal' | 'your_data' | 'assumption'
 
@@ -195,10 +196,6 @@ function monthsBetween(from: string, to: string): number {
   return Math.max(0, (b.getUTCFullYear() - a.getUTCFullYear()) * 12 + (b.getUTCMonth() - a.getUTCMonth()) + (b.getUTCDate() >= a.getUTCDate() ? 0 : -1))
 }
 
-function nok(v: number): string {
-  return `${Math.round(v).toLocaleString('en-US')} NOK`
-}
-
 function statusFor(probability: number): GoalProjection['status'] {
   if (probability >= 75) return 'likely'
   if (probability >= 50) return 'possible'
@@ -236,34 +233,34 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
   }
 
   const annualExpenses = savings.averageMonthlyExpenses * 12
-  const target = resolve('target_amount', 'Target amount', 'NOK', [
-    [input.target_amount, 'your_input', 'The amount you entered.'],
-    [goal?.target_amount, 'registered_goal', `From your registered goal "${goal?.name}".`],
+  const target = resolve('target_amount', 'Målbeløp', 'NOK', [
+    [input.target_amount, 'your_input', 'Beløpet du har lagt inn.'],
+    [goal?.target_amount, 'registered_goal', `Fra det registrerte målet ditt «${goal?.name}».`],
     [Math.max(100000, Math.round((annualExpenses * 25) / 10000) * 10000), 'your_data',
-      `Financial independence estimate: 25 x your yearly spending (${nok(annualExpenses)}), the "4% rule of thumb".`],
+      `Anslag for økonomisk uavhengighet: 25 × det årlige forbruket ditt (${kr(annualExpenses)}), etter «4 %-regelen».`],
   ])
   const goalYears = goal ? Math.max(1, monthsBetween(TODAY, goal.target_date) / 12) : undefined
-  const years = resolve('years', 'Years to goal', 'years', [
-    [input.years, 'your_input', 'The time horizon you entered.'],
-    [goalYears, 'registered_goal', `Until your goal date ${goal?.target_date}.`],
-    [15, 'assumption', `No goal date registered. 15 years is a typical horizon for financial independence (your stated investment horizon is ${customer?.investment_horizon ?? 'unknown'}).`],
+  const years = resolve('years', 'År til målet', 'years', [
+    [input.years, 'your_input', 'Tidshorisonten du har lagt inn.'],
+    [goalYears, 'registered_goal', `Frem til måldatoen din ${goal ? dateName(goal.target_date) : ''}.`],
+    [15, 'assumption', `Ingen måldato er registrert. 15 år er en vanlig horisont for økonomisk uavhengighet (oppgitt investeringshorisont: ${customer ? horizonName(customer.investment_horizon) : 'ukjent'}).`],
   ])
-  const monthly = resolve('monthly_contribution', 'Monthly saving', 'NOK/month', [
-    [input.monthly_contribution, 'your_input', 'The monthly amount you entered.'],
-    [monthlyInvesting > 0 ? monthlyInvesting : undefined, 'your_data', `Average monthly transfers to investments over the last ${months} month(s).`],
-    [Math.max(0, savings.averageMonthlySavings), 'your_data', 'Your average monthly surplus (income minus spending).'],
+  const monthly = resolve('monthly_contribution', 'Månedlig sparing', 'NOK/month', [
+    [input.monthly_contribution, 'your_input', 'Det månedlige beløpet du har lagt inn.'],
+    [monthlyInvesting > 0 ? monthlyInvesting : undefined, 'your_data', `Gjennomsnittlige månedlige overføringer til investeringer de siste ${months} månedene.`],
+    [Math.max(0, savings.averageMonthlySavings), 'your_data', 'Gjennomsnittlig månedlig overskudd (inntekt minus forbruk).'],
   ])
-  const start = resolve('starting_amount', 'Invested today', 'NOK', [
-    [input.starting_amount, 'your_input', 'The starting amount you entered.'],
-    [portfolio.total_value, 'your_data', 'Current market value of your investments.'],
+  const start = resolve('starting_amount', 'Investert i dag', 'NOK', [
+    [input.starting_amount, 'your_input', 'Startbeløpet du har lagt inn.'],
+    [portfolio.total_value, 'your_data', 'Dagens markedsverdi av investeringene dine.'],
   ])
-  const nominal = resolve('annual_return_pct', 'Expected return (before inflation)', '%', [
-    [input.annual_return_pct, 'your_input', 'The return you chose.'],
-    [assumption.expected_annual_return_pct, 'assumption', `Typical long-run return for a "${profile}" mix. Not a promise.`],
+  const nominal = resolve('annual_return_pct', 'Forventet avkastning (før inflasjon)', '%', [
+    [input.annual_return_pct, 'your_input', 'Avkastningen du har valgt.'],
+    [assumption.expected_annual_return_pct, 'assumption', `Typisk langsiktig avkastning for en «${profileName(profile)}»-blanding. Ikke et løfte.`],
   ])
-  const vol = resolve('annual_volatility_pct', 'Yearly swings', '%', [
-    [input.annual_volatility_pct, 'your_input', 'The level of swings you chose.'],
-    [assumption.expected_annual_volatility_pct, 'assumption', `Typical yearly swings for a "${profile}" mix.`],
+  const vol = resolve('annual_volatility_pct', 'Årlige svingninger', '%', [
+    [input.annual_volatility_pct, 'your_input', 'Svingningsnivået du har valgt.'],
+    [assumption.expected_annual_volatility_pct, 'assumption', `Typiske årlige svingninger for en «${profileName(profile)}»-blanding.`],
   ])
   const real = nominal - ASSUMED_INFLATION_PCT
 
@@ -272,11 +269,11 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
   const median = percentile(sim.finals, 0.5)
 
   const leverDefs: { id: string; label: string; params: SimParams }[] = [
-    { id: 'save-more', label: `Save ${nok(1000)} more per month`, params: { ...base, monthly: monthly + 1000 } },
-    { id: 'save-more-3000', label: `Save ${nok(3000)} more per month`, params: { ...base, monthly: monthly + 3000 } },
-    { id: 'wait-longer', label: 'Give it 3 more years', params: { ...base, years: years + 3 } },
-    { id: 'early-crash', label: 'Markets fall 25% right away', params: { ...base, initialShockPct: -25 } },
-    { id: 'lower-return', label: 'Returns 2 points lower each year', params: { ...base, realReturnPct: real - 2 } },
+    { id: 'save-more', label: `Spar ${kr(1000)} mer per måned`, params: { ...base, monthly: monthly + 1000 } },
+    { id: 'save-more-3000', label: `Spar ${kr(3000)} mer per måned`, params: { ...base, monthly: monthly + 3000 } },
+    { id: 'wait-longer', label: 'Gi det 3 år ekstra', params: { ...base, years: years + 3 } },
+    { id: 'early-crash', label: 'Markedet faller 25 % med en gang', params: { ...base, initialShockPct: -25 } },
+    { id: 'lower-return', label: 'Avkastningen blir 2 prosentpoeng lavere hvert år', params: { ...base, realReturnPct: real - 2 } },
   ]
   const levers: Lever[] = leverDefs.map((l) => {
     const r = simulate(l.params)
@@ -315,29 +312,29 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
   const status = statusFor(probability)
   const summary: string[] = []
   const statusText: Record<GoalProjection['status'], string> = {
-    likely: 'you are likely on track',
-    possible: 'reaching the goal is possible, but far from certain',
-    at_risk: 'the goal is at risk with today\'s plan',
-    unlikely: 'the goal is unlikely without changes',
+    likely: 'du er sannsynligvis i rute',
+    possible: 'det er mulig å nå målet, men langt fra sikkert',
+    at_risk: 'målet er i fare med dagens plan',
+    unlikely: 'målet er lite sannsynlig uten endringer',
   }
-  summary.push(`In ${probability}% of ${SIMULATIONS.toLocaleString('en-US')} simulated market paths you reach ${nok(target)} within ${round(years, 1)} years, so ${statusText[status]}.`)
-  summary.push(`A typical outcome is ${nok(median)} (in today's money). In a weak market it could be ${nok(percentile(sim.finals, 0.1))}; in a strong one ${nok(percentile(sim.finals, 0.9))}.`)
-  if (required > monthly) summary.push(`To reach the goal with average returns you would need to save about ${nok(required)} per month instead of ${nok(monthly)}.`)
-  else summary.push(`With average returns your current saving of ${nok(monthly)} per month is enough.`)
-  if (yearsNeeded && yearsNeeded > years) summary.push(`At your current pace and average returns you would reach it in about ${yearsNeeded} years.`)
+  summary.push(`I ${probability} % av ${SIMULATIONS.toLocaleString('nb-NO')} simulerte markedsforløp når du ${kr(target)} innen ${num(years)} år, så ${statusText[status]}.`)
+  summary.push(`Et typisk utfall er ${kr(median)} (i dagens kroner). I et svakt marked kan det bli ${kr(percentile(sim.finals, 0.1))}, i et sterkt ${kr(percentile(sim.finals, 0.9))}.`)
+  if (required > monthly) summary.push(`For å nå målet med gjennomsnittlig avkastning må du spare rundt ${kr(required)} per måned i stedet for ${kr(monthly)}.`)
+  else summary.push(`Med gjennomsnittlig avkastning er dagens sparing på ${kr(monthly)} per måned nok.`)
+  if (yearsNeeded && yearsNeeded > years) summary.push(`Med dagens tempo og gjennomsnittlig avkastning når du målet om rundt ${num(yearsNeeded)} år.`)
   if (planCheck) {
     summary.push(planCheck.verdict === 'on_plan'
-      ? `You are right on the plan you made ${planCheck.months_since_start} months ago.`
-      : `Compared with the plan you made ${planCheck.months_since_start} months ago you are ${nok(Math.abs(planCheck.difference))} ${planCheck.verdict}.`)
+      ? `Du er akkurat i rute med planen du lagde for ${planCheck.months_since_start} måneder siden.`
+      : `Sammenlignet med planen du lagde for ${planCheck.months_since_start} måneder siden ligger du ${kr(Math.abs(planCheck.difference))} ${planCheck.verdict === 'ahead' ? 'foran' : 'bak'}.`)
   }
 
   const limitations = [
-    `Transactions only cover ${months} month(s), so your monthly saving is a rough estimate.`,
-    'Taxes, fees and changes in income or spending are not included.',
-    'Markets can behave differently from the past - this is a range of scenarios, not a forecast or a promise.',
+    `Transaksjonene dekker bare ${months} måneder, så den månedlige sparingen er et grovt anslag.`,
+    'Skatt, gebyrer og endringer i inntekt eller forbruk er ikke tatt med.',
+    'Markedet kan oppføre seg annerledes enn før. Dette er et spenn av scenarioer, ikke en prognose eller et løfte.',
   ]
-  if (!goal) limitations.unshift('No goal is registered for you, so the target and time horizon are estimates you should adjust.')
-  if (portfolio.total_value === 0) limitations.unshift('You have no investments yet; the projection starts from zero.')
+  if (!goal) limitations.unshift('Du har ikke registrert noe mål, så målbeløp og tidshorisont er anslag du bør justere.')
+  if (portfolio.total_value === 0) limitations.unshift('Du har ingen investeringer ennå, så fremskrivingen starter fra null.')
 
   return {
     customer_id: customerId,
@@ -358,10 +355,10 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
     summary,
     data_quality: {
       assumptions: [
-        `Amounts are in today's money: returns are reduced by ${ASSUMED_INFLATION_PCT}% assumed inflation (${nominal}% - ${ASSUMED_INFLATION_PCT}% = ${round(real, 1)}% real return).`,
-        `${SIMULATIONS.toLocaleString('en-US')} market paths with ${vol}% yearly swings, using a fixed random seed so the same inputs always give the same result.`,
-        'Pessimistic / optimistic = 1 in 10 worst / best outcomes.',
-        'Monthly saving is invested at the end of each month and kept constant.',
+        `Beløpene er i dagens kroner: avkastningen er redusert med ${ASSUMED_INFLATION_PCT} % antatt inflasjon (${pct(nominal)} - ${ASSUMED_INFLATION_PCT} % = ${pct(real)} realavkastning).`,
+        `${SIMULATIONS.toLocaleString('nb-NO')} markedsforløp med ${pct(vol)} årlige svingninger, med fast startverdi for tilfeldighetene slik at samme input alltid gir samme resultat.`,
+        'Svakt / sterkt marked = de 1 av 10 dårligste / beste utfallene.',
+        'Den månedlige sparingen investeres ved slutten av hver måned og holdes konstant.',
       ],
       limitations,
     },

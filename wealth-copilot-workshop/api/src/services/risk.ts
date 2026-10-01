@@ -117,6 +117,6 @@ export function calculateRisk(customerId: string): RiskSummary {
     },
     customer_risk_profile: customer?.risk_profile ?? 'Unknown',
     risk_profile_alignment: alignment,
-    disclaimer: 'Educational/demo risk model only. Not a real investment suitability assessment.',
+    disclaimer: 'Kun en pedagogisk demomodell for risiko. Ikke en reell egnethetsvurdering.',
   }
 }

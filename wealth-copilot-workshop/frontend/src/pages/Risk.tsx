@@ -4,12 +4,13 @@ import { fetchRiskExplanation } from '../api/client'
 import { useCustomerData } from '../hooks/useCustomerData'
 import { PairBars, VolGauge } from '../components/charts'
 import { ErrorState, Loading, MethodNote, PageHeading, Panel, Pill, Segmented, Stat, Story } from '../components/ui'
-import { formatCurrency } from '../utils/format'
+import { formatCurrency, formatDate, formatPct } from '../utils/format'
+import { instrumentName, profileName } from '../utils/labels'
 
 const ALIGNMENT = {
-  within: { tone: 'good', label: 'Matches your profile' },
-  above: { tone: 'critical', label: 'Riskier than your profile' },
-  below: { tone: 'warning', label: 'Calmer than your profile' },
+  within: { tone: 'good', label: 'I tråd med profilen din' },
+  above: { tone: 'critical', label: 'Mer risiko enn profilen din' },
+  below: { tone: 'warning', label: 'Roligere enn profilen din' },
 } as const
 
 export default function Risk() {
@@ -17,8 +18,8 @@ export default function Risk() {
   const [groupBy, setGroupBy] = useState<'sector' | 'holding' | 'geography'>('sector')
 
   const heading = (
-    <PageHeading eyebrow="Case B · Make risk visible" title="Where does my risk come from?"
-      lead="Risk here means how much your investments swing up and down. See what drives those swings and whether they fit the risk profile you chose." />
+    <PageHeading eyebrow="Case B · Gjør risiko synlig" title="Hvor kommer risikoen min fra?"
+      lead="Risiko betyr her hvor mye investeringene dine svinger opp og ned. Se hva som driver svingningene, og om de passer med risikoprofilen du har valgt." />
   )
 
   if (loading && !r) return <Loading />
@@ -36,10 +37,13 @@ export default function Risk() {
   }
 
   const a = ALIGNMENT[r.alignment]
+  const profile = profileName(r.risk_profile)
+  const band = `${r.profile_band_pct.min}–${r.profile_band_pct.max} %`
   const groupRows = groupBy === 'holding'
-    ? r.contributions.slice(0, 8).map((c) => ({ label: c.name.replace(' (Fictional)', ''), a: c.weight_pct, b: c.risk_contribution_pct }))
+    ? r.contributions.slice(0, 8).map((c) => ({ label: instrumentName(c.name), a: c.weight_pct, b: c.risk_contribution_pct }))
     : (groupBy === 'sector' ? r.by_sector : r.by_geography).map((g) => ({ label: g.label, a: g.weight_pct, b: g.risk_contribution_pct }))
   const worst = Math.min(...r.stress_tests.map((s) => s.impact_pct), -1)
+  const top = r.contributions[0]
 
   return (
     <div className="page">
@@ -47,31 +51,31 @@ export default function Risk() {
       <Story lines={r.summary} />
 
       <div className="grid grid--2">
-        <Panel title="How much it swings" subtitle="Typical yearly ups and downs" action={<Pill tone={a.tone}>{a.label}</Pill>}>
+        <Panel title="Hvor mye den svinger" subtitle="Typiske opp- og nedturer i løpet av et år" action={<Pill tone={a.tone}>{a.label}</Pill>}>
           <VolGauge value={r.portfolio_volatility_pct} min={r.profile_band_pct.min} max={r.profile_band_pct.max} />
           <p className="small muted" style={{ marginTop: 8, textAlign: 'center' }}>
-            "{r.risk_profile}" means {r.profile_description}.
+            «{profile}» betyr {r.profile_description}.
           </p>
         </Panel>
         <div className="grid">
-        <Stat label="A bad month could cost" value={<span className="delta--neg">-{formatCurrency(r.bad_month.loss_value)}</span>}
-          sub={`${r.bad_month.loss_pct}% or more, ${r.bad_month.frequency}. Markets usually recover, but not always quickly.`} />
-        <Stat label="Share in stocks & equity funds" value={`${r.equity_share_pct}%`}
-          sub={`A typical "${r.risk_profile}" mix has about ${r.profile_equity_share_pct}%.`} />
-        <Stat label="Biggest single risk driver" value={r.contributions[0]?.name.replace(' (Fictional)', '') ?? '-'}
-          sub={`${r.contributions[0]?.weight_pct}% of your money, ${r.contributions[0]?.risk_contribution_pct}% of your risk`} />
+          <Stat label="En dårlig måned kan koste" value={<span className="delta--neg">-{formatCurrency(r.bad_month.loss_value)}</span>}
+            sub={`${formatPct(r.bad_month.loss_pct)} eller mer, ${r.bad_month.frequency}. Markedet henter seg som regel inn igjen, men ikke alltid raskt.`} />
+          <Stat label="Andel i aksjer og aksjefond" value={formatPct(r.equity_share_pct)}
+            sub={`En typisk «${profile}»-blanding har rundt ${r.profile_equity_share_pct} %.`} />
+          <Stat label="Største enkeltdriver av risiko" value={top ? instrumentName(top.name) : '-'}
+            sub={top ? `${formatPct(top.weight_pct)} av pengene dine, ${formatPct(top.risk_contribution_pct)} av risikoen` : undefined} />
         </div>
       </div>
 
       <div className="grid grid--main-side">
-        <Panel title="Share of money vs. share of risk" subtitle="When the orange bar is longer than the grey one, that part drives more of your swings than its size suggests."
-          action={<Segmented label="Group by" value={groupBy} onChange={setGroupBy} options={[
-            { value: 'sector', label: 'Sector' }, { value: 'holding', label: 'Investment' }, { value: 'geography', label: 'Region' },
+        <Panel title="Andel av pengene mot andel av risikoen" subtitle="Når den oransje stolpen er lengre enn den grå, driver den delen mer av svingningene enn størrelsen tilsier."
+          action={<Segmented label="Grupper etter" value={groupBy} onChange={setGroupBy} options={[
+            { value: 'sector', label: 'Sektor' }, { value: 'holding', label: 'Investering' }, { value: 'geography', label: 'Region' },
           ]} />}>
-          <PairBars rows={groupRows} aLabel="Share of your money" bLabel="Share of your risk" />
+          <PairBars rows={groupRows} aLabel="Andel av pengene dine" bLabel="Andel av risikoen din" />
         </Panel>
 
-        <Panel title="What if markets fall?" subtitle="Illustrative scenarios, not forecasts">
+        <Panel title="Hva om markedet faller?" subtitle="Illustrasjoner, ikke prognoser">
           <div className="stress">
             {r.stress_tests.map((s) => (
               <div key={s.id} className="stress__item">
@@ -79,7 +83,7 @@ export default function Risk() {
                   <span>{s.name}</span>
                   <span className={s.impact_value >= 0 ? 'delta--pos' : 'delta--neg'}>{s.impact_value >= 0 ? '+' : '-'}{formatCurrency(Math.abs(s.impact_value))}</span>
                 </div>
-                <p className="stress__desc">{s.description} ({s.impact_pct}%)</p>
+                <p className="stress__desc">{s.description} ({formatPct(s.impact_pct)})</p>
                 <div className="stress__meter" aria-hidden="true">
                   <span style={{ width: `${Math.max(0, (s.impact_pct / worst) * 100)}%` }} />
                 </div>
@@ -90,24 +94,24 @@ export default function Risk() {
       </div>
 
       <div className="grid grid--2">
-        <Panel title="How your mix drifted" subtitle={`Sector weights on ${r.drift.since} vs. today, from price moves alone`}>
+        <Panel title="Slik har fordelingen endret seg" subtitle={`Sektorvekter ${formatDate(r.drift.since)} mot i dag, bare fra kursbevegelser`}>
           <PairBars rows={r.drift.rows.slice(0, 6).map((d) => ({ label: d.label, a: d.start_pct, b: d.now_pct }))}
-            aLabel={`Then (${r.drift.since})`} bLabel="Now" aClass="pair__bar--money" bClass="pair__bar--now" />
+            aLabel={`Da (${formatDate(r.drift.since)})`} bLabel="Nå" aClass="pair__bar--money" bClass="pair__bar--now" />
           <p className="small muted" style={{ marginTop: 12 }}>
-            Winners grow into a bigger share over time, so a portfolio can become riskier without you buying anything.
+            Vinnere vokser til en større andel over tid, så en portefølje kan bli mer risikabel uten at du kjøper noe.
           </p>
         </Panel>
 
-        <Panel title="What would change it?" subtitle="An illustration of how the numbers respond, not advice">
+        <Panel title="Hva ville endret bildet?" subtitle="En illustrasjon av hvordan tallene påvirkes, ikke et råd">
           {r.what_if ? (
             <div className="kv">
               <p style={{ marginBottom: 12 }}>{r.what_if.description}:</p>
-              <div className="kv__row"><span>Yearly swings</span><span>{r.portfolio_volatility_pct}% &rarr; <strong>{r.what_if.new_volatility_pct}%</strong></span></div>
-              <div className="kv__row"><span>Bad month</span><span>-{formatCurrency(r.bad_month.loss_value)} &rarr; <strong>-{formatCurrency(r.what_if.new_bad_month_loss)}</strong></span></div>
-              <div className="kv__row"><span>Profile range</span><span>{r.profile_band_pct.min}-{r.profile_band_pct.max}%</span></div>
-              <p className="small muted" style={{ marginTop: 12 }}>Talk to your advisor before making changes. Lower risk also means lower expected growth.</p>
+              <div className="kv__row"><span>Årlige svingninger</span><span>{formatPct(r.portfolio_volatility_pct)} &rarr; <strong>{formatPct(r.what_if.new_volatility_pct)}</strong></span></div>
+              <div className="kv__row"><span>Dårlig måned</span><span>-{formatCurrency(r.bad_month.loss_value)} &rarr; <strong>-{formatCurrency(r.what_if.new_bad_month_loss)}</strong></span></div>
+              <div className="kv__row"><span>Spenn for profilen</span><span>{band}</span></div>
+              <p className="small muted" style={{ marginTop: 12 }}>Snakk med rådgiveren din før du gjør endringer. Lavere risiko betyr også lavere forventet vekst.</p>
             </div>
-          ) : <p className="muted">Your largest risk driver is not a share or equity fund, so there is no simple what-if to show.</p>}
+          ) : <p className="muted">Den største risikodriveren din er ikke en aksje eller et aksjefond, så det finnes ikke et enkelt hva-hvis-eksempel å vise.</p>}
         </Panel>
       </div>
 

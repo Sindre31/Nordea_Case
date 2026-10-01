@@ -1,14 +1,10 @@
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import type { PerformancePoint } from '../api/types'
-import { formatCompact, formatCurrency } from '../utils/format'
-
-function shortDate(date: string) {
-  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' }).format(new Date(date))
-}
+import { formatCompact, formatCurrency, formatShortDate as shortDate } from '../utils/format'
 
 // Single-series value-over-time chart with a crosshair tooltip.
 export default function PerformanceChart({ series, height = 260, compact = false }: { series: PerformancePoint[]; height?: number; compact?: boolean }) {
-  if (series.length === 0) return <p className="state">No performance history available yet.</p>
+  if (series.length === 0) return <p className="state">Ingen verdihistorikk ennå.</p>
   const values = series.map((p) => p.value)
   const min = Math.min(...values)
   const max = Math.max(...values)
@@ -27,7 +23,7 @@ export default function PerformanceChart({ series, height = 260, compact = false
         {!compact && <CartesianGrid stroke="#eceef3" vertical={false} />}
         <XAxis dataKey="date" tickFormatter={shortDate} minTickGap={48} hide={compact}
           tick={{ fill: '#646a85', fontSize: 12 }} axisLine={false} tickLine={false} />
-        <YAxis domain={[min - pad, max + pad]} tickFormatter={formatCompact} width={48} hide={compact}
+        <YAxis domain={[min - pad, max + pad]} tickFormatter={formatCompact} width={64} hide={compact}
           tick={{ fill: '#646a85', fontSize: 12 }} axisLine={false} tickLine={false} />
         <Tooltip
           cursor={{ stroke: compact ? '#dcedff' : '#0000a0', strokeDasharray: '4 4' }}

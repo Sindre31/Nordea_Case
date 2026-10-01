@@ -1,6 +1,6 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import type { AllocationSlice } from '../api/types'
-import { formatCurrency } from '../utils/format'
+import { formatCurrency, formatPct } from '../utils/format'
 
 // Categorical slots in fixed order (validated for colour-blind separation on
 // white). More than 6 slices fold into "Other" - never cycle hues. Every
@@ -13,7 +13,7 @@ function fold(data: AllocationSlice[]): (AllocationSlice & { color: string })[] 
   const head = data.slice(0, SERIES.length - 1).map((d, i) => ({ ...d, color: SERIES[i] }))
   const rest = data.slice(SERIES.length - 1)
   const other = {
-    label: 'Other',
+    label: 'Annet',
     value: rest.reduce((s, d) => s + d.value, 0),
     percentage: Number(rest.reduce((s, d) => s + d.percentage, 0).toFixed(2)),
     color: OTHER,
@@ -21,12 +21,12 @@ function fold(data: AllocationSlice[]): (AllocationSlice & { color: string })[] 
   return [...head, other]
 }
 
-export default function AllocationPieChart({ data, title }: { data: AllocationSlice[]; title: string }) {
-  const slices = fold(data)
+export default function AllocationPieChart({ data, title, labelOf = (s) => s }: { data: AllocationSlice[]; title: string; labelOf?: (label: string) => string }) {
+  const slices = fold(data.map((d) => ({ ...d, label: labelOf(d.label) })))
   return (
     <section className="panel">
       <div className="panel__head"><h2 className="panel__title">{title}</h2></div>
-      {slices.length === 0 ? <p className="state">No holdings to display.</p> : (
+      {slices.length === 0 ? <p className="state">Ingen beholdninger å vise.</p> : (
         <>
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
@@ -37,7 +37,7 @@ export default function AllocationPieChart({ data, title }: { data: AllocationSl
               <Tooltip content={({ active, payload }) => active && payload?.length ? (
                 <div className="chart-tooltip">
                   <div className="chart-tooltip__label">{String(payload[0].payload.label)}</div>
-                  <strong>{payload[0].payload.percentage}%</strong> &middot; {formatCurrency(Number(payload[0].payload.value))}
+                  <strong>{formatPct(payload[0].payload.percentage)}</strong> &middot; {formatCurrency(Number(payload[0].payload.value))}
                 </div>
               ) : null} />
             </PieChart>
@@ -45,7 +45,7 @@ export default function AllocationPieChart({ data, title }: { data: AllocationSl
           <div className="legend">
             {slices.map((s) => (
               <span key={s.label} className="legend__item">
-                <span className="swatch" style={{ background: s.color }} />{s.label} <strong>{s.percentage}%</strong>
+                <span className="swatch" style={{ background: s.color }} />{s.label} <strong>{formatPct(s.percentage)}</strong>
               </span>
             ))}
           </div>

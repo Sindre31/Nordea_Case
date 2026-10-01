@@ -14,7 +14,8 @@
 // returned alongside the numbers so the UI can show "how we calculated this".
 import { getInvestmentsFor, getMarketDataFor, getTransactionsFor, getCustomer } from '../data.js'
 import type { Investment } from '../types.js'
-import { profileAssumption, round, sectorLabel } from './assumptions.js'
+import { profileAssumption, round } from './assumptions.js'
+import { assetTypeName, instrumentName, kr, pct, profileName, sectorName } from './locale.js'
 
 export interface ContributionRow {
   ticker: string
@@ -114,10 +115,6 @@ function groupBy(rows: ContributionRow[], key: (r: ContributionRow) => string, s
     .sort((a, b) => Math.abs(b.change_value) - Math.abs(a.change_value))
 }
 
-function nok(value: number): string {
-  return `${Math.round(Math.abs(value)).toLocaleString('en-US')} NOK`
-}
-
 export function parsePeriodDays(raw: unknown): number | null {
   if (raw === undefined) return 90
   const days = Number(raw)
@@ -146,7 +143,7 @@ export function explainPerformance(customerId: string, days = 90): PerformanceEx
     const endValue = h.quantity * end.price
     return {
       ticker: h.ticker,
-      name: h.name,
+      name: instrumentName(h.name),
       asset_type: h.asset_type,
       sector: h.sector,
       start_value: round(startValue),
@@ -199,35 +196,36 @@ export function explainPerformance(customerId: string, days = 90): PerformanceEx
     .filter((t) => t.category === 'Investments' && t.date >= startDate && t.date <= endDate)
     .reduce((s, t) => s + Math.abs(t.amount), 0)
 
-  const byAssetType = groupBy(contributions, (r) => r.asset_type, startTotal)
-  const bySector = groupBy(contributions, (r) => sectorLabel(r.sector), startTotal)
+  const byAssetType = groupBy(contributions, (r) => assetTypeName(r.asset_type), startTotal)
+  const bySector = groupBy(contributions, (r) => sectorName(r.sector), startTotal)
 
   const summary: string[] = []
   if (holdings.length === 0 || startTotal === 0) {
-    summary.push('You have no investments yet, so there is no development to explain.')
+    summary.push('Du har ingen investeringer ennå, så det er ingen utvikling å forklare.')
   } else {
-    const direction = changeValue >= 0 ? 'grew' : 'fell'
-    summary.push(`Over the last ${days} days your investments ${direction} by ${nok(changeValue)} (${changePct >= 0 ? '+' : ''}${changePct.toFixed(1)}%).`)
+    const profileNo = profileName(profile).toLowerCase()
+    const direction = changeValue >= 0 ? 'steg' : 'falt'
+    summary.push(`De siste ${days} dagene ${direction} investeringene dine med ${kr(changeValue)} (${pct(changePct, 1, true)}).`)
     const ups = contributions.filter((c) => c.change_value > 0).slice(0, 2)
     const downs = contributions.filter((c) => c.change_value < 0).slice(0, 1)
-    if (ups.length) summary.push(`The biggest lift came from ${ups.map((u) => `${u.name} (+${nok(u.change_value)})`).join(' and ')}.`)
-    if (downs.length) summary.push(`${downs[0].name} pulled the other way (-${nok(downs[0].change_value)}).`)
-    const marketPart = `A simple mix matching your "${profile}" profile moved ${marketReturnPct >= 0 ? '+' : ''}${marketReturnPct.toFixed(1)}% in the same period`
-    if (verdict === 'mostly_market') summary.push(`${marketPart}, so most of your result is explained by the market as a whole rather than your specific investments.`)
-    else if (verdict === 'mostly_choices') summary.push(`${marketPart}. Most of your result comes from which investments you hold, not from the market as a whole.`)
-    else summary.push(`${marketPart}. Your result is a mix of general market movements and your specific investments.`)
+    if (ups.length) summary.push(`Mest løft kom fra ${ups.map((u) => `${u.name} (+${kr(u.change_value)})`).join(' og ')}.`)
+    if (downs.length) summary.push(`${downs[0].name} trakk ned (-${kr(downs[0].change_value)}).`)
+    const marketPart = `En enkel blanding tilpasset risikoprofilen din («${profileName(profile)}») endret seg ${pct(marketReturnPct, 1, true)} i samme periode`
+    if (verdict === 'mostly_market') summary.push(`${marketPart}, så det meste av resultatet ditt skyldes markedet generelt, ikke de konkrete investeringene dine.`)
+    else if (verdict === 'mostly_choices') summary.push(`${marketPart}. Det meste av resultatet ditt skyldes hvilke investeringer du eier, ikke markedet generelt.`)
+    else summary.push(`${marketPart}. Resultatet ditt er en blanding av generelle markedsbevegelser og de konkrete investeringene dine.`)
     summary.push(rangeVerdict === 'within'
-      ? `For a ${profile.toLowerCase()} investor, a ${days}-day result between ${lowPct.toFixed(1)}% and ${highPct.toFixed(1)}% is normal, so this is within what we would expect.`
-      : `For a ${profile.toLowerCase()} investor, a ${days}-day result between ${lowPct.toFixed(1)}% and ${highPct.toFixed(1)}% is normal. Yours is ${rangeVerdict} that range, which is worth understanding but not necessarily a problem.`)
+      ? `For en investor med ${profileNo} risikoprofil er et resultat mellom ${pct(lowPct)} og ${pct(highPct)} over ${days} dager normalt, så dette er innenfor det vi kan forvente.`
+      : `For en investor med ${profileNo} risikoprofil er et resultat mellom ${pct(lowPct)} og ${pct(highPct)} over ${days} dager normalt. Ditt resultat er ${rangeVerdict === 'above' ? 'over' : 'under'} dette spennet. Det er verdt å forstå hvorfor, men trenger ikke være et problem.`)
   }
 
   const limitations = [
-    'Your holdings are assumed unchanged through the whole period. Purchases and sales are not yet part of the calculation, so new money can look like growth.',
-    `Market history only covers ${maxDays} days, so longer periods (like a half-year) cannot be explained yet.`,
-    'Market data is synthetic and created for this demo.',
+    'Vi antar at beholdningene dine var uendret gjennom hele perioden. Kjøp og salg er ikke med i beregningen ennå, så nye innskudd kan se ut som vekst.',
+    `Markedshistorikken dekker bare ${maxDays} dager, så lengre perioder (for eksempel et halvår) kan ikke forklares ennå.`,
+    'Markedsdataene er syntetiske og laget for denne demoen.',
   ]
-  if (netNewMoney > 0) limitations.unshift(`You moved ${nok(netNewMoney)} into investments in this period. Without trade history we cannot tell what it bought, so it is not separated from market growth.`)
-  if (missingPrices > 0) limitations.unshift(`${missingPrices} holding(s) had no price on the start or end date; today's price was used instead.`)
+  if (netNewMoney > 0) limitations.unshift(`Du overførte ${kr(netNewMoney)} til investeringer i perioden. Uten handelshistorikk vet vi ikke hva pengene ble brukt til, så de er ikke skilt fra markedsveksten.`)
+  if (missingPrices > 0) limitations.unshift(`${missingPrices} beholdning(er) manglet pris på start- eller sluttdatoen. Dagens pris ble brukt i stedet.`)
 
   return {
     customer_id: customerId,
@@ -241,10 +239,10 @@ export function explainPerformance(customerId: string, days = 90): PerformanceEx
     by_sector: bySector,
     market_vs_choices: {
       reference_portfolio: {
-        name: `${assumption.equity_share_pct}/${100 - assumption.equity_share_pct} reference mix for "${profile}"`,
+        name: `${assumption.equity_share_pct}/${100 - assumption.equity_share_pct}-referanseblanding for «${profileName(profile)}»`,
         composition: [
-          { ...REFERENCE.equity, weight_pct: assumption.equity_share_pct },
-          ...REFERENCE.bonds.map((b) => ({ ...b, weight_pct: round(bondWeight * 100, 1) })),
+          { ...REFERENCE.equity, name: instrumentName(REFERENCE.equity.name), weight_pct: assumption.equity_share_pct },
+          ...REFERENCE.bonds.map((b) => ({ ...b, name: instrumentName(b.name), weight_pct: round(bondWeight * 100, 1) })),
         ],
       },
       market_return_pct: round(marketReturnPct),
@@ -265,9 +263,9 @@ export function explainPerformance(customerId: string, days = 90): PerformanceEx
       data_as_of: endDate,
       net_new_money_in_period: round(netNewMoney),
       assumptions: [
-        `"The market" = a reference mix of ${assumption.equity_share_pct}% global shares and ${100 - assumption.equity_share_pct}% Nordic bonds, matching a "${profile}" profile.`,
-        `Normal range = expected return ${assumption.expected_annual_return_pct}%/year with typical swings of ${assumption.expected_annual_volatility_pct}%/year, scaled to ${days} days (covers about 9 in 10 periods).`,
-        'Contribution = quantity x (price at end - price at start) for each holding.',
+        `«Markedet» = en referanseblanding av ${assumption.equity_share_pct} % globale aksjer og ${100 - assumption.equity_share_pct} % nordiske obligasjoner, tilpasset risikoprofilen «${profileName(profile)}».`,
+        `Normalt spenn = forventet avkastning ${assumption.expected_annual_return_pct} % per år og typiske svingninger på ${assumption.expected_annual_volatility_pct} % per år, skalert til ${days} dager (dekker omtrent 9 av 10 perioder).`,
+        'Bidrag = antall × (pris ved slutt - pris ved start) for hver beholdning.',
       ],
       limitations,
     },

@@ -18,7 +18,8 @@
 import { getCustomer, getInvestmentsFor, getMarketDataFor } from '../data.js'
 import type { Investment } from '../types.js'
 import { aggregateByTicker, priceOn } from './attribution.js'
-import { isEquityLike, profileAssumption, round, sectorLabel } from './assumptions.js'
+import { isEquityLike, profileAssumption, round } from './assumptions.js'
+import { assetTypeName, dateName, geographyName, instrumentName, kr, pct, profileName, sectorName } from './locale.js'
 
 const TRADING_DAYS = 252
 const MONTH_DAYS = 21
@@ -148,33 +149,29 @@ function group(rows: RiskContributionRow[], key: (r: RiskContributionRow) => str
 const STRESS_SCENARIOS: { id: string; name: string; description: string; shock: (h: Investment) => number }[] = [
   {
     id: 'tech-selloff',
-    name: 'Tech sell-off',
-    description: 'Technology shares and funds fall 25%, other shares fall 8%, bonds rise slightly.',
+    name: 'Teknologifall',
+    description: 'Teknologiaksjer og -fond faller 25 %, andre aksjer faller 8 %, obligasjoner stiger litt.',
     shock: (h) => (h.asset_type === 'Cash' ? 0 : !isEquityLike(h.asset_type, h.sector) ? 0.01 : h.sector === 'Technology' ? -0.25 : -0.08),
   },
   {
     id: 'broad-fall',
-    name: 'Broad market fall',
-    description: 'All shares and equity funds fall 20%, bonds rise 2% as investors seek safety.',
+    name: 'Bredt markedsfall',
+    description: 'Alle aksjer og aksjefond faller 20 %, obligasjoner stiger 2 % når investorer søker trygghet.',
     shock: (h) => (h.asset_type === 'Cash' ? 0 : isEquityLike(h.asset_type, h.sector) ? -0.2 : 0.02),
   },
   {
     id: 'rates-up',
-    name: 'Interest rates jump',
-    description: 'Bond prices fall 6% and shares fall 5% when interest rates rise sharply.',
+    name: 'Kraftig renteøkning',
+    description: 'Obligasjonskursene faller 6 % og aksjer faller 5 % når rentene stiger kraftig.',
     shock: (h) => (h.asset_type === 'Cash' ? 0 : isEquityLike(h.asset_type, h.sector) ? -0.05 : -0.06),
   },
   {
     id: 'nordic-downturn',
-    name: 'Nordic downturn',
-    description: 'Nordic shares fall 18%, shares elsewhere fall 5%, bonds unchanged.',
+    name: 'Nordisk nedgang',
+    description: 'Nordiske aksjer faller 18 %, andre aksjer faller 5 %, obligasjoner uendret.',
     shock: (h) => (!isEquityLike(h.asset_type, h.sector) ? 0 : NORDIC.has(h.geography) ? -0.18 : -0.05),
   },
 ]
-
-function nok(v: number): string {
-  return `${Math.round(Math.abs(v)).toLocaleString('en-US')} NOK`
-}
 
 export function explainRisk(customerId: string): RiskExplanation {
   const customer = getCustomer(customerId)
@@ -187,7 +184,7 @@ export function explainRisk(customerId: string): RiskExplanation {
   const contributions: RiskContributionRow[] = holdings
     .map((h, i) => ({
       ticker: h.ticker,
-      name: h.name,
+      name: instrumentName(h.name),
       asset_type: h.asset_type,
       sector: h.sector,
       geography: h.geography,
@@ -218,10 +215,10 @@ export function explainRisk(customerId: string): RiskExplanation {
   const startTotal = startValues.reduce((a, b) => a + b, 0)
   const driftMap = new Map<string, { start: number; now: number }>()
   holdings.forEach((h, i) => {
-    const d = driftMap.get(sectorLabel(h.sector)) ?? { start: 0, now: 0 }
+    const d = driftMap.get(sectorName(h.sector)) ?? { start: 0, now: 0 }
     d.start += startValues[i]
     d.now += values[i]
-    driftMap.set(sectorLabel(h.sector), d)
+    driftMap.set(sectorName(h.sector), d)
   })
   const driftRows = [...driftMap.entries()]
     .map(([label, d]) => ({
@@ -250,27 +247,27 @@ export function explainRisk(customerId: string): RiskExplanation {
     newValues[existingBond >= 0 ? existingBond : newValues.length - 1] += moved
     const newModel = riskModel(newHoldings, newValues)
     whatIf = {
-      description: `If half of ${top.name} (${nok(moved)}) were held in a Nordic bond fund instead`,
+      description: `Hvis halvparten av ${top.name} (${kr(moved)}) i stedet var plassert i et nordisk obligasjonsfond`,
       new_volatility_pct: round(newModel.volAnnualPct, 1),
       new_bad_month_loss: round(badMonthLoss(newModel.volAnnualPct, total).value),
     }
   }
 
-  const bySector = group(contributions, (r) => sectorLabel(r.sector))
+  const bySector = group(contributions, (r) => sectorName(r.sector))
   const summary: string[] = []
   if (total === 0) {
-    summary.push('You have no investments yet, so there is no investment risk to explain.')
+    summary.push('Du har ingen investeringer ennå, så det er ingen investeringsrisiko å forklare.')
   } else {
-    summary.push(`Your investments typically swing about ${vol.toFixed(1)}% up or down in a year. For a "${profile}" profile we would expect ${band.min}-${band.max}%.`)
-    if (alignment === 'above') summary.push('That is more than your profile suggests, which explains why market falls can feel bigger than you expect.')
-    else if (alignment === 'below') summary.push('That is less than your profile suggests: calmer, but with less growth potential over time.')
-    else summary.push('That is in line with your profile.')
+    summary.push(`Investeringene dine svinger typisk rundt ${pct(vol)} opp eller ned i løpet av et år. For risikoprofilen «${profileName(profile)}» forventer vi ${band.min}–${band.max} %.`)
+    if (alignment === 'above') summary.push('Det er mer enn profilen din tilsier, og forklarer hvorfor markedsfall kan føles større enn du venter.')
+    else if (alignment === 'below') summary.push('Det er mindre enn profilen din tilsier: roligere, men med lavere vekstpotensial over tid.')
+    else summary.push('Det er i tråd med risikoprofilen din.')
     const topSector = bySector[0]
-    if (topSector) summary.push(`${topSector.label} is ${topSector.weight_pct}% of your money but ${topSector.risk_contribution_pct}% of your risk.`)
-    summary.push(`In a bad month (about 1 in 20) your investments could fall around ${nok(badMonth.value)} or more.`)
-    const techDrift = driftRows.find((r) => r.label === 'Technology')
+    if (topSector) summary.push(`${topSector.label} utgjør ${pct(topSector.weight_pct)} av pengene dine, men ${pct(topSector.risk_contribution_pct)} av risikoen.`)
+    summary.push(`I en dårlig måned (omtrent 1 av 20) kan investeringene dine falle rundt ${kr(badMonth.value)} eller mer.`)
+    const techDrift = driftRows.find((r) => r.label === sectorName('Technology'))
     if (techDrift && techDrift.now_pct - techDrift.start_pct >= 1) {
-      summary.push(`Price moves alone have raised your technology share from ${techDrift.start_pct}% to ${techDrift.now_pct}% since ${since}.`)
+      summary.push(`Kursbevegelser alene har økt teknologiandelen din fra ${pct(techDrift.start_pct)} til ${pct(techDrift.now_pct)} siden ${dateName(since)}.`)
     }
   }
 
@@ -286,25 +283,25 @@ export function explainRisk(customerId: string): RiskExplanation {
     profile_equity_share_pct: assumption.equity_share_pct,
     contributions,
     by_sector: bySector,
-    by_geography: group(contributions, (r) => r.geography),
-    by_asset_type: group(contributions, (r) => r.asset_type),
-    bad_month: { loss_value: round(badMonth.value), loss_pct: round(badMonth.pct, 1), frequency: 'about 1 in 20 months' },
+    by_geography: group(contributions, (r) => geographyName(r.geography)),
+    by_asset_type: group(contributions, (r) => assetTypeName(r.asset_type)),
+    bad_month: { loss_value: round(badMonth.value), loss_pct: round(badMonth.pct, 1), frequency: 'omtrent 1 av 20 måneder' },
     stress_tests: stressTests,
     drift: { since, rows: driftRows },
     what_if: whatIf,
     summary,
     data_quality: {
       assumptions: [
-        'Each holding\'s own swings are measured from its daily price changes in the available market history.',
-        'How holdings move together uses rules of thumb: shares 0.5, same sector +0.3, broad funds +0.15, same region +0.1 (max 0.9); bonds with bonds 0.6; shares with bonds 0.1; cash 0.',
-        `"Bad month" = a loss you would expect to exceed in about 1 of 20 months, assuming normally distributed returns.`,
-        `Profile band for "${profile}": ${band.min}-${band.max}% yearly swings, ${assumption.equity_share_pct}% in shares.`,
+        'Hver beholdnings egne svingninger måles fra de daglige kursendringene i tilgjengelig markedshistorikk.',
+        'Hvor mye beholdningene beveger seg sammen, bygger på tommelfingerregler: aksjer 0,5, samme sektor +0,3, brede fond +0,15, samme region +0,1 (maks 0,9); obligasjoner med obligasjoner 0,6; aksjer med obligasjoner 0,1; kontanter 0.',
+        '«Dårlig måned» = et tap du kan vente å overstige omtrent 1 av 20 måneder, gitt normalfordelt avkastning.',
+        `Spenn for «${profileName(profile)}»: ${band.min}–${band.max} % årlige svingninger, ${assumption.equity_share_pct} % i aksjer.`,
       ],
       limitations: [
-        'Market history covers only about 90 days of synthetic prices, which is too short for a reliable risk estimate.',
-        'No history of past trades: drift shows only price-driven changes, not how your own purchases changed the mix.',
-        'Stress tests are illustrative scenarios, not forecasts.',
-        'Educational model only - not a real risk or suitability assessment.',
+        'Markedshistorikken dekker bare rundt 90 dager med syntetiske priser, som er for kort til et pålitelig risikoestimat.',
+        'Ingen historikk over tidligere handler: endringen i fordeling viser bare kursdrevne endringer, ikke hvordan egne kjøp har endret sammensetningen.',
+        'Stresstestene er illustrasjoner, ikke prognoser.',
+        'Kun en pedagogisk modell, ikke en reell risiko- eller egnethetsvurdering.',
       ],
     },
   }

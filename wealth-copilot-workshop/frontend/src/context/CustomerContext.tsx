@@ -16,9 +16,9 @@ const CustomerContext = createContext<CustomerContextValue | undefined>(undefine
 // The three workshop personas (see docs/workshop.md) are shown first, then
 // the rest of the synthetic customers.
 export const PERSONAS = [
-  { id: 'CUST-00101', caseLabel: 'Case A', question: 'Why did my portfolio grow?', path: '/performance' },
-  { id: 'CUST-00102', caseLabel: 'Case B', question: 'Where does my risk come from?', path: '/risk' },
-  { id: 'CUST-00103', caseLabel: 'Case C', question: 'Will I reach my goal?', path: '/goals' },
+  { id: 'CUST-00101', caseLabel: 'Case A', question: 'Hvorfor har porteføljen min steget?', path: '/performance' },
+  { id: 'CUST-00102', caseLabel: 'Case B', question: 'Hvor kommer risikoen min fra?', path: '/risk' },
+  { id: 'CUST-00103', caseLabel: 'Case C', question: 'Når jeg målet mitt?', path: '/goals' },
 ]
 const FEATURED_CUSTOMER_IDS = PERSONAS.map((p) => p.id)
 const STORAGE_KEY = 'wealth-copilot:customer'

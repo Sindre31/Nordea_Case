@@ -12,11 +12,11 @@ interface ChatMessage {
 }
 
 const SUGGESTED_QUESTIONS = [
-  'Why did my portfolio change?',
-  'Where does my risk come from?',
-  'Am I on track for my goal?',
-  'Am I diversified?',
-  'How much am I saving every month?',
+  'Hvorfor endret porteføljen min seg?',
+  'Hvor kommer risikoen min fra?',
+  'Er jeg i rute til å nå målet mitt?',
+  'Er jeg godt nok diversifisert?',
+  'Hvor mye sparer jeg hver måned?',
 ]
 
 export default function Copilot() {
@@ -30,7 +30,7 @@ export default function Copilot() {
   useEffect(() => {
     setMessages([{
       role: 'assistant',
-      text: `Hi${selectedCustomer ? ` ${selectedCustomer.first_name}` : ''}! I can explain why your portfolio moved, where your risk comes from, and whether you are on track for your goals. Every answer shows which of your data it used.`,
+      text: `Hei${selectedCustomer ? ` ${selectedCustomer.first_name}` : ''}! Jeg kan forklare hvorfor porteføljen din har endret seg, hvor risikoen din kommer fra, og om du er i rute til å nå målene dine. Hvert svar viser hvilke av dataene dine det bygger på.`,
     }])
   }, [selectedCustomerId, selectedCustomer])
 
@@ -48,7 +48,7 @@ export default function Copilot() {
       const reply = await askCopilot(selectedCustomerId, text)
       setMessages((prev) => [...prev, { role: 'assistant', text: reply.answer, sources: reply.sources, followUps: reply.follow_ups }])
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      setError(err instanceof Error ? err.message : 'Noe gikk galt')
     } finally {
       setSending(false)
     }
@@ -56,8 +56,8 @@ export default function Copilot() {
 
   return (
     <div className="page">
-      <PageHeading eyebrow="Deterministic today, LLM-ready by design" title="Ask Copilot"
-        lead="Answers are calculated from your own data with transparent rules - no external AI, and nothing is guessed." />
+      <PageHeading eyebrow="Regelbasert i dag, klar for språkmodell" title="Spør Copilot"
+        lead="Svarene beregnes fra dine egne data med åpne regler. Ingen ekstern KI, og ingenting er gjettet." />
       <section className="panel chat">
         <div className="chat__messages" ref={listRef} aria-live="polite">
           {messages.map((m, i) => (
@@ -67,7 +67,7 @@ export default function Copilot() {
                 {m.text}
                 {m.sources && m.sources.length > 0 && (
                   <div className="msg__sources">
-                    Why am I seeing this? Based on:
+                    Hvorfor ser jeg dette? Basert på:
                     <ul>{m.sources.map((s) => <li key={s}>{s}</li>)}</ul>
                   </div>
                 )}
@@ -82,7 +82,7 @@ export default function Copilot() {
           {sending && (
             <div className="msg msg--assistant">
               <span className="avatar"><SparkIcon size={14} /></span>
-              <div className="msg__bubble"><span className="typing" aria-label="Thinking"><span /><span /><span /></span></div>
+              <div className="msg__bubble"><span className="typing" aria-label="Tenker"><span /><span /><span /></span></div>
             </div>
           )}
         </div>
@@ -93,7 +93,7 @@ export default function Copilot() {
         )}
         {error && <p className="state--error small" style={{ padding: '0 24px 8px' }} role="alert">{error}</p>}
         <form className="chat__input" onSubmit={(e) => { e.preventDefault(); sendMessage(input) }}>
-          <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask about your finances..." aria-label="Ask the Wealth Copilot" />
+          <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Spør om økonomien din …" aria-label="Spør Wealth Copilot" />
           <button type="submit" className="btn btn--primary row" style={{ gap: 6 }} disabled={sending || !input.trim()}><SendIcon size={16} /> Send</button>
         </form>
       </section>

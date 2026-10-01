@@ -371,7 +371,7 @@ const goals = [
     type: 'financial_independence',
     // Maria's own definition: enough invested to cover a 60% work week from
     // age 39 (see docs/solution.md for the reasoning).
-    name: 'Financial freedom by 39',
+    name: 'Økonomisk frihet ved 39',
     target_amount: 1500000,
     target_date: '2036-09-01',
     created_at: '2025-09-01',

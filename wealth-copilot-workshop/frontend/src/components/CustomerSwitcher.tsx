@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { PERSONAS, useCustomerContext } from '../context/CustomerContext'
 import type { Customer } from '../api/types'
 import { ChevronIcon } from './Icons'
+import { profileName } from '../utils/labels'
 
 export function initials(c: Customer) {
   return `${c.first_name[0] ?? ''}${c.last_name[0] ?? ''}`
@@ -13,7 +14,7 @@ export function PersonaChips() {
   const { customers, selectedCustomerId, setSelectedCustomerId } = useCustomerContext()
   const navigate = useNavigate()
   return (
-    <div className="topbar__personas" role="group" aria-label="Workshop cases">
+    <div className="topbar__personas" role="group" aria-label="Workshop-caser">
       {PERSONAS.map((p) => {
         const c = customers.find((x) => x.customer_id === p.id)
         if (!c) return null
@@ -51,7 +52,7 @@ export default function CustomerSwitcher() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return customers
-    return customers.filter((c) => `${c.first_name} ${c.last_name} ${c.customer_id} ${c.risk_profile}`.toLowerCase().includes(q))
+    return customers.filter((c) => `${c.first_name} ${c.last_name} ${c.customer_id} ${c.risk_profile} ${profileName(c.risk_profile)}`.toLowerCase().includes(q))
   }, [customers, query])
 
   if (loading || !selectedCustomer) return <div className="switcher skeleton" style={{ width: 200, height: 46 }} />
@@ -63,14 +64,14 @@ export default function CustomerSwitcher() {
         <span>
           <span className="switcher__name">{selectedCustomer.first_name} {selectedCustomer.last_name}</span>
           <br />
-          <span className="switcher__meta">{selectedCustomer.age} y &middot; {selectedCustomer.risk_profile}</span>
+          <span className="switcher__meta">{selectedCustomer.age} år &middot; {profileName(selectedCustomer.risk_profile)}</span>
         </span>
         <ChevronIcon size={16} />
       </button>
       {open && (
         <div className="switcher__panel">
-          <input autoFocus placeholder="Search name, ID or profile..." value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search customers" />
-          <div className="switcher__list" role="listbox" aria-label="Customers">
+          <input autoFocus placeholder="Søk på navn, kundenummer eller profil …" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Søk etter kunde" />
+          <div className="switcher__list" role="listbox" aria-label="Kunder">
             {filtered.map((c) => {
               const persona = PERSONAS.find((p) => p.id === c.customer_id)
               return (
@@ -80,13 +81,13 @@ export default function CustomerSwitcher() {
                   <span style={{ flex: 1, minWidth: 0 }}>
                     <span className="switcher__name">{c.first_name} {c.last_name}</span>
                     <br />
-                    <span className="switcher__meta">{c.customer_id} &middot; {c.age} y &middot; {c.risk_profile}</span>
+                    <span className="switcher__meta">{c.customer_id} &middot; {c.age} år &middot; {profileName(c.risk_profile)}</span>
                   </span>
                   {persona && <span className="nav__case">{persona.caseLabel}</span>}
                 </button>
               )
             })}
-            {filtered.length === 0 && <p className="state small">No customers match.</p>}
+            {filtered.length === 0 && <p className="state small">Ingen kunder passer søket.</p>}
           </div>
         </div>
       )}

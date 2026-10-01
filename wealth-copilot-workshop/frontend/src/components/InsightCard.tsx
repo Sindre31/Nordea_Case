@@ -2,9 +2,9 @@ import type { Insight } from '../api/types'
 import { AlertIcon, BulbIcon, InfoIcon } from './Icons'
 
 const SEVERITY: Record<Insight['severity'], { label: string; icon: JSX.Element }> = {
-  info: { label: 'Good to know', icon: <InfoIcon /> },
-  notice: { label: 'Worth a look', icon: <BulbIcon /> },
-  warning: { label: 'Needs attention', icon: <AlertIcon /> },
+  info: { label: 'Godt å vite', icon: <InfoIcon /> },
+  notice: { label: 'Verdt å se på', icon: <BulbIcon /> },
+  warning: { label: 'Bør følges opp', icon: <AlertIcon /> },
 }
 
 export default function InsightCard({ insight }: { insight: Insight }) {

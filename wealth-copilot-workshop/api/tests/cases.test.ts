@@ -39,7 +39,7 @@ describe('Case A: GET /customers/:id/performance/explain', () => {
   it('flags new money that cannot be separated from growth', async () => {
     const res = await request(app).get(`/customers/${ANNE}/performance/explain`)
     expect(res.body.data_quality.net_new_money_in_period).toBeGreaterThan(0)
-    expect(res.body.data_quality.limitations[0]).toMatch(/moved .* into investments/)
+    expect(res.body.data_quality.limitations[0]).toMatch(/overførte .* til investeringer/)
   })
 
   it('handles a customer without investments', async () => {
@@ -47,7 +47,7 @@ describe('Case A: GET /customers/:id/performance/explain', () => {
     const res = await request(app).get(`/customers/${noInvestments.customer_id}/performance/explain`)
     expect(res.status).toBe(200)
     expect(res.body.change_value).toBe(0)
-    expect(res.body.summary[0]).toMatch(/no investments/)
+    expect(res.body.summary[0]).toMatch(/ingen investeringer/)
   })
 })
 
@@ -63,7 +63,7 @@ describe('Case B: GET /customers/:id/risk/explain', () => {
   it('shows Jonas that tech drives his risk and exceeds his moderate profile', async () => {
     const res = await request(app).get(`/customers/${JONAS}/risk/explain`)
     expect(res.body.alignment).toBe('above')
-    expect(res.body.by_sector[0].label).toBe('Technology')
+    expect(res.body.by_sector[0].label).toBe('Teknologi')
     expect(res.body.by_sector[0].risk_contribution_pct).toBeGreaterThan(res.body.by_sector[0].weight_pct)
     expect(res.body.stress_tests[0].id).toBe('tech-selloff')
     expect(res.body.what_if.new_volatility_pct).toBeLessThan(res.body.portfolio_volatility_pct)
@@ -108,7 +108,7 @@ describe('Case C: goals and projection', () => {
     const res = await request(app).post(`/customers/${JONAS}/goals/projection`).send({})
     expect(res.status).toBe(200)
     expect(res.body.goal).toBeNull()
-    expect(res.body.data_quality.limitations[0]).toMatch(/No goal is registered/)
+    expect(res.body.data_quality.limitations[0]).toMatch(/ikke registrert noe mål/)
   })
 
   it('rejects invalid input', async () => {
@@ -119,10 +119,19 @@ describe('Case C: goals and projection', () => {
 
 describe('Copilot explains its sources', () => {
   it.each([
+    ['Hvorfor endret porteføljen min seg?', 'performance-drivers'],
+    ['Var dette forventet for risikoprofilen min?', 'performance-drivers'],
+    ['Hvor kommer risikoen min fra?', 'risk-sources'],
+    ['Er jeg i rute til å nå målet mitt?', 'goal'],
+    ['Hvordan har porteføljen min utviklet seg?', 'performance'],
+    ['Hvorfor har risikoen min økt?', 'risk-change'],
+    ['Er jeg godt nok diversifisert?', 'diversification'],
+    ['Hvor mye sparer jeg hver måned?', 'savings'],
+    ['Hva er de største risikoene i porteføljen min?', 'largest-risks'],
+    // English questions still work.
     ['Why did my portfolio change?', 'performance-drivers'],
     ['Where does my risk come from?', 'risk-sources'],
     ['Am I on track for my goal?', 'goal'],
-    ['How has my portfolio performed?', 'performance'],
   ])('"%s" -> %s', async (message, intent) => {
     const res = await request(app).post(`/customers/${MARIA}/copilot`).send({ message })
     expect(res.status).toBe(200)

@@ -218,6 +218,11 @@ A light, restrained private-banking look inspired by Nordic banks:
   white. Gains and losses always carry a +/- sign, and status pills always have an icon
   and a word, so nothing relies on colour alone.
 - Responsive down to phone width. Respects reduced-motion settings.
+- The whole interface is in Norwegian (bokmål), including the explanations, insights and
+  Copilot answers the API generates (`api/src/services/locale.ts`). Numbers use Norwegian
+  formatting ("1 234 567 kr", "4,8 %"). The data model and API field names stay in
+  English, so the API contract is unchanged. The Copilot understands questions in both
+  Norwegian and English.
 
 ## Tests
 

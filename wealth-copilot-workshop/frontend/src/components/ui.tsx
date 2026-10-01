@@ -60,7 +60,7 @@ export function Delta({ value, children }: { value: number; children: ReactNode 
 }
 
 // "In plain words" narrative - the main answer to the customer's question.
-export function Story({ title = 'In plain words', lines }: { title?: string; lines: string[] }) {
+export function Story({ title = 'Forklart enkelt', lines }: { title?: string; lines: string[] }) {
   return (
     <div className="story" aria-live="polite">
       <span className="story__icon"><SparkIcon size={16} /></span>
@@ -77,14 +77,14 @@ export function Story({ title = 'In plain words', lines }: { title?: string; lin
 export function MethodNote({ assumptions, limitations, extra }: { assumptions: string[]; limitations: string[]; extra?: ReactNode }) {
   return (
     <details className="method">
-      <summary><DataIcon size={16} /> How we calculated this &middot; what the data can't tell us</summary>
+      <summary><DataIcon size={16} /> Slik har vi regnet &middot; dette kan ikke dataene si noe om</summary>
       <div className="method__body">
         <div>
-          <h4>Assumptions</h4>
+          <h4>Antakelser</h4>
           <ul>{assumptions.map((a) => <li key={a}>{a}</li>)}</ul>
         </div>
         <div>
-          <h4>Limitations &amp; missing data</h4>
+          <h4>Begrensninger og manglende data</h4>
           <ul>{limitations.map((l) => <li key={l}>{l}</li>)}</ul>
         </div>
         {extra}
@@ -138,7 +138,7 @@ export function AnimatedNumber({ value, format }: { value: number; format: (v: n
 
 export function Loading({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="page" aria-busy="true" aria-label="Loading">
+    <div className="page" aria-busy="true" aria-label="Laster">
       <div className="skeleton" style={{ height: 56, width: '40%' }} />
       {Array.from({ length: rows }, (_, i) => <div key={i} className="skeleton" style={{ height: i === 0 ? 180 : 120 }} />)}
     </div>
@@ -148,9 +148,9 @@ export function Loading({ rows = 3 }: { rows?: number }) {
 export function ErrorState({ message }: { message: string }) {
   return (
     <div className="panel state state--error" role="alert">
-      <p><strong>Could not load data.</strong></p>
+      <p><strong>Kunne ikke hente data.</strong></p>
       <p className="small">{message}</p>
-      <p className="small muted" style={{ marginTop: 8 }}>Is the API running? Start it with <code>npm run dev</code>.</p>
+      <p className="small muted" style={{ marginTop: 8 }}>Kjører API-et? Start det med <code>npm run dev</code>.</p>
     </div>
   )
 }

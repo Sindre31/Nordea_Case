@@ -1,7 +1,7 @@
 // Purpose-built explanation visuals for cases A-C. Plain HTML/SVG where a
 // chart library would add more than it gives; recharts for the fan chart.
 import { Area, ComposedChart, CartesianGrid, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { formatCompact, formatCurrency, formatSignedCurrency } from '../utils/format'
+import { formatCompact, formatCurrency, formatNumber, formatPct, formatSignedCurrency } from '../utils/format'
 
 // --- Diverging bars: what pushed the value up (right) or down (left) -------
 export function DivergingBars({ rows }: { rows: { key: string; label: string; detail?: string; value: number }[] }) {
@@ -29,16 +29,16 @@ export function RangeBar({ low, high, value, expected, unit = '%' }: { low: numb
   const span = Math.max(Math.abs(low), Math.abs(high), Math.abs(value)) * 1.35 || 1
   const min = -span
   const pos = (v: number) => `${((v - min) / (2 * span)) * 100}%`
-  const fmt = (v: number) => `${v >= 0 ? '+' : ''}${v.toFixed(1)}${unit}`
+  const fmt = (v: number) => (unit === '%' ? formatPct(v, 1, true) : `${v >= 0 ? '+' : ''}${formatNumber(v, 1)}${unit}`)
   return (
-    <div className="range" role="img" aria-label={`Your result ${fmt(value)}. Normal range ${fmt(low)} to ${fmt(high)}.`}>
+    <div className="range" role="img" aria-label={`Ditt resultat ${fmt(value)}. Normalt spenn ${fmt(low)} til ${fmt(high)}.`}>
       <div className="range__track">
         <div className="range__band" style={{ left: pos(low), width: `calc(${pos(high)} - ${pos(low)})` }} />
         <div className="range__marker" style={{ left: pos(value) }}>
-          <span className="range__marker-label">You: {fmt(value)}</span>
+          <span className="range__marker-label">Du: {fmt(value)}</span>
         </div>
         <span className="range__tick" style={{ left: pos(low) }}>{fmt(low)}</span>
-        <span className="range__tick" style={{ left: pos(expected) }}>avg {fmt(expected)}</span>
+        <span className="range__tick" style={{ left: pos(expected) }}>snitt {fmt(expected)}</span>
         <span className="range__tick" style={{ left: pos(high) }}>{fmt(high)}</span>
       </div>
     </div>
@@ -58,10 +58,10 @@ export function PairBars({ rows, aLabel, bLabel, aClass = 'pair__bar--money', bC
     <div>
       <div className="pairs">
         {rows.map((r) => (
-          <div key={r.label} title={`${r.label}: ${aLabel} ${r.a}%, ${bLabel} ${r.b}%`}>
+          <div key={r.label} title={`${r.label}: ${aLabel} ${formatPct(r.a)}, ${bLabel} ${formatPct(r.b)}`}>
             <div className="pair__head">
               <span>{r.label}</span>
-              <span className="muted">{r.a}% &rarr; <strong style={{ color: 'var(--text)' }}>{r.b}%</strong></span>
+              <span className="muted">{formatPct(r.a)} &rarr; <strong style={{ color: 'var(--text)' }}>{formatPct(r.b)}</strong></span>
             </div>
             <div className="pair__bars" aria-hidden="true">
               <span className={`pair__bar ${aClass}`} style={{ width: `${(r.a / max) * 100}%` }} />
@@ -92,17 +92,17 @@ export function VolGauge({ value, min, max }: { value: number; min: number; max:
   const outside = value > max || value < min
   return (
     <div className="gauge">
-      <svg viewBox="0 0 200 118" role="img" aria-label={`Yearly swings ${value}%. Profile range ${min} to ${max}%.`}>
+      <svg viewBox="0 0 200 118" role="img" aria-label={`Årlige svingninger ${formatPct(value)}. Spenn for profilen ${min} til ${max} %.`}>
         <path d={arc(0, scaleMax, 80)} stroke="#eceef3" strokeWidth={14} fill="none" strokeLinecap="round" />
         <path d={arc(min, max, 80)} stroke="#b9d3f5" strokeWidth={14} fill="none" />
         <line x1={100} y1={100} x2={nx} y2={ny} stroke={outside ? '#c62828' : '#00005e'} strokeWidth={4} strokeLinecap="round" />
         <circle cx={100} cy={100} r={8} fill="#00005e" stroke="#ffffff" strokeWidth={3} />
-        <text x={20} y={116} fill="#646a85" fontSize={10} textAnchor="middle">0%</text>
-        <text x={180} y={116} fill="#646a85" fontSize={10} textAnchor="middle">{Math.round(scaleMax)}%</text>
+        <text x={20} y={116} fill="#646a85" fontSize={10} textAnchor="middle">0 %</text>
+        <text x={180} y={116} fill="#646a85" fontSize={10} textAnchor="middle">{Math.round(scaleMax)} %</text>
       </svg>
       <div className="legend" style={{ marginTop: 0 }}>
-        <span className="legend__item"><span className="swatch" style={{ background: '#b9d3f5' }} />Fits your profile ({min}-{max}%)</span>
-        <span className="legend__item"><span className="swatch" style={{ background: outside ? '#c62828' : '#00005e' }} />You ({value}%)</span>
+        <span className="legend__item"><span className="swatch" style={{ background: '#b9d3f5' }} />Passer profilen din ({min}–{max} %)</span>
+        <span className="legend__item"><span className="swatch" style={{ background: outside ? '#c62828' : '#00005e' }} />Du ({formatPct(value)})</span>
       </div>
     </div>
   )
@@ -114,7 +114,7 @@ export function ProbabilityRing({ value, caption }: { value: number; caption: st
   const c = 2 * Math.PI * r
   const color = value >= 75 ? '#0a7d3b' : value >= 50 ? '#2a78d6' : value >= 25 ? '#eda100' : '#c62828'
   return (
-    <div className="ring" role="img" aria-label={`${value}% ${caption}`}>
+    <div className="ring" role="img" aria-label={`${value} % ${caption}`}>
       <svg width="168" height="168" viewBox="0 0 168 168">
         <circle cx="84" cy="84" r={r} stroke="#eceef3" strokeWidth="14" fill="none" />
         <circle cx="84" cy="84" r={r} stroke={color} strokeWidth="14" fill="none" strokeLinecap="round"
@@ -122,7 +122,7 @@ export function ProbabilityRing({ value, caption }: { value: number; caption: st
       </svg>
       <div className="ring__label">
         <div>
-          <div className="ring__value">{value}%</div>
+          <div className="ring__value">{value} %</div>
           <div className="ring__caption">{caption}</div>
         </div>
       </div>
@@ -148,9 +148,9 @@ export function FanChart({ timeline, target }: {
             </linearGradient>
           </defs>
           <CartesianGrid stroke="#eceef3" vertical={false} />
-          <XAxis dataKey="year" type="number" domain={[0, 'dataMax']} tickFormatter={(v: number) => `${Math.round(v)}y`}
+          <XAxis dataKey="year" type="number" domain={[0, 'dataMax']} tickFormatter={(v: number) => `${Math.round(v)} år`}
             tick={{ fill: '#646a85', fontSize: 12 }} axisLine={false} tickLine={false} allowDecimals={false} />
-          <YAxis domain={[0, yMax]} tickFormatter={formatCompact} width={52}
+          <YAxis domain={[0, yMax]} tickFormatter={formatCompact} width={72}
             tick={{ fill: '#646a85', fontSize: 12 }} axisLine={false} tickLine={false} />
           <Tooltip
             cursor={{ stroke: '#0000a0', strokeDasharray: '4 4' }}
@@ -159,11 +159,11 @@ export function FanChart({ timeline, target }: {
               const p = payload[0].payload as (typeof data)[number]
               return (
                 <div className="chart-tooltip">
-                  <div className="chart-tooltip__label">After {p.year} years</div>
-                  <div>Strong market: <strong>{formatCurrency(p.p90)}</strong></div>
-                  <div>Typical: <strong>{formatCurrency(p.p50)}</strong></div>
-                  <div>Weak market: <strong>{formatCurrency(p.p10)}</strong></div>
-                  <div className="muted">You paid in: {formatCurrency(p.contributed)}</div>
+                  <div className="chart-tooltip__label">Etter {formatNumber(p.year, 1)} år</div>
+                  <div>Sterkt marked: <strong>{formatCurrency(p.p90)}</strong></div>
+                  <div>Typisk: <strong>{formatCurrency(p.p50)}</strong></div>
+                  <div>Svakt marked: <strong>{formatCurrency(p.p10)}</strong></div>
+                  <div className="muted">Innbetalt: {formatCurrency(p.contributed)}</div>
                 </div>
               )
             }}
@@ -172,14 +172,14 @@ export function FanChart({ timeline, target }: {
           <Line dataKey="contributed" stroke="#858ba0" strokeWidth={2} strokeDasharray="5 5" dot={false} />
           <Line dataKey="p50" stroke="#00005e" strokeWidth={2} dot={false} activeDot={{ r: 5, fill: '#00005e', stroke: '#ffffff', strokeWidth: 2 }} />
           <ReferenceLine y={target} stroke="#b06f00" strokeWidth={2} strokeDasharray="6 4"
-            label={{ value: `Goal ${formatCompact(target)}`, fill: '#7a4f00', fontSize: 12, position: 'insideTopLeft' }} />
+            label={{ value: `Mål ${formatCompact(target)}`, fill: '#7a4f00', fontSize: 12, position: 'insideTopLeft' }} />
         </ComposedChart>
       </ResponsiveContainer>
       <div className="legend">
-        <span className="legend__item"><span className="swatch" style={{ background: 'rgba(42,120,214,0.35)' }} />8 in 10 outcomes land here</span>
-        <span className="legend__item"><span className="swatch" style={{ background: '#00005e' }} />Typical outcome</span>
-        <span className="legend__item"><span className="swatch" style={{ background: '#858ba0' }} />What you pay in</span>
-        <span className="legend__item"><span className="swatch" style={{ background: '#b06f00' }} />Your goal</span>
+        <span className="legend__item"><span className="swatch" style={{ background: 'rgba(42,120,214,0.35)' }} />8 av 10 utfall havner her</span>
+        <span className="legend__item"><span className="swatch" style={{ background: '#00005e' }} />Typisk utfall</span>
+        <span className="legend__item"><span className="swatch" style={{ background: '#858ba0' }} />Det du betaler inn</span>
+        <span className="legend__item"><span className="swatch" style={{ background: '#b06f00' }} />Målet ditt</span>
       </div>
     </div>
   )

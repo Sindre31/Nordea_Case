@@ -27,35 +27,35 @@ export const PROFILE_ASSUMPTIONS: Record<RiskProfile, ProfileAssumption> = {
     expected_annual_return_pct: 3,
     expected_annual_volatility_pct: 4,
     volatility_band_pct: { min: 0, max: 6 },
-    plain_language: 'mostly safer investments, small and infrequent swings',
+    plain_language: 'mest tryggere investeringer, små og sjeldne svingninger',
   },
   Moderate: {
     equity_share_pct: 35,
     expected_annual_return_pct: 4,
     expected_annual_volatility_pct: 7,
     volatility_band_pct: { min: 4, max: 10 },
-    plain_language: 'a mix leaning towards safer investments, modest swings',
+    plain_language: 'en blanding med vekt på tryggere investeringer, moderate svingninger',
   },
   Balanced: {
     equity_share_pct: 50,
     expected_annual_return_pct: 5,
     expected_annual_volatility_pct: 10,
     volatility_band_pct: { min: 7, max: 13 },
-    plain_language: 'an even mix of shares and safer investments',
+    plain_language: 'en jevn blanding av aksjer og tryggere investeringer',
   },
   Growth: {
     equity_share_pct: 70,
     expected_annual_return_pct: 6,
     expected_annual_volatility_pct: 13,
     volatility_band_pct: { min: 10, max: 17 },
-    plain_language: 'mostly shares, accepting noticeable ups and downs',
+    plain_language: 'mest aksjer, og aksept for merkbare opp- og nedturer',
   },
   Aggressive: {
     equity_share_pct: 85,
     expected_annual_return_pct: 7,
     expected_annual_volatility_pct: 16,
     volatility_band_pct: { min: 13, max: 25 },
-    plain_language: 'almost only shares, accepting large ups and downs',
+    plain_language: 'nesten bare aksjer, og aksept for store opp- og nedturer',
   },
 }
 
@@ -78,7 +78,3 @@ export function round(value: number, decimals = 2): number {
   return Math.round(value * factor) / factor
 }
 
-// Customer-friendly name for a sector bucket.
-export function sectorLabel(sector: string): string {
-  return sector === 'Diversified' ? 'Broad funds' : sector
-}

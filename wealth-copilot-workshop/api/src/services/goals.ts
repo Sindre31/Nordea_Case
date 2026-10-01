@@ -28,6 +28,9 @@ export interface ProjectionInput {
   starting_amount?: number
   annual_return_pct?: number
   annual_volatility_pct?: number
+  // Monthly spending. When set, the target becomes 25 x yearly spending
+  // (unless the customer also sets the target amount directly).
+  monthly_spending?: number
 }
 
 export interface ResolvedInput {
@@ -113,6 +116,7 @@ export const INPUT_LIMITS: Record<keyof ProjectionInput, [number, number]> = {
   starting_amount: [0, 100000000],
   annual_return_pct: [-5, 15],
   annual_volatility_pct: [0, 40],
+  monthly_spending: [0, 1000000],
 }
 
 export function validateProjectionInput(body: unknown): { input: ProjectionInput } | { error: string } {
@@ -269,12 +273,27 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
     throw new Error(`No value for ${key}`)
   }
 
-  const annualExpenses = savings.averageMonthlyExpenses * 12
+  // Financial independence target: 25 x yearly spending, so that about 4 %
+  // can be withdrawn each year (the "4 % rule of thumb").
+  const independenceTarget = (monthlySpending: number) => Math.max(100000, Math.round((monthlySpending * 12 * 25) / 10000) * 10000)
+  const spendingExplanation = input.target_amount !== undefined
+    ? 'Påvirker ikke målet nå, fordi du har valgt målbeløpet selv.'
+    : input.monthly_spending !== undefined
+      ? 'Forbruket du har valgt. Målet blir 25 × årlig forbruk.'
+      : goal
+        ? `Ditt nåværende forbruk, beregnet fra transaksjonene de siste ${months} månedene. Flytt glidebryteren for å regne målet ut fra forbruk i stedet for det registrerte målet.`
+        : `Ditt nåværende forbruk, beregnet fra transaksjonene de siste ${months} månedene. Målet blir 25 × årlig forbruk.`
+  const monthlySpending = resolve('monthly_spending', 'Månedlig forbruk', 'NOK/month', [
+    [input.monthly_spending, 'your_input', spendingExplanation],
+    [savings.averageMonthlyExpenses, 'your_data', spendingExplanation],
+  ])
   const target = resolve('target_amount', 'Målbeløp', 'NOK', [
     [input.target_amount, 'your_input', 'Beløpet du har lagt inn.'],
+    [input.monthly_spending !== undefined ? independenceTarget(input.monthly_spending) : undefined, 'your_input',
+      `25 × det årlige forbruket du har valgt (${kr(input.monthly_spending ?? 0)} × 12 = ${kr((input.monthly_spending ?? 0) * 12)}), etter «4 %-regelen»: da kan du ta ut rundt 4 % i året.`],
     [goal?.target_amount, 'registered_goal', `Fra det registrerte målet ditt «${goal?.name}».`],
-    [Math.max(100000, Math.round((annualExpenses * 25) / 10000) * 10000), 'your_data',
-      `Anslag for økonomisk uavhengighet: 25 × det årlige forbruket ditt (${kr(annualExpenses)}), etter «4 %-regelen».`],
+    [independenceTarget(monthlySpending), 'your_data',
+      `Anslag for økonomisk uavhengighet: 25 × det årlige forbruket ditt (${kr(monthlySpending * 12)}), etter «4 %-regelen»: da kan du ta ut rundt 4 % i året.`],
   ])
   const goalYears = goal ? Math.max(1, monthsBetween(TODAY, goal.target_date) / 12) : undefined
   const years = resolve('years', 'År til målet', 'years', [

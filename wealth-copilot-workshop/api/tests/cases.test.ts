@@ -131,6 +131,29 @@ describe('Case C: goals and projection', () => {
     expect(res.body.market_impact.explanation.join(' ')).toMatch(/ingenting investert/)
   })
 
+  it('uses current spending as default and derives the target from chosen spending', async () => {
+    const base = await request(app).post(`/customers/${JONAS}/goals/projection`).send({})
+    const spending = base.body.inputs.find((i: { key: string }) => i.key === 'monthly_spending')
+    expect(spending.source).toBe('your_data')
+    expect(spending.value).toBeGreaterThan(0)
+
+    const chosen = await request(app).post(`/customers/${JONAS}/goals/projection`).send({ monthly_spending: 20000 })
+    const target = chosen.body.inputs.find((i: { key: string }) => i.key === 'target_amount')
+    expect(target.value).toBe(20000 * 12 * 25)
+    expect(target.source).toBe('your_input')
+
+    const lower = await request(app).post(`/customers/${JONAS}/goals/projection`).send({ monthly_spending: 15000 })
+    expect(lower.body.probability_pct).toBeGreaterThanOrEqual(chosen.body.probability_pct)
+  })
+
+  it('lets chosen spending replace a registered goal, and a chosen target win over spending', async () => {
+    const fromSpending = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ monthly_spending: 10000 })
+    expect(fromSpending.body.inputs.find((i: { key: string }) => i.key === 'target_amount').value).toBe(3000000)
+    const both = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ monthly_spending: 10000, target_amount: 2000000 })
+    expect(both.body.inputs.find((i: { key: string }) => i.key === 'target_amount').value).toBe(2000000)
+    expect(both.body.inputs.find((i: { key: string }) => i.key === 'monthly_spending').explanation).toMatch(/Påvirker ikke målet/)
+  })
+
   it('rejects invalid input', async () => {
     const res = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ years: -3 })
     expect(res.status).toBe(400)

@@ -140,8 +140,11 @@ and which levers matter most.
    compared with what she has (203,852 NOK), so she is 6,477 NOK behind.
 4. **Levers:** +1,000/month gives 40% (+14 points), +3,000/month gives 66%, three more
    years gives 62%, an early 25% crash gives 20%, and returns 2 points lower give 14%.
-5. **Try it yourself:** sliders for target, years, monthly saving and expected return.
-   The projection re-runs live.
+5. **Try it yourself:** sliders for monthly spending, target, years, monthly saving and
+   expected return. The projection re-runs live. Spending starts at her current
+   spending from the transactions and sets the target to 25 × yearly spending.
+   Spending and target both decide the goal, so whichever slider she moved last wins
+   and the other one goes back to its default.
 6. **How the market affects the goal:** a dedicated section, described below.
 
 ### How market development affects the goal
@@ -197,7 +200,8 @@ the UI shows it as a badge:
 
 | Input | Source, in order of priority |
 | --- | --- |
-| Target amount | Her input → registered goal → **25 × yearly spending** (the "4% rule") from her transactions |
+| Monthly spending | Her input → average monthly spending from her transactions |
+| Target amount | Her input → **25 × 12 × the spending she chose** → registered goal → 25 × 12 × her current spending (the "4% rule") |
 | Years | Her input → goal date → assumption: 15 years |
 | Monthly saving | Her input → average transfers to investments → average monthly surplus |
 | Invested today | Her input → current market value |

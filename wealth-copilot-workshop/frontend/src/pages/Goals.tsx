@@ -26,6 +26,7 @@ const STATUS = {
 const years = (v: number) => `${formatNumber(v, 1)} år`
 
 const SLIDERS: { key: keyof ProjectionInput; min: number; max: number; step: number; format: (v: number) => string }[] = [
+  { key: 'monthly_spending', min: 5000, max: 100000, step: 1000, format: (v) => `${formatCurrency(v)} / mnd.` },
   { key: 'target_amount', min: 100000, max: 10000000, step: 50000, format: formatCurrency },
   { key: 'years', min: 1, max: 40, step: 1, format: years },
   { key: 'monthly_contribution', min: 0, max: 40000, step: 500, format: (v) => `${formatCurrency(v)} / mnd.` },
@@ -96,6 +97,15 @@ function MarketImpactPanel({ m, target }: { m: MarketImpact; target: number }) {
       </ul>
     </Panel>
   )
+}
+
+// Spending and target amount both set the goal; whichever slider was moved
+// last decides it, so the other one goes back to its default.
+function withOverride(current: ProjectionInput, key: keyof ProjectionInput, value: number): ProjectionInput {
+  const next = { ...current, [key]: value }
+  if (key === 'monthly_spending') delete next.target_amount
+  if (key === 'target_amount') delete next.monthly_spending
+  return next
 }
 
 function useDebounced<T>(value: T, ms: number): T {
@@ -200,7 +210,7 @@ export default function Goals() {
               const input = g.inputs.find((i) => i.key === def.key)
               if (!input) return null
               return <Slider key={def.key} def={def} input={input} value={overrides[def.key] ?? input.value}
-                onChange={(v) => setOverrides((o) => ({ ...o, [def.key]: v }))} />
+                onChange={(v) => setOverrides((o) => withOverride(o, def.key, v))} />
             })}
           </div>
         </Panel>

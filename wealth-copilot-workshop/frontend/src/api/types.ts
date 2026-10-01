@@ -253,6 +253,7 @@ export interface ProjectionInput {
   starting_amount?: number
   annual_return_pct?: number
   annual_volatility_pct?: number
+  monthly_spending?: number
 }
 
 export type InputSource = 'your_input' | 'registered_goal' | 'your_data' | 'assumption'

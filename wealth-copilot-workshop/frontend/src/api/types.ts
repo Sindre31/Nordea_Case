@@ -284,6 +284,16 @@ export interface GoalProjection {
     verdict: 'ahead' | 'behind' | 'on_plan'
   } | null
   levers: { id: string; label: string; probability_pct: number; median_value: number; delta_probability_pct: number }[]
+  market_impact: MarketImpact
   summary: string[]
   data_quality: DataQuality
+}
+
+export interface MarketImpact {
+  recent: { days: number; change_value: number; probability_without_change_pct: number; probability_now_pct: number } | null
+  composition: { paid_in: number; market_growth: number; median: number; market_share_pct: number }
+  spread: { pessimistic: number; optimistic: number; difference: number }
+  value_per_return_point: number
+  timing: { crash_pct: number; no_crash: number; crash_early: number; crash_late: number; late_crash_year: number }
+  explanation: string[]
 }

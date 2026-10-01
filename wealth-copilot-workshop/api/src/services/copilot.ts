@@ -58,11 +58,18 @@ const INTENTS: { id: string; patterns: RegExp[]; handle: IntentHandler; sources:
     follow_ups: ['Hvorfor endret porteføljen min seg?', 'Er jeg godt nok diversifisert?'],
   },
   {
+    id: 'goal-market',
+    patterns: [/marked.*mål|mål.*marked|markedet.*påvirk/i, /market.*goal|goal.*market/i],
+    handle: (customerId) => projectGoal(customerId).market_impact.explanation.join(' '),
+    sources: ['Markedsutviklingen for investeringene dine de siste 90 dagene', 'Simulerte markedsforløp for målet ditt', 'Avkastningsantakelser for risikoprofilen din'],
+    follow_ups: ['Er jeg i rute til å nå målet mitt?', 'Hvor kommer risikoen min fra?'],
+  },
+  {
     id: 'goal',
     patterns: [/mål|i rute|uavhengig|pensjon|frihet/i, /goal|target|independen|retire|on track|freedom|reach/i],
     handle: (customerId) => projectGoal(customerId).summary.join(' '),
     sources: ['Det registrerte målet ditt (hvis du har et)', 'Dagens verdi av investeringene dine', 'Overføringer til investeringer og forbruk i transaksjonene dine', 'Avkastningsantakelser for risikoprofilen din'],
-    follow_ups: ['Hvor mye sparer jeg hver måned?', 'Hvor kommer risikoen min fra?'],
+    follow_ups: ['Hvordan påvirker markedet målet mitt?', 'Hvor mye sparer jeg hver måned?'],
   },
   {
     id: 'performance',

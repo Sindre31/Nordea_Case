@@ -111,6 +111,26 @@ describe('Case C: goals and projection', () => {
     expect(res.body.data_quality.limitations[0]).toMatch(/ikke registrert noe mål/)
   })
 
+  it('explains how the market affects the goal', async () => {
+    const res = await request(app).post(`/customers/${MARIA}/goals/projection`).send({})
+    const m = res.body.market_impact
+    expect(m.composition.paid_in + m.composition.market_growth).toBeCloseTo(m.composition.median, -1)
+    expect(m.spread.difference).toBe(m.spread.optimistic - m.spread.pessimistic)
+    expect(m.value_per_return_point).toBeGreaterThan(0)
+    // The same fall hurts more right before the goal than at the start.
+    expect(m.timing.crash_late).toBeLessThan(m.timing.crash_early)
+    expect(m.timing.crash_early).toBeLessThan(m.timing.no_crash)
+    expect(m.recent.days).toBe(90)
+    expect(m.explanation.length).toBeGreaterThan(3)
+  })
+
+  it('has no recent market effect for a customer without investments', async () => {
+    if (!noInvestments) return
+    const res = await request(app).post(`/customers/${noInvestments.customer_id}/goals/projection`).send({})
+    expect(res.body.market_impact.recent).toBeNull()
+    expect(res.body.market_impact.explanation.join(' ')).toMatch(/ingenting investert/)
+  })
+
   it('rejects invalid input', async () => {
     const res = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ years: -3 })
     expect(res.status).toBe(400)
@@ -123,6 +143,7 @@ describe('Copilot explains its sources', () => {
     ['Var dette forventet for risikoprofilen min?', 'performance-drivers'],
     ['Hvor kommer risikoen min fra?', 'risk-sources'],
     ['Er jeg i rute til å nå målet mitt?', 'goal'],
+    ['Hvordan påvirker markedet målet mitt?', 'goal-market'],
     ['Hvordan har porteføljen min utviklet seg?', 'performance'],
     ['Hvorfor har risikoen min økt?', 'risk-change'],
     ['Er jeg godt nok diversifisert?', 'diversification'],

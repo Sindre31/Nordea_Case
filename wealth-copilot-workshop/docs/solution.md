@@ -142,6 +142,55 @@ and which levers matter most.
    years gives 62%, an early 25% crash gives 20%, and returns 2 points lower give 14%.
 5. **Try it yourself:** sliders for target, years, monthly saving and expected return.
    The projection re-runs live.
+6. **How the market affects the goal:** a dedicated section, described below.
+
+### How market development affects the goal
+
+Maria asks specifically how market development affects her goal. The market is the part
+of the outcome she cannot control, so the page separates it from what she can control
+(saving, time, risk level) and shows each market effect in kroner. All figures below are
+Maria's, from `market_impact` in `POST /customers/:id/goals/projection`.
+
+| Question | What the page shows | Maria |
+| --- | --- | --- |
+| What did the market just do to my goal? | The 90-day market change in her portfolio, and the goal re-simulated as if it had not happened | +8,593 NOK. The chance moved from 25% to 26%. |
+| How much of the result is the market? | The typical outcome split into money paid in and market growth | 1,036,852 NOK paid in + 212,761 NOK growth (17%) = 1,249,613 NOK |
+| How uncertain is it? | The gap between a weak market (1 in 10) and a strong one at the goal date | 914,274 NOK (905,529 vs. 1,819,803) |
+| How sensitive is it to returns? | Extra or missing kroner per percentage point of yearly return | about 82,583 NOK per point |
+| Does it matter when a fall comes? | The same 25% fall in the first year vs. the last year, with average returns otherwise | No fall: 1,317,310. Fall in year 1: 1,242,118. Fall in the final year: 1,009,365. |
+
+The key messages, in the order the page tells them:
+
+1. **Short-term swings matter little for a ten-year goal.** The last 90 days moved
+   Maria's chance by a single percentage point. This counters the urge to react to
+   daily news.
+2. **Most of the money is her own saving.** With a ten-year horizon and 4% real
+   return, the market adds about 17% of the typical outcome. Saving more is the most
+   reliable lever. The longer the horizon, the larger the market's share.
+3. **The market creates a wide range.** The roughly 0.9 MNOK gap between a weak and a
+   strong market is outside her control. This is why the page shows a range and a
+   probability, never a single number.
+4. **Return assumptions matter.** One percentage point of yearly return is worth about
+   83,000 NOK at the goal date. This is why the return assumption is labelled, adjustable
+   and never presented as a promise.
+5. **Timing matters (sequence risk).** A fall early in the period costs little: the
+   balance is still small, and later savings buy cheaply. The same fall in the last year
+   hits almost the whole amount right before she needs it. This is the reasoning behind
+   gradually reducing risk as a goal approaches. The page explains this as context, not
+   as advice.
+
+**Method.** The 90-day effect uses the case A calculation. It holds holdings constant, so
+the change is pure market movement. The goal simulation is then run again with the
+starting amount minus that change. Both runs use the same random draws, so the difference
+comes only from the market move. The composition, return sensitivity and crash timing use
+the average-return path, which is deterministic and easy to explain. The spread uses the
+simulated 10th and 90th percentiles. If the customer overrides the starting amount with
+the sliders, the 90-day effect is hidden, because it no longer refers to their actual
+portfolio.
+
+**Limits.** The crash scenarios are illustrations with a fixed 25% fall. They are not
+forecasts and do not model a recovery path. The real share of market growth depends
+heavily on the return assumption, which the page states next to the numbers.
 
 **Where each number comes from.** The response labels every input with its source, and
 the UI shows it as a badge:

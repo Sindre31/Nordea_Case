@@ -2,7 +2,7 @@
 // scenarios with every assumption visible and adjustable.
 import { useEffect, useState } from 'react'
 import { fetchGoalProjection } from '../api/client'
-import type { InputSource, ProjectionInput, ResolvedInput } from '../api/types'
+import type { InputSource, MarketImpact, ProjectionInput, ResolvedInput } from '../api/types'
 import { useCustomerContext } from '../context/CustomerContext'
 import { useCustomerData } from '../hooks/useCustomerData'
 import { FanChart, ProbabilityRing } from '../components/charts'
@@ -37,6 +37,65 @@ function formatInput(i: ResolvedInput): string {
   if (i.unit === 'NOK/month') return `${formatCurrency(i.value)} / mnd.`
   if (i.unit === '%') return formatPct(i.value)
   return years(i.value)
+}
+
+// "How market development affects the goal": the part of the outcome the
+// customer does not control, shown in kroner.
+function MarketImpactPanel({ m, target }: { m: MarketImpact; target: number }) {
+  const growth = Math.max(0, m.composition.market_growth)
+  const total = m.composition.paid_in + growth || 1
+  const recentDelta = m.recent ? m.recent.probability_now_pct - m.recent.probability_without_change_pct : 0
+  const timingRows = [
+    { label: 'Uten markedsfall', value: m.timing.no_crash, tone: 'var(--series-1)' },
+    { label: `${m.timing.crash_pct} % fall det første året`, value: m.timing.crash_early, tone: 'var(--neutral-mark)' },
+    { label: `${m.timing.crash_pct} % fall det siste året`, value: m.timing.crash_late, tone: 'var(--series-7)' },
+  ]
+  const maxValue = Math.max(target, ...timingRows.map((r) => r.value)) || 1
+  return (
+    <Panel title="Slik påvirker markedet målet ditt" subtitle="Den delen av resultatet du ikke styrer selv, vist i kroner">
+      <div className="grid grid--3">
+        <Stat label={m.recent ? `Markedet de siste ${m.recent.days} dagene` : 'Markedet de siste 90 dagene'}
+          value={m.recent ? <span className={m.recent.change_value >= 0 ? 'delta--pos' : 'delta--neg'}>{formatSignedCurrency(m.recent.change_value)}</span> : 'Ingen investeringer'}
+          sub={m.recent
+            ? recentDelta === 0 ? 'Ingen merkbar endring i sjansen for å nå målet' : `Sjansen for å nå målet: ${m.recent.probability_without_change_pct} % → ${m.recent.probability_now_pct} %`
+            : 'Markedsbevegelser påvirker deg først når du har investert'} />
+        <Stat label="Svakt mot sterkt marked" value={formatCurrency(m.spread.difference)}
+          sub={`Forskjellen på måldatoen: ${formatCurrency(m.spread.pessimistic)} mot ${formatCurrency(m.spread.optimistic)}`} />
+        <Stat label="1 prosentpoeng avkastning per år" value={`≈ ${formatCurrency(m.value_per_return_point)}`}
+          sub="Så mye mer eller mindre har du på måldatoen" />
+      </div>
+
+      <div className="grid grid--2" style={{ marginTop: 24 }}>
+        <div>
+          <h3 className="panel__title" style={{ fontSize: '0.95rem' }}>Hva består et typisk utfall av?</h3>
+          <p className="panel__subtitle" style={{ marginBottom: 14 }}>{formatCurrency(m.composition.median)} i dagens kroner</p>
+          <div className="split" role="img" aria-label={`Innbetalt ${formatCurrency(m.composition.paid_in)}, avkastning ${formatCurrency(growth)}`}>
+            <span style={{ width: `${(m.composition.paid_in / total) * 100}%`, background: 'var(--neutral-mark)' }} />
+            <span style={{ width: `${(growth / total) * 100}%`, background: 'var(--series-1)' }} />
+          </div>
+          <div className="legend">
+            <span className="legend__item"><span className="swatch" style={{ background: 'var(--neutral-mark)' }} />Det du betaler inn {formatCurrency(m.composition.paid_in)}</span>
+            <span className="legend__item"><span className="swatch" style={{ background: 'var(--series-1)' }} />Avkastning fra markedet {formatCurrency(growth)} ({formatPct(m.composition.market_share_pct, 0)})</span>
+          </div>
+        </div>
+        <div>
+          <h3 className="panel__title" style={{ fontSize: '0.95rem' }}>Når et fall kommer, betyr mye</h3>
+          <p className="panel__subtitle" style={{ marginBottom: 6 }}>Samme fall, ulik timing (ellers gjennomsnittlig avkastning)</p>
+          {timingRows.map((r) => (
+            <div key={r.label} className="lever" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(60px, 30%) auto' }}>
+              <span>{r.label}</span>
+              <span className="lever__bar" aria-hidden="true"><span style={{ width: `${(r.value / maxValue) * 100}%`, background: r.tone }} /></span>
+              <strong style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>{formatCurrency(r.value)}</strong>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <ul className="small" style={{ margin: '20px 0 0', paddingLeft: 18, color: 'var(--text-2)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {m.explanation.map((line) => <li key={line}>{line}</li>)}
+      </ul>
+    </Panel>
+  )
 }
 
 function useDebounced<T>(value: T, ms: number): T {
@@ -146,6 +205,8 @@ export default function Goals() {
           </div>
         </Panel>
       </div>
+
+      <MarketImpactPanel m={g.market_impact} target={target} />
 
       <Panel title="Hva betyr mest?" subtitle="Sjansen for å nå målet hvis én ting endres og alt annet er likt">
         <div>

@@ -14,6 +14,7 @@
 import { getCustomer, getGoalsFor, getTransactionsFor } from '../data.js'
 import type { Goal } from '../types.js'
 import { calculatePortfolio } from './portfolio.js'
+import { explainPerformance } from './attribution.js'
 import { calculateMonthlySavings } from './insights.js'
 import { ASSUMED_INFLATION_PCT, profileAssumption, round } from './assumptions.js'
 import { dateName, horizonName, kr, num, pct, profileName } from './locale.js'
@@ -72,9 +73,34 @@ export interface GoalProjection {
     verdict: 'ahead' | 'behind' | 'on_plan'
   } | null
   levers: Lever[]
+  market_impact: MarketImpact
   summary: string[]
   data_quality: { assumptions: string[]; limitations: string[] }
 }
+
+// How market development affects the goal - the part of case C that is
+// outside the customer's control, made concrete in kroner.
+export interface MarketImpact {
+  // What the last market period actually did to the goal (null if the
+  // customer has no investments).
+  recent: {
+    days: number
+    change_value: number
+    probability_without_change_pct: number
+    probability_now_pct: number
+  } | null
+  // The typical outcome split into money paid in and market growth.
+  composition: { paid_in: number; market_growth: number; median: number; market_share_pct: number }
+  // Weak vs. strong market at the goal date: the cost of uncertainty.
+  spread: { pessimistic: number; optimistic: number; difference: number }
+  // Extra kroner at the goal date per 1 percentage point of yearly return.
+  value_per_return_point: number
+  // Same 25 % crash, different timing (average returns otherwise).
+  timing: { crash_pct: number; no_crash: number; crash_early: number; crash_late: number; late_crash_year: number }
+  explanation: string[]
+}
+
+const CRASH_PCT = 25
 
 const SIMULATIONS = 2000
 const SEED = 20260906
@@ -180,6 +206,17 @@ function futureValue(start: number, monthly: number, months: number, annualPct: 
   if (Math.abs(r) < 1e-9) return start + monthly * months
   const g = Math.pow(1 + r, months)
   return start * g + monthly * ((g - 1) / r)
+}
+
+// Average-return path with an optional one-off fall at a given month.
+function pathWithShock(start: number, monthly: number, months: number, annualPct: number, shockMonth: number | null, shockPct: number): number {
+  const r = Math.pow(1 + annualPct / 100, 1 / 12) - 1
+  let value = start
+  for (let m = 0; m < months; m += 1) {
+    if (m === shockMonth) value *= 1 - shockPct / 100
+    value = value * (1 + r) + monthly
+  }
+  return value
 }
 
 function requiredMonthly(start: number, target: number, months: number, annualPct: number): number {
@@ -309,6 +346,68 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
   }
 
   const probability = round(sim.probability, 0)
+
+  // --- How market development affects the goal ---------------------------
+  const pessimistic = percentile(sim.finals, 0.1)
+  const optimistic = percentile(sim.finals, 0.9)
+  const paidIn = start + monthly * totalMonths
+  const marketGrowth = median - paidIn
+  const valuePerPoint = futureValue(start, monthly, totalMonths, real + 1) - futureValue(start, monthly, totalMonths, real)
+  const lateCrashMonth = Math.max(0, totalMonths - 12)
+  const timing = {
+    crash_pct: CRASH_PCT,
+    no_crash: round(pathWithShock(start, monthly, totalMonths, real, null, 0), 0),
+    crash_early: round(pathWithShock(start, monthly, totalMonths, real, 0, CRASH_PCT), 0),
+    crash_late: round(pathWithShock(start, monthly, totalMonths, real, lateCrashMonth, CRASH_PCT), 0),
+    late_crash_year: round(lateCrashMonth / 12, 1),
+  }
+  let recent: MarketImpact['recent'] = null
+  if (portfolio.total_value > 0 && input.starting_amount === undefined) {
+    // Holdings are kept constant in the 90-day explanation, so its change is
+    // pure market movement. Re-run the goal as if that had not happened.
+    const moved = explainPerformance(customerId, 90)
+    const without = simulate({ ...base, start: Math.max(0, start - moved.change_value) })
+    recent = {
+      days: moved.period.days,
+      change_value: round(moved.change_value, 0),
+      probability_without_change_pct: round(without.probability, 0),
+      probability_now_pct: probability,
+    }
+  }
+  const marketExplanation: string[] = []
+  if (recent) {
+    const dir = recent.change_value >= 0 ? 'steg' : 'falt'
+    const delta = recent.probability_now_pct - recent.probability_without_change_pct
+    const effect = delta === 0
+      ? 'Det endret ikke sjansen for å nå målet merkbart'
+      : `Det flyttet sjansen for å nå målet fra ${recent.probability_without_change_pct} % til ${recent.probability_now_pct} % (${delta > 0 ? '+' : ''}${delta} prosentpoeng)`
+    marketExplanation.push(`De siste ${recent.days} dagene ${dir} investeringene dine ${kr(recent.change_value)} på grunn av markedet alene. ${effect}. Korte svingninger betyr lite for et mål ${num(years)} år frem i tid.`)
+  }
+  if (marketGrowth > 0) {
+    marketExplanation.push(`I et typisk utfall på ${kr(median)} er ${kr(paidIn)} penger du selv betaler inn, og ${kr(marketGrowth)} (${pct((marketGrowth / median) * 100, 0)}) er avkastning fra markedet. Jo lengre tid, jo større del kommer fra markedet.`)
+  } else {
+    marketExplanation.push(`I et typisk utfall på ${kr(median)} betaler du inn ${kr(paidIn)} selv. Etter inflasjon gir markedet lite netto vekst med disse antakelsene, så sparingen din er det som driver målet.`)
+  }
+  marketExplanation.push(`Forskjellen mellom et svakt og et sterkt marked er ${kr(optimistic - pessimistic)} på måldatoen. Det spennet kan du ikke styre, men du kan styre sparebeløp, tid og risikonivå.`)
+  marketExplanation.push(`Hvert prosentpoeng høyere eller lavere årlig avkastning utgjør rundt ${kr(valuePerPoint)} på måldatoen.`)
+  const lateText = `Kommer et fall på ${CRASH_PCT} % det siste året før målet, ender du på rundt ${kr(timing.crash_late)} i stedet for ${kr(timing.no_crash)}, fordi det rammer hele den oppsparte summen rett før du trenger den.`
+  marketExplanation.push(start > 0
+    ? `Når et fall kommer, betyr mye: faller markedet ${CRASH_PCT} % det første året, ender du på rundt ${kr(timing.crash_early)}, fordi du har tid til å hente deg inn og kjøper billig underveis. ${lateText} Derfor er det vanlig å redusere risikoen gradvis når målet nærmer seg.`
+    : `Du har ingenting investert ennå, så et markedsfall nå ville ikke kostet deg noe. ${lateText} Derfor er det vanlig å redusere risikoen gradvis når målet nærmer seg.`)
+
+  const marketImpact: MarketImpact = {
+    recent,
+    composition: {
+      paid_in: round(paidIn, 0),
+      market_growth: round(marketGrowth, 0),
+      median: round(median, 0),
+      market_share_pct: median > 0 ? round(Math.max(0, marketGrowth / median) * 100, 1) : 0,
+    },
+    spread: { pessimistic: round(pessimistic, 0), optimistic: round(optimistic, 0), difference: round(optimistic - pessimistic, 0) },
+    value_per_return_point: round(valuePerPoint, 0),
+    timing,
+    explanation: marketExplanation,
+  }
   const status = statusFor(probability)
   const summary: string[] = []
   const statusText: Record<GoalProjection['status'], string> = {
@@ -352,6 +451,7 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
     years_needed_at_current_pace: yearsNeeded,
     plan_check: planCheck,
     levers,
+    market_impact: marketImpact,
     summary,
     data_quality: {
       assumptions: [

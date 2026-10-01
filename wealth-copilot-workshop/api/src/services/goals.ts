@@ -77,6 +77,7 @@ export interface GoalProjection {
   } | null
   levers: Lever[]
   market_impact: MarketImpact
+  independence: Independence
   summary: string[]
   data_quality: { assumptions: string[]; limitations: string[] }
 }
@@ -104,6 +105,25 @@ export interface MarketImpact {
 }
 
 const CRASH_PCT = 25
+
+// The goal compared with full financial independence (25 x yearly spending),
+// so a smaller goal is never mistaken for being able to stop working.
+export interface Independence {
+  monthly_spending: number
+  target: number
+  goal_target: number
+  // What the goal amount pays per month at a 4 % yearly withdrawal.
+  goal_monthly_income: number
+  // Share of current spending that income covers.
+  coverage_pct: number
+  probability_pct: number
+  required_monthly_contribution: number
+  years_needed_at_current_pace: number | null
+  // True when the goal amount is clearly below full independence.
+  goal_is_partial: boolean
+}
+
+const WITHDRAWAL_RATE = 0.04
 
 const SIMULATIONS = 2000
 const SEED = 20260906
@@ -366,6 +386,25 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
 
   const probability = round(sim.probability, 0)
 
+  // --- Goal vs. full financial independence --------------------------------
+  const fullTarget = independenceTarget(monthlySpending)
+  const goalMonthlyIncome = (target * WITHDRAWAL_RATE) / 12
+  let fullYearsNeeded: number | null = null
+  for (let m = 1; m <= 600; m += 1) {
+    if (futureValue(start, monthly, m, real) >= fullTarget) { fullYearsNeeded = round(m / 12, 1); break }
+  }
+  const independence: Independence = {
+    monthly_spending: round(monthlySpending, 0),
+    target: fullTarget,
+    goal_target: round(target, 0),
+    goal_monthly_income: round(goalMonthlyIncome, 0),
+    coverage_pct: monthlySpending > 0 ? round(Math.min(100, (goalMonthlyIncome / monthlySpending) * 100), 0) : 100,
+    probability_pct: round(simulate({ ...base, target: fullTarget }).probability, 0),
+    required_monthly_contribution: round(requiredMonthly(start, fullTarget, Math.round(years * 12), real), 0),
+    years_needed_at_current_pace: fullYearsNeeded,
+    goal_is_partial: target < fullTarget * 0.95,
+  }
+
   // --- How market development affects the goal ---------------------------
   const pessimistic = percentile(sim.finals, 0.1)
   const optimistic = percentile(sim.finals, 0.9)
@@ -435,6 +474,9 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
     at_risk: 'målet er i fare med dagens plan',
     unlikely: 'målet er lite sannsynlig uten endringer',
   }
+  if (independence.goal_is_partial) {
+    summary.push(`Merk: ${kr(target)} gir rundt ${kr(goalMonthlyIncome)} i måneden hvis du tar ut 4 % i året. Det dekker ${independence.coverage_pct} % av forbruket ditt på ${kr(monthlySpending)}. Full økonomisk uavhengighet ville krevd rundt ${kr(fullTarget)}.`)
+  }
   summary.push(`I ${probability} % av ${SIMULATIONS.toLocaleString('nb-NO')} simulerte markedsforløp når du ${kr(target)} innen ${num(years)} år, så ${statusText[status]}.`)
   summary.push(`Et typisk utfall er ${kr(median)} (i dagens kroner). I et svakt marked kan det bli ${kr(percentile(sim.finals, 0.1))}, i et sterkt ${kr(percentile(sim.finals, 0.9))}.`)
   if (required > monthly) summary.push(`For å nå målet med gjennomsnittlig avkastning må du spare rundt ${kr(required)} per måned i stedet for ${kr(monthly)}.`)
@@ -471,6 +513,7 @@ export function projectGoal(customerId: string, input: ProjectionInput = {}, goa
     plan_check: planCheck,
     levers,
     market_impact: marketImpact,
+    independence,
     summary,
     data_quality: {
       assumptions: [

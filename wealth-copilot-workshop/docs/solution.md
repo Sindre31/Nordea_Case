@@ -33,7 +33,7 @@ Maria's registered goal and the plan she agreed on when she registered it.
 | --- | --- |
 | Anne Lie (52, Balanced) | A mixed portfolio with clear winners (Nordic equity fund, US healthcare) and one loser (Bergen Maritime), plus monthly transfers into her investment account. |
 | Jonas Berg (36, Moderate) | About 80% of his portfolio is technology shares and tech funds, much more than his profile suggests. |
-| Maria Dahl (29, Growth) | She saves 7,000 NOK a month towards "Financial freedom by 39" (1.5 MNOK in today's money, enough to work 60% from age 39). The goal was registered 12 months ago. |
+| Maria Dahl (29, Growth) | She saves 7,000 NOK a month towards a "Frihetsfond ved 39" (freedom fund at 39) of 1.5 MNOK in today's money. The goal was registered 12 months ago. It is a financial buffer, **not** full financial independence: at a 4% withdrawal it pays about 5,000 NOK a month, around 21% of her spending. Full independence would need about 7 MNOK (25 × yearly spending), which is not realistic by 39 on her income. The Goals page shows this comparison. |
 
 ---
 
@@ -146,6 +146,12 @@ and which levers matter most.
    Spending and target both decide the goal, so whichever slider she moved last wins
    and the other one goes back to its default.
 6. **How the market affects the goal:** a dedicated section, described below.
+7. **Goal vs. full independence:** when the goal amount is clearly below 25 × yearly
+   spending, the page compares the two side by side. For Maria, 1.5 MNOK pays about
+   5,000 NOK a month (21% of her 23,257 NOK spending). Full independence would need
+   about 6.98 MNOK, which takes about 46,000 NOK a month in saving (more than her income)
+   or about 35 years at today's pace. This keeps a smaller goal from being mistaken
+   for being able to stop working.
 
 ### How market development affects the goal
 

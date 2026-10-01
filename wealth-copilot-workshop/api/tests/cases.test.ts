@@ -154,6 +154,19 @@ describe('Case C: goals and projection', () => {
     expect(both.body.inputs.find((i: { key: string }) => i.key === 'monthly_spending').explanation).toMatch(/Påvirker ikke målet/)
   })
 
+  it('compares a smaller goal with full financial independence', async () => {
+    const res = await request(app).post(`/customers/${MARIA}/goals/projection`).send({})
+    const x = res.body.independence
+    expect(x.goal_is_partial).toBe(true)
+    expect(x.goal_monthly_income).toBe(1500000 * 0.04 / 12)
+    expect(x.target).toBeGreaterThan(x.goal_target)
+    expect(x.coverage_pct).toBeLessThan(100)
+    expect(res.body.summary[0]).toMatch(/Full økonomisk uavhengighet/)
+    // When the target is set from spending, the goal IS full independence.
+    const full = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ monthly_spending: 23000 })
+    expect(full.body.independence.goal_is_partial).toBe(false)
+  })
+
   it('rejects invalid input', async () => {
     const res = await request(app).post(`/customers/${MARIA}/goals/projection`).send({ years: -3 })
     expect(res.status).toBe(400)

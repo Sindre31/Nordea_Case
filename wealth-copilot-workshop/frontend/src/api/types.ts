@@ -286,6 +286,7 @@ export interface GoalProjection {
   } | null
   levers: { id: string; label: string; probability_pct: number; median_value: number; delta_probability_pct: number }[]
   market_impact: MarketImpact
+  independence: Independence
   summary: string[]
   data_quality: DataQuality
 }
@@ -297,4 +298,16 @@ export interface MarketImpact {
   value_per_return_point: number
   timing: { crash_pct: number; no_crash: number; crash_early: number; crash_late: number; late_crash_year: number }
   explanation: string[]
+}
+
+export interface Independence {
+  monthly_spending: number
+  target: number
+  goal_target: number
+  goal_monthly_income: number
+  coverage_pct: number
+  probability_pct: number
+  required_monthly_contribution: number
+  years_needed_at_current_pace: number | null
+  goal_is_partial: boolean
 }

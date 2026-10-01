@@ -2,7 +2,7 @@
 // scenarios with every assumption visible and adjustable.
 import { useEffect, useState } from 'react'
 import { fetchGoalProjection } from '../api/client'
-import type { InputSource, MarketImpact, ProjectionInput, ResolvedInput } from '../api/types'
+import type { Independence, InputSource, MarketImpact, ProjectionInput, ResolvedInput } from '../api/types'
 import { useCustomerContext } from '../context/CustomerContext'
 import { useCustomerData } from '../hooks/useCustomerData'
 import { FanChart, ProbabilityRing } from '../components/charts'
@@ -38,6 +38,51 @@ function formatInput(i: ResolvedInput): string {
   if (i.unit === 'NOK/month') return `${formatCurrency(i.value)} / mnd.`
   if (i.unit === '%') return formatPct(i.value)
   return years(i.value)
+}
+
+// Goal vs. full financial independence, so a smaller goal is never mistaken
+// for being able to stop working.
+function IndependencePanel({ x, goalProbability }: { x: Independence; goalProbability: number }) {
+  return (
+    <Panel title="Ditt mål eller full økonomisk uavhengighet?"
+      subtitle="Hva målbeløpet faktisk gir, sammenlignet med å kunne leve av formuen. Beregnet med 4 % uttak per år.">
+      <div className="grid grid--2">
+        <div className="stat" style={{ boxShadow: 'none' }}>
+          <p className="stat__label">Ditt mål</p>
+          <p className="stat__value">{formatCurrency(x.goal_target)}</p>
+          <div className="kv" style={{ marginTop: 8 }}>
+            <div className="kv__row"><span>Gir per måned</span><strong>≈ {formatCurrency(x.goal_monthly_income)}</strong></div>
+            <div className="kv__row"><span>Dekker av forbruket ditt</span><strong>{x.coverage_pct} %</strong></div>
+            <div className="kv__row"><span>Sjanse for å nå det</span><strong>{goalProbability} %</strong></div>
+          </div>
+        </div>
+        <div className="stat" style={{ boxShadow: 'none' }}>
+          <p className="stat__label">Full økonomisk uavhengighet (25 × årlig forbruk)</p>
+          <p className="stat__value">{formatCurrency(x.target)}</p>
+          <div className="kv" style={{ marginTop: 8 }}>
+            <div className="kv__row"><span>Gir per måned</span><strong>≈ {formatCurrency(x.monthly_spending)}</strong></div>
+            <div className="kv__row"><span>Nødvendig sparing per måned</span><strong>{formatCurrency(x.required_monthly_contribution)}</strong></div>
+            <div className="kv__row"><span>Med dagens sparing</span><strong>{x.years_needed_at_current_pace ? `ca. ${years(x.years_needed_at_current_pace)}` : 'over 50 år'}</strong></div>
+            <div className="kv__row"><span>Sjanse innen måldatoen</span><strong>{x.probability_pct} %</strong></div>
+          </div>
+        </div>
+      </div>
+      <div style={{ marginTop: 20 }}>
+        <div className="split" role="img" aria-label={`Målet dekker ${x.coverage_pct} % av forbruket`}>
+          <span style={{ width: `${x.coverage_pct}%`, background: 'var(--series-1)' }} />
+          <span style={{ width: `${100 - x.coverage_pct}%`, background: 'var(--surface-3)' }} />
+        </div>
+        <div className="legend">
+          <span className="legend__item"><span className="swatch" style={{ background: 'var(--series-1)' }} />Dekket av målet: {formatCurrency(x.goal_monthly_income)} / mnd.</span>
+          <span className="legend__item"><span className="swatch" style={{ background: 'var(--surface-3)', border: '1px solid var(--border-strong)' }} />Resten av forbruket: {formatCurrency(Math.max(0, x.monthly_spending - x.goal_monthly_income))} / mnd.</span>
+        </div>
+      </div>
+      <p className="small muted" style={{ marginTop: 16 }}>
+        Et mindre mål kan være et godt mål, for eksempel en buffer som gir frihet til å jobbe mindre, ta permisjon eller bytte jobb.
+        Men det betyr ikke at du kan slutte å jobbe. Flytt glidebryteren for forbruk under «Prøv selv» for å regne på full uavhengighet.
+      </p>
+    </Panel>
+  )
 }
 
 // "How market development affects the goal": the part of the outcome the
@@ -198,6 +243,8 @@ export default function Goals() {
       </div>
 
       <Story lines={g.summary} />
+
+      {g.independence.goal_is_partial && <IndependencePanel x={g.independence} goalProbability={g.probability_pct} />}
 
       <div className="grid grid--main-side">
         <Panel title="Dine mulige fremtider" subtitle="I dagens kroner, justert for inflasjon">

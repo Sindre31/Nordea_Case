@@ -368,10 +368,11 @@ const goals = [
   {
     goal_id: 'GOAL-0001',
     customer_id: 'CUST-00103',
-    type: 'financial_independence',
-    // Maria's own definition: enough invested to cover a 60% work week from
-    // age 39 (see docs/solution.md for the reasoning).
-    name: 'Økonomisk frihet ved 39',
+    type: 'other',
+    // A financial buffer ("freedom fund") at 39 - deliberately NOT full
+    // financial independence, which would need ~25 x yearly spending
+    // (about 7 MNOK for Maria). The Goals page shows that comparison.
+    name: 'Frihetsfond ved 39',
     target_amount: 1500000,
     target_date: '2036-09-01',
     created_at: '2025-09-01',

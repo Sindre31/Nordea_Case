@@ -36,9 +36,10 @@ execSync('npm run build --workspace frontend', {
 })
 cpSync(path.join(root, 'frontend', 'dist'), path.join(out, 'static'), { recursive: true })
 
-// 3) API function: bundle everything except Swagger UI, which serves its
-// static assets from its own package folder and is copied alongside.
-const external = ['swagger-ui-express', 'swagger-ui-dist']
+// 3) API function: bundle everything except swagger-ui-dist, which serves
+// its static assets from its own package folder and is copied alongside.
+// It has no runtime dependencies, so nothing else needs to ship unbundled.
+const external = ['swagger-ui-dist']
 await build({
   entryPoints: [path.join(root, 'api', 'src', 'vercel.ts')],
   outfile: path.join(func, 'index.mjs'),

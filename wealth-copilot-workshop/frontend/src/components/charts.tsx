@@ -93,16 +93,16 @@ export function VolGauge({ value, min, max }: { value: number; min: number; max:
   return (
     <div className="gauge">
       <svg viewBox="0 0 200 118" role="img" aria-label={`Yearly swings ${value}%. Profile range ${min} to ${max}%.`}>
-        <path d={arc(0, scaleMax, 80)} stroke="#1a2d5c" strokeWidth={14} fill="none" strokeLinecap="round" />
-        <path d={arc(min, max, 80)} stroke="#3987e5" strokeWidth={14} fill="none" />
-        <line x1={100} y1={100} x2={nx} y2={ny} stroke={outside ? '#f07a7a' : '#ffffff'} strokeWidth={4} strokeLinecap="round" />
-        <circle cx={100} cy={100} r={8} fill="#ffffff" stroke="#0e1a3a" strokeWidth={3} />
-        <text x={20} y={116} fill="#8291b8" fontSize={10} textAnchor="middle">0%</text>
-        <text x={180} y={116} fill="#8291b8" fontSize={10} textAnchor="middle">{Math.round(scaleMax)}%</text>
+        <path d={arc(0, scaleMax, 80)} stroke="#eceef3" strokeWidth={14} fill="none" strokeLinecap="round" />
+        <path d={arc(min, max, 80)} stroke="#b9d3f5" strokeWidth={14} fill="none" />
+        <line x1={100} y1={100} x2={nx} y2={ny} stroke={outside ? '#c62828' : '#00005e'} strokeWidth={4} strokeLinecap="round" />
+        <circle cx={100} cy={100} r={8} fill="#00005e" stroke="#ffffff" strokeWidth={3} />
+        <text x={20} y={116} fill="#646a85" fontSize={10} textAnchor="middle">0%</text>
+        <text x={180} y={116} fill="#646a85" fontSize={10} textAnchor="middle">{Math.round(scaleMax)}%</text>
       </svg>
       <div className="legend" style={{ marginTop: 0 }}>
-        <span className="legend__item"><span className="swatch" style={{ background: '#3987e5' }} />Fits your profile ({min}-{max}%)</span>
-        <span className="legend__item"><span className="swatch" style={{ background: outside ? '#f07a7a' : '#fff' }} />You ({value}%)</span>
+        <span className="legend__item"><span className="swatch" style={{ background: '#b9d3f5' }} />Fits your profile ({min}-{max}%)</span>
+        <span className="legend__item"><span className="swatch" style={{ background: outside ? '#c62828' : '#00005e' }} />You ({value}%)</span>
       </div>
     </div>
   )
@@ -112,11 +112,11 @@ export function VolGauge({ value, min, max }: { value: number; min: number; max:
 export function ProbabilityRing({ value, caption }: { value: number; caption: string }) {
   const r = 70
   const c = 2 * Math.PI * r
-  const color = value >= 75 ? '#3fcf6a' : value >= 50 ? '#86b6ef' : value >= 25 ? '#fab219' : '#f07a7a'
+  const color = value >= 75 ? '#0a7d3b' : value >= 50 ? '#2a78d6' : value >= 25 ? '#eda100' : '#c62828'
   return (
     <div className="ring" role="img" aria-label={`${value}% ${caption}`}>
       <svg width="168" height="168" viewBox="0 0 168 168">
-        <circle cx="84" cy="84" r={r} stroke="#1a2d5c" strokeWidth="14" fill="none" />
+        <circle cx="84" cy="84" r={r} stroke="#eceef3" strokeWidth="14" fill="none" />
         <circle cx="84" cy="84" r={r} stroke={color} strokeWidth="14" fill="none" strokeLinecap="round"
           strokeDasharray={`${(value / 100) * c} ${c}`} style={{ transition: 'stroke-dasharray 0.8s cubic-bezier(.2,.8,.2,1)' }} />
       </svg>
@@ -143,17 +143,17 @@ export function FanChart({ timeline, target }: {
         <ComposedChart data={data} margin={{ top: 16, right: 12, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="fanFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#3987e5" stopOpacity={0.45} />
-              <stop offset="100%" stopColor="#3987e5" stopOpacity={0.15} />
+              <stop offset="0%" stopColor="#2a78d6" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="#2a78d6" stopOpacity={0.12} />
             </linearGradient>
           </defs>
-          <CartesianGrid stroke="rgba(138,167,255,0.08)" vertical={false} />
+          <CartesianGrid stroke="#eceef3" vertical={false} />
           <XAxis dataKey="year" type="number" domain={[0, 'dataMax']} tickFormatter={(v: number) => `${Math.round(v)}y`}
-            tick={{ fill: '#8291b8', fontSize: 12 }} axisLine={false} tickLine={false} allowDecimals={false} />
+            tick={{ fill: '#646a85', fontSize: 12 }} axisLine={false} tickLine={false} allowDecimals={false} />
           <YAxis domain={[0, yMax]} tickFormatter={formatCompact} width={52}
-            tick={{ fill: '#8291b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+            tick={{ fill: '#646a85', fontSize: 12 }} axisLine={false} tickLine={false} />
           <Tooltip
-            cursor={{ stroke: '#86b6ef', strokeDasharray: '4 4' }}
+            cursor={{ stroke: '#0000a0', strokeDasharray: '4 4' }}
             content={({ active, payload }) => {
               if (!active || !payload?.length) return null
               const p = payload[0].payload as (typeof data)[number]
@@ -169,17 +169,17 @@ export function FanChart({ timeline, target }: {
             }}
           />
           <Area dataKey="band" stroke="none" fill="url(#fanFill)" isAnimationActive />
-          <Line dataKey="contributed" stroke="#8291b8" strokeWidth={2} strokeDasharray="5 5" dot={false} />
-          <Line dataKey="p50" stroke="#ffffff" strokeWidth={2} dot={false} activeDot={{ r: 5, fill: '#fff', stroke: '#0e1a3a', strokeWidth: 2 }} />
-          <ReferenceLine y={target} stroke="#c98500" strokeWidth={2} strokeDasharray="6 4"
-            label={{ value: `Goal ${formatCompact(target)}`, fill: '#ffd98a', fontSize: 12, position: 'insideTopLeft' }} />
+          <Line dataKey="contributed" stroke="#858ba0" strokeWidth={2} strokeDasharray="5 5" dot={false} />
+          <Line dataKey="p50" stroke="#00005e" strokeWidth={2} dot={false} activeDot={{ r: 5, fill: '#00005e', stroke: '#ffffff', strokeWidth: 2 }} />
+          <ReferenceLine y={target} stroke="#b06f00" strokeWidth={2} strokeDasharray="6 4"
+            label={{ value: `Goal ${formatCompact(target)}`, fill: '#7a4f00', fontSize: 12, position: 'insideTopLeft' }} />
         </ComposedChart>
       </ResponsiveContainer>
       <div className="legend">
-        <span className="legend__item"><span className="swatch" style={{ background: 'rgba(57,135,229,0.6)' }} />8 in 10 outcomes land here</span>
-        <span className="legend__item"><span className="swatch" style={{ background: '#fff' }} />Typical outcome</span>
-        <span className="legend__item"><span className="swatch" style={{ background: '#8291b8' }} />What you pay in</span>
-        <span className="legend__item"><span className="swatch" style={{ background: '#c98500' }} />Your goal</span>
+        <span className="legend__item"><span className="swatch" style={{ background: 'rgba(42,120,214,0.35)' }} />8 in 10 outcomes land here</span>
+        <span className="legend__item"><span className="swatch" style={{ background: '#00005e' }} />Typical outcome</span>
+        <span className="legend__item"><span className="swatch" style={{ background: '#858ba0' }} />What you pay in</span>
+        <span className="legend__item"><span className="swatch" style={{ background: '#b06f00' }} />Your goal</span>
       </div>
     </div>
   )

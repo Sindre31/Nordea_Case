@@ -203,12 +203,21 @@ be reproduced exactly from (customer, data snapshot, code version). We propose t
 
 ## Design (task 7)
 
-A complete redesign in a deep Nordic blue: a sidebar with the three cases as primary
-navigation, glass cards, a hero card with an animated net worth, and a searchable customer
-switcher with persona shortcuts. The layout is responsive down to phone width and respects
-reduced-motion settings. Chart colours use a categorical palette validated for
-colour-blind separation and ≥3:1 contrast on the card surface. Status is never shown by
-colour alone: every status pill has an icon and a word.
+A light, restrained private-banking look inspired by Nordic banks:
+
+- A deep-blue masthead (`#00005E`) with the "Wealth Copilot · Private Banking" wordmark,
+  the main navigation and the customer switcher. Below it, a slim white bar with the
+  three workshop personas.
+- White cards on a pale grey background, generous spacing, thin borders and soft
+  shadows. Pill-shaped buttons and controls.
+- Serif display type (Source Serif 4) for page titles and key figures, with Inter for
+  body text and numbers.
+- A solid deep-blue hero for total wealth, and light-blue "In plain words" panels for the
+  explanations.
+- Chart colours use a categorical palette validated for colour-blind separation on
+  white. Gains and losses always carry a +/- sign, and status pills always have an icon
+  and a word, so nothing relies on colour alone.
+- Responsive down to phone width. Respects reduced-motion settings.
 
 ## Tests
 

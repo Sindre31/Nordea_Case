@@ -3,9 +3,10 @@ import type { AllocationSlice } from '../api/types'
 import { formatCurrency } from '../utils/format'
 
 // Categorical slots in fixed order (validated for colour-blind separation on
-// the dark surface). More than 6 slices fold into "Other" - never cycle hues.
-export const SERIES = ['#3987e5', '#d95926', '#199e70', '#c98500', '#d55181', '#9085e9']
-const OTHER = '#4a5a85'
+// white). More than 6 slices fold into "Other" - never cycle hues. Every
+// slice is also named with its percentage in the legend.
+export const SERIES = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300']
+const OTHER = '#9aa1b5'
 
 function fold(data: AllocationSlice[]): (AllocationSlice & { color: string })[] {
   if (data.length <= SERIES.length) return data.map((d, i) => ({ ...d, color: SERIES[i] }))
@@ -30,7 +31,7 @@ export default function AllocationPieChart({ data, title }: { data: AllocationSl
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie data={slices} dataKey="value" nameKey="label" innerRadius={58} outerRadius={86}
-                paddingAngle={1.5} stroke="#0e1a3a" strokeWidth={2} cornerRadius={4}>
+                paddingAngle={1.5} stroke="#ffffff" strokeWidth={2} cornerRadius={4}>
                 {slices.map((s) => <Cell key={s.label} fill={s.color} />)}
               </Pie>
               <Tooltip content={({ active, payload }) => active && payload?.length ? (

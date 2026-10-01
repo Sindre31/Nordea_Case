@@ -31,7 +31,7 @@ export function LogoMark({ size = 22 }: P) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M4 18 9.5 8l4 6 2.5-4L20 18" stroke="#fff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="16" cy="6" r="2" fill="#86b6ef" />
+      <circle cx="16" cy="6" r="2" fill="#dcedff" />
     </svg>
   )
 }

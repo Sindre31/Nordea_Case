@@ -13,22 +13,24 @@ export default function PerformanceChart({ series, height = 260, compact = false
   const min = Math.min(...values)
   const max = Math.max(...values)
   const pad = (max - min) * 0.15 || max * 0.05 || 1
+  // Separate ids so the hero chart and a page chart never share a gradient.
+  const gradientId = compact ? 'valueFillCompact' : 'valueFill'
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
         <defs>
-          <linearGradient id="valueFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3987e5" stopOpacity={0.45} />
-            <stop offset="100%" stopColor="#3987e5" stopOpacity={0} />
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={compact ? '#dcedff' : '#2a78d6'} stopOpacity={compact ? 0.35 : 0.22} />
+            <stop offset="100%" stopColor={compact ? '#dcedff' : '#2a78d6'} stopOpacity={0} />
           </linearGradient>
         </defs>
-        {!compact && <CartesianGrid stroke="rgba(138,167,255,0.08)" vertical={false} />}
+        {!compact && <CartesianGrid stroke="#eceef3" vertical={false} />}
         <XAxis dataKey="date" tickFormatter={shortDate} minTickGap={48} hide={compact}
-          tick={{ fill: '#8291b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+          tick={{ fill: '#646a85', fontSize: 12 }} axisLine={false} tickLine={false} />
         <YAxis domain={[min - pad, max + pad]} tickFormatter={formatCompact} width={48} hide={compact}
-          tick={{ fill: '#8291b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+          tick={{ fill: '#646a85', fontSize: 12 }} axisLine={false} tickLine={false} />
         <Tooltip
-          cursor={{ stroke: '#86b6ef', strokeDasharray: '4 4' }}
+          cursor={{ stroke: compact ? '#dcedff' : '#0000a0', strokeDasharray: '4 4' }}
           content={({ active, payload, label }) => active && payload?.length ? (
             <div className="chart-tooltip">
               <div className="chart-tooltip__label">{shortDate(String(label))}</div>
@@ -36,8 +38,8 @@ export default function PerformanceChart({ series, height = 260, compact = false
             </div>
           ) : null}
         />
-        <Area type="monotone" dataKey="value" stroke="#86b6ef" strokeWidth={2} fill="url(#valueFill)"
-          activeDot={{ r: 5, stroke: '#0e1a3a', strokeWidth: 2, fill: '#86b6ef' }} />
+        <Area type="monotone" dataKey="value" stroke={compact ? '#ffffff' : '#2a78d6'} strokeWidth={2} fill={`url(#${gradientId})`}
+          activeDot={{ r: 5, stroke: '#ffffff', strokeWidth: 2, fill: compact ? '#ffffff' : '#2a78d6' }} />
       </AreaChart>
     </ResponsiveContainer>
   )

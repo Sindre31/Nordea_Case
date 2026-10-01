@@ -1,14 +1,16 @@
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
+import Performance from './pages/Performance'
+import Risk from './pages/Risk'
+import Goals from './pages/Goals'
 import Portfolio from './pages/Portfolio'
 import Insights from './pages/Insights'
 import Copilot from './pages/Copilot'
 import { CustomerProvider } from './context/CustomerContext'
 
 // HashRouter is used (rather than BrowserRouter) so client-side routes work
-// out of the box on GitHub Pages static hosting without needing a custom
-// 404-redirect workaround.
+// out of the box on static hosting without a custom 404-redirect workaround.
 export default function App() {
   return (
     <CustomerProvider>
@@ -16,6 +18,9 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Dashboard />} />
+            <Route path="performance" element={<Performance />} />
+            <Route path="risk" element={<Risk />} />
+            <Route path="goals" element={<Goals />} />
             <Route path="portfolio" element={<Portfolio />} />
             <Route path="insights" element={<Insights />} />
             <Route path="copilot" element={<Copilot />} />

@@ -5,15 +5,20 @@
 // truth, read once into memory. This keeps the workshop easy to run and
 // modify - swapping this module for a real database client is one of the
 // natural "next steps" exercises for participants.
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { Account, Customer, Instrument, Investment, MarketDataPoint, Transaction } from './types.js'
+import type { Account, Customer, Goal, Instrument, Investment, MarketDataPoint, Transaction } from './types.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 // Both `src` (via tsx) and `dist` (built) sit directly under /api, so the
-// data folder is always two levels up from here.
-const DATA_DIR = path.join(__dirname, '..', '..', 'data')
+// data folder is normally two levels up from here. The bundled Vercel
+// function (scripts/build-vercel.mjs) ships the data next to itself instead.
+const DATA_DIR = [
+  process.env.WEALTH_COPILOT_DATA_DIR,
+  path.join(__dirname, '..', '..', 'data'),
+  path.join(__dirname, 'data'),
+].find((dir): dir is string => !!dir && existsSync(path.join(dir, 'customers.json'))) ?? path.join(__dirname, '..', '..', 'data')
 
 function loadJson<T>(fileName: string): T {
   const filePath = path.join(DATA_DIR, fileName)
@@ -26,6 +31,7 @@ export const accounts: Account[] = loadJson<Account[]>('accounts.json')
 export const transactions: Transaction[] = loadJson<Transaction[]>('transactions.json')
 export const investments: Investment[] = loadJson<Investment[]>('investments.json')
 export const marketData: MarketDataPoint[] = loadJson<MarketDataPoint[]>('market_data.json')
+export const goals: Goal[] = loadJson<Goal[]>('goals.json')
 
 const investmentValueByAccount = new Map<string, number>()
 for (const investment of investments) {
@@ -81,6 +87,9 @@ export function getTransactionsFor(customerId: string): Transaction[] {
 }
 export function getInvestmentsFor(customerId: string): Investment[] {
   return investmentsByCustomer.get(customerId) ?? []
+}
+export function getGoalsFor(customerId: string): Goal[] {
+  return goals.filter((g) => g.customer_id === customerId)
 }
 export function getMarketDataFor(ticker: string): MarketDataPoint[] {
   return marketDataByTicker.get(ticker) ?? []

@@ -251,6 +251,138 @@ for (const customer of customers) {
     }
   }
 }
+// --- Workshop personas -----------------------------------------------------
+// Three hand-designed customers matching the case studies in
+// docs/workshop.md (A: Anne, B: Jonas, C: Maria). They are appended AFTER the
+// random customers and use their own PRNG, so the 100 seeded customers above
+// stay byte-for-byte identical.
+const personaRng = mulberry32(2026)
+const personaFloat = (min, max) => Number((personaRng() * (max - min) + min).toFixed(2))
+const PERSONAS = [
+  {
+    customer: {
+      customer_id: 'CUST-00101', first_name: 'Anne', last_name: 'Lie', age: 52, country: 'Norway',
+      risk_profile: 'Balanced', investment_horizon: '10-20 years', annual_income: 1150000, customer_since: '2004-03-15',
+    },
+    current: 62000, savings: 340000, salary: 64000, housing: 14500, monthlyInvesting: 8000,
+    holdings: [
+      // [ticker, quantity, purchase price as a fraction of today's price, account]
+      ['NRDEQ', 900, 0.84, 'inv'], ['GLBEQ', 1100, 0.9, 'inv'], ['USHL', 320, 0.82, 'inv'], ['NRSK', 260, 0.95, 'inv'],
+      ['BRGN', 180, 1.12, 'inv'], ['MFBAL', 700, 0.86, 'pen'], ['CORPB', 900, 0.99, 'pen'], ['GOVNO', 650, 1.01, 'pen'],
+      ['CASHNOK', 45000, 1, 'inv'],
+    ],
+  },
+  {
+    customer: {
+      customer_id: 'CUST-00102', first_name: 'Jonas', last_name: 'Berg', age: 36, country: 'Norway',
+      risk_profile: 'Moderate', investment_horizon: '5-10 years', annual_income: 780000, customer_since: '2013-08-02',
+    },
+    current: 28000, savings: 85000, salary: 46000, housing: 16500, monthlyInvesting: 6000,
+    holdings: [
+      ['USTK', 420, 0.62, 'inv'], ['OSLC', 650, 0.7, 'inv'], ['TECHF', 520, 0.68, 'inv'], ['HELS', 700, 0.85, 'inv'],
+      ['ASIP', 900, 0.74, 'inv'], ['GLBEQ', 600, 0.88, 'inv'], ['EMGEQ', 500, 0.95, 'inv'], ['CORPB', 120, 1.0, 'inv'],
+    ],
+  },
+  {
+    customer: {
+      customer_id: 'CUST-00103', first_name: 'Maria', last_name: 'Dahl', age: 29, country: 'Norway',
+      risk_profile: 'Growth', investment_horizon: '5-10 years', annual_income: 620000, customer_since: '2019-01-10',
+    },
+    current: 21000, savings: 60000, salary: 37500, housing: 12000, monthlyInvesting: 7000,
+    holdings: [
+      ['GLBEQ', 850, 0.93, 'inv'], ['NRDEQ', 260, 0.9, 'inv'], ['EMGEQ', 600, 0.97, 'inv'], ['MFBAL', 180, 0.92, 'inv'],
+      ['CASHNOK', 12000, 1, 'inv'],
+    ],
+  },
+]
+
+for (const persona of PERSONAS) {
+  const { customer } = persona
+  customers.push(customer)
+  const current = addAccount(customer.customer_id, 'Current Account', 'NOK', persona.current)
+  const savings = addAccount(customer.customer_id, 'Savings', 'NOK', persona.savings)
+  const investmentAccount = addAccount(customer.customer_id, 'Investment Account', 'NOK', 0)
+  const pension = persona.holdings.some((h) => h[3] === 'pen')
+    ? addAccount(customer.customer_id, 'Pension', 'NOK', 0)
+    : null
+
+  for (const [ticker, quantity, purchaseFactor, accountKey] of persona.holdings) {
+    const instrument = ALL_INSTRUMENTS.find((i) => i.ticker === ticker)
+    const currentPrice = latestPriceByTicker.get(ticker)
+    const account = accountKey === 'pen' ? pension : investmentAccount
+    investments.push({
+      investment_id: `INV-${String(investmentCounter).padStart(6, '0')}`,
+      customer_id: customer.customer_id,
+      account_id: account.account_id,
+      asset_type: instrument.assetType,
+      ticker,
+      name: instrument.name,
+      quantity,
+      purchase_price: Number((currentPrice * purchaseFactor).toFixed(2)),
+      current_price: currentPrice,
+      currency: 'NOK',
+      sector: instrument.sector,
+      geography: instrument.geography,
+    })
+    investmentCounter += 1
+  }
+  for (const account of [investmentAccount, pension]) {
+    if (!account) continue
+    account.balance = Number(investments
+      .filter((inv) => inv.account_id === account.account_id)
+      .reduce((sum, inv) => sum + inv.quantity * inv.current_price, 0)
+      .toFixed(2))
+  }
+
+  const personaTx = (date, type, category, description, amount, account) => {
+    transactions.push({
+      transaction_id: `TXN-${String(transactionCounter).padStart(7, '0')}`,
+      customer_id: customer.customer_id,
+      account_id: account.account_id,
+      date,
+      type,
+      category,
+      description,
+      amount: Number(amount.toFixed(2)),
+      currency: 'NOK',
+    })
+    transactionCounter += 1
+  }
+  for (const month of ['2026-08', '2026-09']) {
+    personaTx(`${month}-01`, 'credit', 'Salary', 'Monthly salary', persona.salary, current)
+    personaTx(`${month}-02`, 'debit', 'Housing', 'Mortgage payment', -persona.housing, current)
+    personaTx(`${month}-03`, 'transfer', 'Investments', 'Monthly savings plan', -persona.monthlyInvesting, investmentAccount)
+    personaTx(`${month}-05`, 'debit', 'Utilities', 'Electricity bill', -personaFloat(700, 1600), current)
+    personaTx(`${month}-06`, 'debit', 'Groceries', 'Supermarket', -personaFloat(2500, 4200), current)
+    personaTx(`${month}-14`, 'debit', 'Groceries', 'Grocery store', -personaFloat(1800, 3200), current)
+    personaTx(`${month}-11`, 'debit', 'Restaurants', 'Restaurant', -personaFloat(400, 1400), current)
+    personaTx(`${month}-17`, 'debit', 'Subscriptions', 'Streaming service', -personaFloat(129, 299), current)
+    personaTx(`${month}-21`, 'debit', 'Shopping', 'Online marketplace', -personaFloat(600, 2600), current)
+    personaTx(`${month}-24`, 'debit', 'Utilities', 'Internet & mobile', -personaFloat(500, 900), current)
+  }
+}
+
+// Registered financial goals. Only Maria (case C) has one; for everyone else
+// the goal planner in the UI starts from clearly labelled assumptions.
+const goals = [
+  {
+    goal_id: 'GOAL-0001',
+    customer_id: 'CUST-00103',
+    type: 'financial_independence',
+    // Maria's own definition: enough invested to cover a 60% work week from
+    // age 39 (see docs/solution.md for the reasoning).
+    name: 'Financial freedom by 39',
+    target_amount: 1500000,
+    target_date: '2036-09-01',
+    created_at: '2025-09-01',
+    plan: {
+      starting_amount: 120000,
+      monthly_contribution: 7000,
+      assumed_annual_return_pct: 4,
+    },
+  },
+]
+
 transactions.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0))
 
 // --- Write output ----------------------------------------------------------
@@ -265,5 +397,6 @@ await writeJson('accounts.json', accounts)
 await writeJson('transactions.json', transactions)
 await writeJson('investments.json', investments)
 await writeJson('market_data.json', marketData)
+await writeJson('goals.json', goals)
 
 console.log('Done. All data is 100% synthetic / fictional.')

@@ -133,4 +133,157 @@ export interface InsightsSummary {
 export interface CopilotReply {
   answer: string
   matched_intent: string
+  sources: string[]
+  follow_ups: string[]
+}
+
+export interface DataQuality {
+  assumptions: string[]
+  limitations: string[]
+}
+
+// --- Case A: performance explained ------------------------------------------
+export interface ContributionRow {
+  ticker: string
+  name: string
+  asset_type: string
+  sector: string
+  start_value: number
+  end_value: number
+  change_value: number
+  return_pct: number
+  contribution_pct_points: number
+  weight_start_pct: number
+}
+
+export interface GroupContribution {
+  label: string
+  change_value: number
+  contribution_pct_points: number
+}
+
+export interface PerformanceExplanation {
+  customer_id: string
+  period: { start_date: string; end_date: string; days: number; max_days_available: number }
+  start_value: number
+  end_value: number
+  change_value: number
+  change_pct: number
+  contributions: ContributionRow[]
+  by_asset_type: GroupContribution[]
+  by_sector: GroupContribution[]
+  market_vs_choices: {
+    reference_portfolio: { name: string; composition: { ticker: string; name: string; weight_pct: number }[] }
+    market_return_pct: number
+    choices_effect_pct_points: number
+    market_effect_value: number
+    choices_effect_value: number
+    verdict: 'mostly_market' | 'mostly_choices' | 'mixed'
+  }
+  expected_range: { risk_profile: string; low_pct: number; expected_pct: number; high_pct: number; verdict: 'within' | 'above' | 'below' }
+  summary: string[]
+  data_quality: DataQuality & { data_as_of: string; net_new_money_in_period: number }
+}
+
+// --- Case B: risk explained ---------------------------------------------------
+export interface RiskContributionRow {
+  ticker: string
+  name: string
+  asset_type: string
+  sector: string
+  geography: string
+  value: number
+  weight_pct: number
+  own_volatility_pct: number
+  risk_contribution_pct: number
+}
+
+export interface GroupRisk {
+  label: string
+  weight_pct: number
+  risk_contribution_pct: number
+}
+
+export interface StressTest {
+  id: string
+  name: string
+  description: string
+  impact_value: number
+  impact_pct: number
+}
+
+export interface RiskExplanation {
+  customer_id: string
+  total_value: number
+  portfolio_volatility_pct: number
+  risk_profile: string
+  profile_band_pct: { min: number; max: number }
+  profile_description: string
+  alignment: 'within' | 'above' | 'below'
+  equity_share_pct: number
+  profile_equity_share_pct: number
+  contributions: RiskContributionRow[]
+  by_sector: GroupRisk[]
+  by_geography: GroupRisk[]
+  by_asset_type: GroupRisk[]
+  bad_month: { loss_value: number; loss_pct: number; frequency: string }
+  stress_tests: StressTest[]
+  drift: { since: string; rows: { label: string; start_pct: number; now_pct: number }[] }
+  what_if: { description: string; new_volatility_pct: number; new_bad_month_loss: number } | null
+  summary: string[]
+  data_quality: DataQuality
+}
+
+// --- Case C: goals ------------------------------------------------------------
+export interface Goal {
+  goal_id: string
+  customer_id: string
+  type: string
+  name: string
+  target_amount: number
+  target_date: string
+  created_at: string
+  plan: { starting_amount: number; monthly_contribution: number; assumed_annual_return_pct: number }
+}
+
+export interface ProjectionInput {
+  target_amount?: number
+  years?: number
+  monthly_contribution?: number
+  starting_amount?: number
+  annual_return_pct?: number
+  annual_volatility_pct?: number
+}
+
+export type InputSource = 'your_input' | 'registered_goal' | 'your_data' | 'assumption'
+
+export interface ResolvedInput {
+  key: keyof ProjectionInput
+  label: string
+  value: number
+  unit: 'NOK' | 'years' | '%' | 'NOK/month'
+  source: InputSource
+  explanation: string
+}
+
+export interface GoalProjection {
+  customer_id: string
+  goal: Goal | null
+  inputs: ResolvedInput[]
+  probability_pct: number
+  status: 'likely' | 'possible' | 'at_risk' | 'unlikely'
+  outcomes: { pessimistic: number; median: number; optimistic: number }
+  timeline: { year: number; p10: number; p50: number; p90: number; contributed: number }[]
+  required_monthly_contribution: number
+  years_needed_at_current_pace: number | null
+  plan_check: {
+    months_since_start: number
+    planned_value_today: number
+    actual_value_today: number
+    difference: number
+    verdict: 'ahead' | 'behind' | 'on_plan'
+  } | null
+  levers: { id: string; label: string; probability_pct: number; median_value: number; delta_probability_pct: number }[]
+  summary: string[]
+  data_quality: DataQuality
 }

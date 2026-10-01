@@ -65,6 +65,7 @@ frontend/
     pages/              dashboard, portefølje, innsikter og Copilot
 docs/
   workshop.md           kundecaser, refleksjoner, arbeidssteg og leveranser
+  solution.md           løsningen på case A, B og C
   itok-guide.md         ikke-teknisk guide til hva workshopen forventer
 prompts/
   *.md                  eksempler på GitHub Copilot CLI-prompter
@@ -91,7 +92,15 @@ GET  /customers/:customerId/performance
 GET  /customers/:customerId/risk
 GET  /customers/:customerId/insights
 POST /customers/:customerId/copilot
+GET  /customers/:customerId/performance/explain?days=30|60|90   # Case A
+GET  /customers/:customerId/risk/explain                        # Case B
+GET  /customers/:customerId/goals                               # Case C
+POST /customers/:customerId/goals/projection                    # Case C
 ```
+
+Løsningen på case A, B og C er beskrevet i [`docs/solution.md`](docs/solution.md). De tre
+personaene Anne (`CUST-00101`), Jonas (`CUST-00102`) og Maria (`CUST-00103`) ligger øverst i
+kundevelgeren.
 
 Copilot-endepunktet tar imot `{ "message": "Hvordan har porteføljen min utviklet seg?" }`.
 Det bruker deterministisk intensjonsgjenkjenning og beregninger i dag. Tjenestegrensesnittet
@@ -147,6 +156,21 @@ til GitHub Pages. Konfigurer Pages-kilden i repoet som **GitHub Actions**.
 
 Sett `VITE_API_URL` som en repository-variabel, eller rediger miljøet i workflowen slik at
 det peker på det distribuerte API-et. Ikke legg hemmeligheter i frontend-bygget.
+
+## Distribuere til Vercel (frontend + API i ett prosjekt)
+
+`vercel.json` og `scripts/build-vercel.mjs` bygger hele appen med Vercels Build Output API:
+frontenden blir statiske filer, og hele Express-API-et blir én funksjon under `/api`
+(samme domene, ingen CORS eller `VITE_API_URL` å sette opp).
+
+1. Importer GitHub-repoet i Vercel (**Add New → Project**).
+2. Sett **Root Directory** til mappen som inneholder denne README-en (for eksempel
+   `wealth-copilot-workshop` hvis repoet har den som undermappe).
+3. La Framework Preset, Build Command og Output Directory stå som standard. `vercel.json`
+   styrer bygget.
+4. Deploy. API-dokumentasjonen ligger på `/api/docs/`.
+
+Lokal test av samme bygg: `npm run vercel-build`. Resultatet havner i `.vercel/output`.
 
 ## Distribuere API-et
 

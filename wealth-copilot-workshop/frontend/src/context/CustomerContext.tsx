@@ -13,10 +13,23 @@ interface CustomerContextValue {
 
 const CustomerContext = createContext<CustomerContextValue | undefined>(undefined)
 
-// A small, fixed set of "featured" customers shown first in the selector so
-// workshop participants land on a realistic, varied set of situations
-// (rather than the raw alphabetical/generation order of all 500 records).
-const FEATURED_CUSTOMER_IDS = ['CUST-00001', 'CUST-00002', 'CUST-00003', 'CUST-00004', 'CUST-00005']
+// The three workshop personas (see docs/workshop.md) are shown first, then
+// the rest of the synthetic customers.
+export const PERSONAS = [
+  { id: 'CUST-00101', caseLabel: 'Case A', question: 'Why did my portfolio grow?', path: '/performance' },
+  { id: 'CUST-00102', caseLabel: 'Case B', question: 'Where does my risk come from?', path: '/risk' },
+  { id: 'CUST-00103', caseLabel: 'Case C', question: 'Will I reach my goal?', path: '/goals' },
+]
+const FEATURED_CUSTOMER_IDS = PERSONAS.map((p) => p.id)
+const STORAGE_KEY = 'wealth-copilot:customer'
+
+function readStoredCustomer(): string | null {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY)
+  } catch {
+    return null
+  }
+}
 
 export function CustomerProvider({ children }: { children: ReactNode }) {
   const [customers, setCustomers] = useState<Customer[]>([])
@@ -34,7 +47,9 @@ export function CustomerProvider({ children }: { children: ReactNode }) {
           ...result.customers.filter((c) => !FEATURED_CUSTOMER_IDS.includes(c.customer_id)),
         ] as Customer[]
         setCustomers(ordered)
-        setSelectedCustomerId(ordered[0]?.customer_id ?? null)
+        const stored = readStoredCustomer()
+        const initial = ordered.find((c) => c.customer_id === stored) ?? ordered[0]
+        setSelectedCustomerId(initial?.customer_id ?? null)
       })
       .catch((err: Error) => !cancelled && setError(err.message))
       .finally(() => !cancelled && setLoading(false))
@@ -48,10 +63,19 @@ export function CustomerProvider({ children }: { children: ReactNode }) {
     [customers, selectedCustomerId],
   )
 
+  const selectCustomer = (id: string) => {
+    setSelectedCustomerId(id)
+    try {
+      window.localStorage.setItem(STORAGE_KEY, id)
+    } catch {
+      // Storage can be unavailable (private mode); selection still works.
+    }
+  }
+
   const value: CustomerContextValue = {
     customers,
     selectedCustomerId,
-    setSelectedCustomerId,
+    setSelectedCustomerId: selectCustomer,
     selectedCustomer,
     loading,
     error,

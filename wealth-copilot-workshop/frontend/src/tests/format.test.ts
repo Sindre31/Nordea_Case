@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatCurrency, formatPercentage } from '../utils/format'
+import { formatCompact, formatCurrency, formatPercentage, formatSignedCurrency } from '../utils/format'
 
 describe('formatCurrency', () => {
   it('rounds and formats with the default currency', () => {
@@ -19,5 +19,21 @@ describe('formatPercentage', () => {
 
   it('keeps the minus sign for negative values', () => {
     expect(formatPercentage(-3.1)).toBe('-3.1%')
+  })
+})
+
+describe('formatCompact', () => {
+  it('abbreviates thousands and millions', () => {
+    expect(formatCompact(340_000)).toBe('340k')
+    expect(formatCompact(1_250_000)).toBe('1.3M')
+    expect(formatCompact(-5_913)).toBe('-6k')
+    expect(formatCompact(512)).toBe('512')
+  })
+})
+
+describe('formatSignedCurrency', () => {
+  it('always shows the sign', () => {
+    expect(formatSignedCurrency(12375)).toBe('+12,375 NOK')
+    expect(formatSignedCurrency(-5913.4)).toBe('-5,913 NOK')
   })
 })

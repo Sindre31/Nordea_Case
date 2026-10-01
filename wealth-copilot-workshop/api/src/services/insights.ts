@@ -5,7 +5,8 @@
 // ship today, with the AI/Copilot service (see copilot.ts) layered on top
 // later without needing to touch this deterministic core.
 import { calculatePortfolio, calculatePerformance } from './portfolio.js'
-import { calculateRisk } from './risk.js'
+import { explainRisk } from './riskBreakdown.js'
+import { sectorLabel } from './assumptions.js'
 import { getTransactionsFor } from '../data.js'
 
 export interface Insight {
@@ -54,7 +55,7 @@ export interface InsightsSummary {
 
 export function generateInsights(customerId: string): InsightsSummary {
   const portfolio = calculatePortfolio(customerId)
-  const risk = calculateRisk(customerId)
+  const risk = explainRisk(customerId)
   const performance = calculatePerformance(customerId)
   const savings = calculateMonthlySavings(customerId)
   const insights: Insight[] = []
@@ -65,7 +66,7 @@ export function generateInsights(customerId: string): InsightsSummary {
       id: 'sector-concentration',
       severity: 'warning',
       title: 'High concentration in one sector',
-      detail: `${topSector.percentage}% of your portfolio is invested in ${topSector.label}. Consider whether this concentration matches your risk tolerance.`,
+      detail: `${topSector.percentage}% of your portfolio is invested in ${sectorLabel(topSector.label)}. Consider whether this concentration matches your risk tolerance.`,
     })
   }
 
@@ -79,12 +80,14 @@ export function generateInsights(customerId: string): InsightsSummary {
     })
   }
 
-  if (risk.risk_profile_alignment !== 'Aligned') {
+  // Uses the same swing-based model as the Risk page, so the insight and the
+  // detailed explanation never contradict each other.
+  if (risk.total_value > 0 && risk.alignment !== 'within') {
     insights.push({
       id: 'risk-profile-mismatch',
-      severity: 'warning',
-      title: 'Portfolio risk differs from your risk profile',
-      detail: `Your portfolio's illustrative risk category is "${risk.risk_category}", which is ${risk.risk_profile_alignment.toLowerCase()} ("${risk.customer_risk_profile}"). It may be worth reviewing your allocation with an advisor.`,
+      severity: risk.alignment === 'above' ? 'warning' : 'notice',
+      title: risk.alignment === 'above' ? 'Your portfolio swings more than your risk profile' : 'Your portfolio is calmer than your risk profile',
+      detail: `Your investments typically swing about ${risk.portfolio_volatility_pct}% a year, while a "${risk.risk_profile}" profile suggests ${risk.profile_band_pct.min}-${risk.profile_band_pct.max}%. ${risk.by_sector[0] ? `${risk.by_sector[0].label} accounts for ${risk.by_sector[0].risk_contribution_pct}% of the swings. ` : ''}It may be worth reviewing your allocation with an advisor.`,
     })
   }
 

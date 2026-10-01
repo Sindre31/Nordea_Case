@@ -7,10 +7,15 @@ import type {
   Account,
   Customer,
   CopilotReply,
+  Goal,
+  GoalProjection,
   InsightsSummary,
   Investment,
+  PerformanceExplanation,
   PerformanceSummary,
   PortfolioSummary,
+  ProjectionInput,
+  RiskExplanation,
   RiskSummary,
   Transaction,
 } from './types'
@@ -65,14 +70,34 @@ export async function fetchInsights(customerId: string): Promise<InsightsSummary
   return getJson(`/customers/${customerId}/insights`)
 }
 
-export async function askCopilot(customerId: string, message: string): Promise<CopilotReply> {
-  const response = await fetch(`${API_URL}/customers/${customerId}/copilot`, {
+async function postJson<T>(path: string, body: unknown): Promise<T> {
+  const response = await fetch(`${API_URL}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message }),
+    body: JSON.stringify(body),
   })
   if (!response.ok) {
-    throw new Error(`Copilot request failed with status ${response.status}`)
+    throw new Error(`Request to ${path} failed with status ${response.status}`)
   }
-  return (await response.json()) as CopilotReply
+  return (await response.json()) as T
+}
+
+export async function askCopilot(customerId: string, message: string): Promise<CopilotReply> {
+  return postJson(`/customers/${customerId}/copilot`, { message })
+}
+
+export async function fetchPerformanceExplanation(customerId: string, days = 90): Promise<PerformanceExplanation> {
+  return getJson(`/customers/${customerId}/performance/explain?days=${days}`)
+}
+
+export async function fetchRiskExplanation(customerId: string): Promise<RiskExplanation> {
+  return getJson(`/customers/${customerId}/risk/explain`)
+}
+
+export async function fetchGoals(customerId: string): Promise<{ goals: Goal[] }> {
+  return getJson(`/customers/${customerId}/goals`)
+}
+
+export async function fetchGoalProjection(customerId: string, input: ProjectionInput = {}): Promise<GoalProjection> {
+  return postJson(`/customers/${customerId}/goals/projection`, input)
 }

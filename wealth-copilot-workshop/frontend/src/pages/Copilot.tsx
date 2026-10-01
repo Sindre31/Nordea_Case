@@ -1,18 +1,22 @@
 import { useEffect, useRef, useState } from 'react'
 import { useCustomerContext } from '../context/CustomerContext'
 import { askCopilot } from '../api/client'
+import { SendIcon, SparkIcon } from '../components/Icons'
+import { PageHeading } from '../components/ui'
 
 interface ChatMessage {
   role: 'user' | 'assistant'
   text: string
+  sources?: string[]
+  followUps?: string[]
 }
 
 const SUGGESTED_QUESTIONS = [
-  'How has my portfolio performed?',
-  'Why has my risk increased?',
+  'Why did my portfolio change?',
+  'Where does my risk come from?',
+  'Am I on track for my goal?',
   'Am I diversified?',
   'How much am I saving every month?',
-  'What are the largest risks in my portfolio?',
 ]
 
 export default function Copilot() {
@@ -24,17 +28,15 @@ export default function Copilot() {
   const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setMessages([
-      {
-        role: 'assistant',
-        text: `Hi${selectedCustomer ? ` ${selectedCustomer.first_name}` : ''}! I'm your Wealth Copilot. Ask me about your portfolio performance, risk, diversification or savings.`,
-      },
-    ])
+    setMessages([{
+      role: 'assistant',
+      text: `Hi${selectedCustomer ? ` ${selectedCustomer.first_name}` : ''}! I can explain why your portfolio moved, where your risk comes from, and whether you are on track for your goals. Every answer shows which of your data it used.`,
+    }])
   }, [selectedCustomerId, selectedCustomer])
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' })
-  }, [messages])
+  }, [messages, sending])
 
   async function sendMessage(text: string) {
     if (!selectedCustomerId || !text.trim() || sending) return
@@ -44,7 +46,7 @@ export default function Copilot() {
     setSending(true)
     try {
       const reply = await askCopilot(selectedCustomerId, text)
-      setMessages((prev) => [...prev, { role: 'assistant', text: reply.answer }])
+      setMessages((prev) => [...prev, { role: 'assistant', text: reply.answer, sources: reply.sources, followUps: reply.follow_ups }])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -54,45 +56,47 @@ export default function Copilot() {
 
   return (
     <div className="page">
-      <div className="page-heading">
-        <p className="eyebrow">Deterministic today, LLM-ready by design</p>
-        <h2>Wealth Copilot</h2>
-      </div>
-
-      <div className="copilot-suggestions">
-        {SUGGESTED_QUESTIONS.map((question) => (
-          <button key={question} onClick={() => sendMessage(question)} disabled={sending}>
-            {question}
-          </button>
-        ))}
-      </div>
-
-      <div className="copilot-chat">
-        <div className="copilot-chat__messages" ref={listRef}>
-          {messages.map((message, index) => (
-            <div key={index} className={`copilot-message copilot-message--${message.role}`}>
-              {message.text}
+      <PageHeading eyebrow="Deterministic today, LLM-ready by design" title="Ask Copilot"
+        lead="Answers are calculated from your own data with transparent rules - no external AI, and nothing is guessed." />
+      <section className="panel chat">
+        <div className="chat__messages" ref={listRef} aria-live="polite">
+          {messages.map((m, i) => (
+            <div key={i} className={`msg msg--${m.role}`}>
+              {m.role === 'assistant' && <span className="avatar"><SparkIcon size={14} /></span>}
+              <div className="msg__bubble">
+                {m.text}
+                {m.sources && m.sources.length > 0 && (
+                  <div className="msg__sources">
+                    Why am I seeing this? Based on:
+                    <ul>{m.sources.map((s) => <li key={s}>{s}</li>)}</ul>
+                  </div>
+                )}
+                {m.followUps && m.followUps.length > 0 && i === messages.length - 1 && (
+                  <div className="msg__followups">
+                    {m.followUps.map((f) => <button key={f} type="button" className="chip" onClick={() => sendMessage(f)} disabled={sending}>{f}</button>)}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
-          {sending && <div className="copilot-message copilot-message--assistant copilot-message--pending">Thinking...</div>}
+          {sending && (
+            <div className="msg msg--assistant">
+              <span className="avatar"><SparkIcon size={14} /></span>
+              <div className="msg__bubble"><span className="typing" aria-label="Thinking"><span /><span /><span /></span></div>
+            </div>
+          )}
         </div>
-        {error && <p className="error-state">{error}</p>}
-        <form
-          className="copilot-chat__input"
-          onSubmit={(event) => {
-            event.preventDefault()
-            sendMessage(input)
-          }}
-        >
-          <input
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-            placeholder="Ask about your finances..."
-            aria-label="Ask the Wealth Copilot"
-          />
-          <button type="submit" disabled={sending || !input.trim()}>Send</button>
+        {messages.length <= 1 && (
+          <div className="chat__suggestions">
+            {SUGGESTED_QUESTIONS.map((q) => <button key={q} type="button" className="chip" onClick={() => sendMessage(q)} disabled={sending}>{q}</button>)}
+          </div>
+        )}
+        {error && <p className="state--error small" style={{ padding: '0 24px 8px' }} role="alert">{error}</p>}
+        <form className="chat__input" onSubmit={(e) => { e.preventDefault(); sendMessage(input) }}>
+          <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask about your finances..." aria-label="Ask the Wealth Copilot" />
+          <button type="submit" className="btn btn--primary row" style={{ gap: 6 }} disabled={sending || !input.trim()}><SendIcon size={16} /> Send</button>
         </form>
-      </div>
+      </section>
     </div>
   )
 }

@@ -495,6 +495,39 @@
     "currency": "NOK"
   },
   {
+    "transaction_id": "TXN-0002621",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-08-01",
+    "type": "credit",
+    "category": "Salary",
+    "description": "Monthly salary",
+    "amount": 64000,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002641",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-08-01",
+    "type": "credit",
+    "category": "Salary",
+    "description": "Monthly salary",
+    "amount": 46000,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002661",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-08-01",
+    "type": "credit",
+    "category": "Salary",
+    "description": "Monthly salary",
+    "amount": 37500,
+    "currency": "NOK"
+  },
+  {
     "transaction_id": "TXN-0000065",
     "customer_id": "CUST-00003",
     "account_id": "ACC-000008",
@@ -1034,6 +1067,39 @@
     "currency": "NOK"
   },
   {
+    "transaction_id": "TXN-0002622",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-08-02",
+    "type": "debit",
+    "category": "Housing",
+    "description": "Mortgage payment",
+    "amount": -14500,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002642",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-08-02",
+    "type": "debit",
+    "category": "Housing",
+    "description": "Mortgage payment",
+    "amount": -16500,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002662",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-08-02",
+    "type": "debit",
+    "category": "Housing",
+    "description": "Mortgage payment",
+    "amount": -12000,
+    "currency": "NOK"
+  },
+  {
     "transaction_id": "TXN-0000060",
     "customer_id": "CUST-00003",
     "account_id": "ACC-000008",
@@ -1493,6 +1559,39 @@
     "category": "Restaurants",
     "description": "Cafe",
     "amount": -282.28,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002623",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000323",
+    "date": "2026-08-03",
+    "type": "transfer",
+    "category": "Investments",
+    "description": "Monthly savings plan",
+    "amount": -8000,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002643",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000327",
+    "date": "2026-08-03",
+    "type": "transfer",
+    "category": "Investments",
+    "description": "Monthly savings plan",
+    "amount": -6000,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002663",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000330",
+    "date": "2026-08-03",
+    "type": "transfer",
+    "category": "Investments",
+    "description": "Monthly savings plan",
+    "amount": -7000,
     "currency": "NOK"
   },
   {
@@ -2376,6 +2475,39 @@
     "currency": "NOK"
   },
   {
+    "transaction_id": "TXN-0002624",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-08-05",
+    "type": "debit",
+    "category": "Utilities",
+    "description": "Electricity bill",
+    "amount": -1109.87,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002644",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-08-05",
+    "type": "debit",
+    "category": "Utilities",
+    "description": "Electricity bill",
+    "amount": -861.54,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002664",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-08-05",
+    "type": "debit",
+    "category": "Utilities",
+    "description": "Electricity bill",
+    "amount": -1072.63,
+    "currency": "NOK"
+  },
+  {
     "transaction_id": "TXN-0000003",
     "customer_id": "CUST-00001",
     "account_id": "ACC-000001",
@@ -2868,6 +3000,39 @@
     "category": "Investments",
     "description": "Monthly savings plan",
     "amount": -5548.04,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002625",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-08-06",
+    "type": "debit",
+    "category": "Groceries",
+    "description": "Supermarket",
+    "amount": -3024.44,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002645",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-08-06",
+    "type": "debit",
+    "category": "Groceries",
+    "description": "Supermarket",
+    "amount": -3062.8,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002665",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-08-06",
+    "type": "debit",
+    "category": "Groceries",
+    "description": "Supermarket",
+    "amount": -2987.32,
     "currency": "NOK"
   },
   {
@@ -5434,6 +5599,39 @@
     "currency": "NOK"
   },
   {
+    "transaction_id": "TXN-0002627",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-08-11",
+    "type": "debit",
+    "category": "Restaurants",
+    "description": "Restaurant",
+    "amount": -1018.48,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002647",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-08-11",
+    "type": "debit",
+    "category": "Restaurants",
+    "description": "Restaurant",
+    "amount": -1320.87,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002667",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-08-11",
+    "type": "debit",
+    "category": "Restaurants",
+    "description": "Restaurant",
+    "amount": -1242.45,
+    "currency": "NOK"
+  },
+  {
     "transaction_id": "TXN-0000035",
     "customer_id": "CUST-00002",
     "account_id": "ACC-000005",
@@ -6996,6 +7194,39 @@
     "currency": "NOK"
   },
   {
+    "transaction_id": "TXN-0002626",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-08-14",
+    "type": "debit",
+    "category": "Groceries",
+    "description": "Grocery store",
+    "amount": -2725.62,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002646",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-08-14",
+    "type": "debit",
+    "category": "Groceries",
+    "description": "Grocery store",
+    "amount": -2369.38,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002666",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-08-14",
+    "type": "debit",
+    "category": "Groceries",
+    "description": "Grocery store",
+    "amount": -2729.29,
+    "currency": "NOK"
+  },
+  {
     "transaction_id": "TXN-0000122",
     "customer_id": "CUST-00005",
     "account_id": "ACC-000015",
@@ -8489,6 +8720,39 @@
     "category": "Shopping",
     "description": "Clothing store",
     "amount": -1621.72,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002628",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-08-17",
+    "type": "debit",
+    "category": "Subscriptions",
+    "description": "Streaming service",
+    "amount": -154.89,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002648",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-08-17",
+    "type": "debit",
+    "category": "Subscriptions",
+    "description": "Streaming service",
+    "amount": -225.06,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002668",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-08-17",
+    "type": "debit",
+    "category": "Subscriptions",
+    "description": "Streaming service",
+    "amount": -180.2,
     "currency": "NOK"
   },
   {
@@ -10593,6 +10857,39 @@
     "currency": "NOK"
   },
   {
+    "transaction_id": "TXN-0002629",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-08-21",
+    "type": "debit",
+    "category": "Shopping",
+    "description": "Online marketplace",
+    "amount": -1043.69,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002649",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-08-21",
+    "type": "debit",
+    "category": "Shopping",
+    "description": "Online marketplace",
+    "amount": -603.46,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002669",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-08-21",
+    "type": "debit",
+    "category": "Shopping",
+    "description": "Online marketplace",
+    "amount": -2437.28,
+    "currency": "NOK"
+  },
+  {
     "transaction_id": "TXN-0000001",
     "customer_id": "CUST-00001",
     "account_id": "ACC-000001",
@@ -12108,6 +12405,39 @@
     "category": "Subscriptions",
     "description": "Gym membership",
     "amount": -347.39,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002630",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-08-24",
+    "type": "debit",
+    "category": "Utilities",
+    "description": "Internet & mobile",
+    "amount": -773.14,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002650",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-08-24",
+    "type": "debit",
+    "category": "Utilities",
+    "description": "Internet & mobile",
+    "amount": -581.53,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002670",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-08-24",
+    "type": "debit",
+    "category": "Utilities",
+    "description": "Internet & mobile",
+    "amount": -532.15,
     "currency": "NOK"
   },
   {
@@ -14729,6 +15059,39 @@
     "currency": "NOK"
   },
   {
+    "transaction_id": "TXN-0002631",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-09-01",
+    "type": "credit",
+    "category": "Salary",
+    "description": "Monthly salary",
+    "amount": 64000,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002651",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-09-01",
+    "type": "credit",
+    "category": "Salary",
+    "description": "Monthly salary",
+    "amount": 46000,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002671",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-09-01",
+    "type": "credit",
+    "category": "Salary",
+    "description": "Monthly salary",
+    "amount": 37500,
+    "currency": "NOK"
+  },
+  {
     "transaction_id": "TXN-0000016",
     "customer_id": "CUST-00001",
     "account_id": "ACC-000001",
@@ -15243,6 +15606,39 @@
     "category": "Investments",
     "description": "Monthly savings plan",
     "amount": -2866,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002632",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-09-02",
+    "type": "debit",
+    "category": "Housing",
+    "description": "Mortgage payment",
+    "amount": -14500,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002652",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-09-02",
+    "type": "debit",
+    "category": "Housing",
+    "description": "Mortgage payment",
+    "amount": -16500,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002672",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-09-02",
+    "type": "debit",
+    "category": "Housing",
+    "description": "Mortgage payment",
+    "amount": -12000,
     "currency": "NOK"
   },
   {
@@ -15826,6 +16222,39 @@
     "category": "Housing",
     "description": "Rent payment",
     "amount": -16957.87,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002633",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000323",
+    "date": "2026-09-03",
+    "type": "transfer",
+    "category": "Investments",
+    "description": "Monthly savings plan",
+    "amount": -8000,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002653",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000327",
+    "date": "2026-09-03",
+    "type": "transfer",
+    "category": "Investments",
+    "description": "Monthly savings plan",
+    "amount": -6000,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002673",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000330",
+    "date": "2026-09-03",
+    "type": "transfer",
+    "category": "Investments",
+    "description": "Monthly savings plan",
+    "amount": -7000,
     "currency": "NOK"
   },
   {
@@ -16841,6 +17270,39 @@
     "currency": "NOK"
   },
   {
+    "transaction_id": "TXN-0002634",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-09-05",
+    "type": "debit",
+    "category": "Utilities",
+    "description": "Electricity bill",
+    "amount": -1421.27,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002654",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-09-05",
+    "type": "debit",
+    "category": "Utilities",
+    "description": "Electricity bill",
+    "amount": -948.49,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002674",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-09-05",
+    "type": "debit",
+    "category": "Utilities",
+    "description": "Electricity bill",
+    "amount": -736.72,
+    "currency": "NOK"
+  },
+  {
     "transaction_id": "TXN-0000049",
     "customer_id": "CUST-00002",
     "account_id": "ACC-000005",
@@ -17399,6 +17861,39 @@
     "category": "Transfers",
     "description": "Transfer to savings",
     "amount": -3449.71,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002635",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-09-06",
+    "type": "debit",
+    "category": "Groceries",
+    "description": "Supermarket",
+    "amount": -2998.9,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002655",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-09-06",
+    "type": "debit",
+    "category": "Groceries",
+    "description": "Supermarket",
+    "amount": -3822.69,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002675",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-09-06",
+    "type": "debit",
+    "category": "Groceries",
+    "description": "Supermarket",
+    "amount": -3070.14,
     "currency": "NOK"
   },
   {
@@ -19888,6 +20383,39 @@
     "currency": "NOK"
   },
   {
+    "transaction_id": "TXN-0002637",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-09-11",
+    "type": "debit",
+    "category": "Restaurants",
+    "description": "Restaurant",
+    "amount": -466.59,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002657",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-09-11",
+    "type": "debit",
+    "category": "Restaurants",
+    "description": "Restaurant",
+    "amount": -1342.2,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002677",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-09-11",
+    "type": "debit",
+    "category": "Restaurants",
+    "description": "Restaurant",
+    "amount": -1141.95,
+    "currency": "NOK"
+  },
+  {
     "transaction_id": "TXN-0000127",
     "customer_id": "CUST-00005",
     "account_id": "ACC-000015",
@@ -21725,6 +22253,39 @@
     "currency": "NOK"
   },
   {
+    "transaction_id": "TXN-0002636",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-09-14",
+    "type": "debit",
+    "category": "Groceries",
+    "description": "Grocery store",
+    "amount": -1859.74,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002656",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-09-14",
+    "type": "debit",
+    "category": "Groceries",
+    "description": "Grocery store",
+    "amount": -3134.77,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002676",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-09-14",
+    "type": "debit",
+    "category": "Groceries",
+    "description": "Grocery store",
+    "amount": -2882.69,
+    "currency": "NOK"
+  },
+  {
     "transaction_id": "TXN-0000044",
     "customer_id": "CUST-00002",
     "account_id": "ACC-000005",
@@ -23108,6 +23669,39 @@
     "category": "Salary",
     "description": "Monthly salary",
     "amount": 29036.22,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002638",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-09-17",
+    "type": "debit",
+    "category": "Subscriptions",
+    "description": "Streaming service",
+    "amount": -234.33,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002658",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-09-17",
+    "type": "debit",
+    "category": "Subscriptions",
+    "description": "Streaming service",
+    "amount": -259.08,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002678",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-09-17",
+    "type": "debit",
+    "category": "Subscriptions",
+    "description": "Streaming service",
+    "amount": -196.13,
     "currency": "NOK"
   },
   {
@@ -25091,6 +25685,39 @@
     "currency": "NOK"
   },
   {
+    "transaction_id": "TXN-0002639",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-09-21",
+    "type": "debit",
+    "category": "Shopping",
+    "description": "Online marketplace",
+    "amount": -1377.62,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002659",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-09-21",
+    "type": "debit",
+    "category": "Shopping",
+    "description": "Online marketplace",
+    "amount": -1156.99,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002679",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-09-21",
+    "type": "debit",
+    "category": "Shopping",
+    "description": "Online marketplace",
+    "amount": -2534.67,
+    "currency": "NOK"
+  },
+  {
     "transaction_id": "TXN-0000070",
     "customer_id": "CUST-00003",
     "account_id": "ACC-000008",
@@ -26518,6 +27145,39 @@
     "category": "Transfers",
     "description": "Transfer to savings",
     "amount": -3463.18,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002640",
+    "customer_id": "CUST-00101",
+    "account_id": "ACC-000321",
+    "date": "2026-09-24",
+    "type": "debit",
+    "category": "Utilities",
+    "description": "Internet & mobile",
+    "amount": -545.8,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002660",
+    "customer_id": "CUST-00102",
+    "account_id": "ACC-000325",
+    "date": "2026-09-24",
+    "type": "debit",
+    "category": "Utilities",
+    "description": "Internet & mobile",
+    "amount": -609.64,
+    "currency": "NOK"
+  },
+  {
+    "transaction_id": "TXN-0002680",
+    "customer_id": "CUST-00103",
+    "account_id": "ACC-000328",
+    "date": "2026-09-24",
+    "type": "debit",
+    "category": "Utilities",
+    "description": "Internet & mobile",
+    "amount": -770.59,
     "currency": "NOK"
   },
   {

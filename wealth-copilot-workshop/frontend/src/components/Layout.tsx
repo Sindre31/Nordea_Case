@@ -1,60 +1,45 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import CustomerSwitcher, { PersonaChips } from './CustomerSwitcher'
 import { useCustomerContext } from '../context/CustomerContext'
-
-function CustomerSelector() {
-  const { customers, selectedCustomerId, setSelectedCustomerId, selectedCustomer, loading } = useCustomerContext()
-
-  if (loading) return <div className="customer-selector customer-selector--loading">Loading customers...</div>
-
-  return (
-    <div className="customer-selector">
-      <label htmlFor="customer-select">Customer</label>
-      <select
-        id="customer-select"
-        value={selectedCustomerId ?? ''}
-        onChange={(event) => setSelectedCustomerId(event.target.value)}
-      >
-        {customers.map((customer) => (
-          <option key={customer.customer_id} value={customer.customer_id}>
-            {customer.first_name} {customer.last_name} ({customer.customer_id})
-          </option>
-        ))}
-      </select>
-      {selectedCustomer && (
-        <div className="customer-selector__meta">
-          <span>Risk profile: {selectedCustomer.risk_profile}</span>
-          <span>Horizon: {selectedCustomer.investment_horizon}</span>
-        </div>
-      )}
-    </div>
-  )
-}
+import { BulbIcon, HomeIcon, LogoMark, PieIcon, ShieldIcon, SparkIcon, TargetIcon, TrendIcon } from './Icons'
+import { ErrorState } from './ui'
 
 export default function Layout() {
+  const { error } = useCustomerContext()
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <div className="app-header__brand">
-          <span className="app-header__logo">◆</span>
-          <div>
-            <h1>Wealth Copilot</h1>
-            <p>Fictional demo bank &middot; synthetic data only</p>
-          </div>
-        </div>
-        <nav className="app-nav">
-          <NavLink to="/" end>Dashboard</NavLink>
-          <NavLink to="/portfolio">Portfolio</NavLink>
-          <NavLink to="/insights">Insights</NavLink>
-          <NavLink to="/copilot">Wealth Copilot</NavLink>
+      <aside className="sidebar">
+        <NavLink to="/" className="brand" aria-label="Wealth Copilot home">
+          <span className="brand__mark"><LogoMark /></span>
+          <span>
+            <span className="brand__name">Wealth Copilot</span>
+            <br />
+            <span className="brand__tag">Private Banking &middot; demo</span>
+          </span>
+        </NavLink>
+        <nav className="nav" aria-label="Main">
+          <span className="nav__section">Overview</span>
+          <NavLink to="/" end><HomeIcon /> Overview</NavLink>
+          <span className="nav__section">Understand</span>
+          <NavLink to="/performance"><TrendIcon /> Performance <span className="nav__case">A</span></NavLink>
+          <NavLink to="/risk"><ShieldIcon /> Risk <span className="nav__case">B</span></NavLink>
+          <NavLink to="/goals"><TargetIcon /> Goals <span className="nav__case">C</span></NavLink>
+          <span className="nav__section">Explore</span>
+          <NavLink to="/portfolio"><PieIcon /> Portfolio</NavLink>
+          <NavLink to="/insights"><BulbIcon /> Insights</NavLink>
+          <NavLink to="/copilot"><SparkIcon /> Ask Copilot</NavLink>
         </nav>
-        <CustomerSelector />
-      </header>
-      <main className="app-main">
-        <Outlet />
-      </main>
-      <footer className="app-footer">
-        <p>Workshop demo · All customers, accounts, transactions and holdings are 100% fictional synthetic data.</p>
-      </footer>
+        <p className="sidebar__footer">All customers, accounts and holdings are fictional synthetic data. Educational demo, not financial advice.</p>
+      </aside>
+      <div className="main">
+        <header className="topbar">
+          <PersonaChips />
+          <CustomerSwitcher />
+        </header>
+        <main className="content">
+          {error ? <ErrorState message={error} /> : <Outlet />}
+        </main>
+      </div>
     </div>
   )
 }

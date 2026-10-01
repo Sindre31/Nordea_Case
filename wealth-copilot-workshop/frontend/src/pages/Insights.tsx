@@ -1,61 +1,49 @@
-import { useEffect, useState } from 'react'
-import { useCustomerContext } from '../context/CustomerContext'
 import { fetchInsights, fetchRisk } from '../api/client'
-import type { InsightsSummary, RiskSummary } from '../api/types'
+import { useCustomerData } from '../hooks/useCustomerData'
 import InsightCard from '../components/InsightCard'
+import { ErrorState, Loading, PageHeading, Panel } from '../components/ui'
+import { formatCurrency } from '../utils/format'
 
 export default function Insights() {
-  const { selectedCustomerId } = useCustomerContext()
-  const [insights, setInsights] = useState<InsightsSummary | null>(null)
-  const [risk, setRisk] = useState<RiskSummary | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!selectedCustomerId) return
-    let cancelled = false
-    setLoading(true)
-    setError(null)
-    Promise.all([fetchInsights(selectedCustomerId), fetchRisk(selectedCustomerId)])
-      .then(([insightsRes, riskRes]) => {
-        if (cancelled) return
-        setInsights(insightsRes)
-        setRisk(riskRes)
-      })
-      .catch((err: Error) => !cancelled && setError(err.message))
-      .finally(() => !cancelled && setLoading(false))
-    return () => {
-      cancelled = true
-    }
-  }, [selectedCustomerId])
-
-  if (loading) return <p className="loading-state">Loading insights...</p>
-  if (error) return <p className="error-state">Could not load insights: {error}</p>
-  if (!insights || !risk) return null
+  const { data, loading, error } = useCustomerData((id) => Promise.all([fetchInsights(id), fetchRisk(id)]))
+  if (loading && !data) return <Loading />
+  if (error) return <ErrorState message={error} />
+  if (!data) return null
+  const [insights, risk] = data
+  const factors = [
+    ['Asset allocation', risk.factors.asset_allocation_score],
+    ['Concentration', risk.factors.concentration_score],
+    ['Geography', risk.factors.geography_score],
+    ['Volatility', risk.factors.volatility_score],
+  ] as const
 
   return (
     <div className="page">
-      <div className="page-heading">
-        <p className="eyebrow">Deterministic, rule-based</p>
-        <h2>Insights</h2>
+      <PageHeading eyebrow="Rule-based, explainable" title="Insights" lead="Observations from your accounts and investments. Every insight follows a simple, visible rule." />
+      <div className="grid grid--2">
+        {insights.insights.map((i) => <InsightCard key={i.id} insight={i} />)}
       </div>
-
-      <div className="insight-grid">
-        {insights.insights.map((insight) => (
-          <InsightCard key={insight.id} insight={insight} />
-        ))}
+      <div className="grid grid--2">
+        <Panel title="Monthly cash flow" subtitle="Average over the months in your transactions">
+          <div className="kv">
+            <div className="kv__row"><span>Income</span><strong>{formatCurrency(insights.savings.averageMonthlyIncome)}</strong></div>
+            <div className="kv__row"><span>Spending</span><strong>{formatCurrency(insights.savings.averageMonthlyExpenses)}</strong></div>
+            <div className="kv__row"><span>Left over</span><strong>{formatCurrency(insights.savings.averageMonthlySavings)}</strong></div>
+            <div className="kv__row"><span>Savings rate</span><strong>{insights.savings.savingsRatePct}%</strong></div>
+          </div>
+        </Panel>
+        <Panel title={`Illustrative risk score: ${risk.risk_score}/100`} subtitle={`${risk.risk_category} · ${risk.risk_profile_alignment}`}>
+          <div className="pairs">
+            {factors.map(([label, v]) => (
+              <div key={label}>
+                <div className="pair__head"><span>{label}</span><strong>{v}</strong></div>
+                <div className="lever__bar"><span style={{ width: `${Math.min(100, v)}%` }} /></div>
+              </div>
+            ))}
+          </div>
+          <p className="disclaimer" style={{ marginTop: 14 }}>{risk.disclaimer} See the Risk page for a plain-language breakdown.</p>
+        </Panel>
       </div>
-
-      <section className="panel panel--muted">
-        <h3>Risk score breakdown</h3>
-        <p className="disclaimer">{risk.disclaimer}</p>
-        <ul className="risk-factor-list">
-          <li>Asset allocation: {risk.factors.asset_allocation_score}</li>
-          <li>Concentration: {risk.factors.concentration_score}</li>
-          <li>Geography: {risk.factors.geography_score}</li>
-          <li>Volatility: {risk.factors.volatility_score}</li>
-        </ul>
-      </section>
     </div>
   )
 }

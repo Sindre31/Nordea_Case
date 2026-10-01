@@ -4,6 +4,9 @@ import { calculatePortfolio, calculatePerformance } from '../services/portfolio.
 import { calculateRisk } from '../services/risk.js'
 import { generateInsights } from '../services/insights.js'
 import { deterministicCopilot } from '../services/copilot.js'
+import { explainPerformance, parsePeriodDays } from '../services/attribution.js'
+import { explainRisk } from '../services/riskBreakdown.js'
+import { getGoals, projectGoal, validateProjectionInput } from '../services/goals.js'
 
 export const customersRouter = Router()
 
@@ -69,6 +72,42 @@ customersRouter.get('/:customerId/performance', (req, res) => {
   const customer = requireCustomer(req.params.customerId)
   if (!customer) return res.status(404).json({ error: 'Customer not found' })
   res.json(calculatePerformance(customer.customer_id))
+})
+
+// GET /customers/:customerId/performance/explain?days=30|60|90 - case A:
+// what drove the change, market vs. own choices, and whether it was expected.
+customersRouter.get('/:customerId/performance/explain', (req, res) => {
+  const customer = requireCustomer(req.params.customerId)
+  if (!customer) return res.status(404).json({ error: 'Customer not found' })
+  const days = parsePeriodDays(req.query.days)
+  if (days === null) return res.status(400).json({ error: 'Query parameter "days" must be 30, 60 or 90' })
+  res.json(explainPerformance(customer.customer_id, days))
+})
+
+// GET /customers/:customerId/risk/explain - case B: where the risk comes from.
+customersRouter.get('/:customerId/risk/explain', (req, res) => {
+  const customer = requireCustomer(req.params.customerId)
+  if (!customer) return res.status(404).json({ error: 'Customer not found' })
+  res.json(explainRisk(customer.customer_id))
+})
+
+// GET /customers/:customerId/goals - registered financial goals (may be empty).
+customersRouter.get('/:customerId/goals', (req, res) => {
+  const customer = requireCustomer(req.params.customerId)
+  if (!customer) return res.status(404).json({ error: 'Customer not found' })
+  res.json({ customer_id: customer.customer_id, goals: getGoals(customer.customer_id) })
+})
+
+// POST /customers/:customerId/goals/projection - case C: scenario-based goal
+// projection. Body fields are all optional; missing values are filled from
+// the registered goal, the customer's data or labelled assumptions.
+customersRouter.post('/:customerId/goals/projection', (req, res) => {
+  const customer = requireCustomer(req.params.customerId)
+  if (!customer) return res.status(404).json({ error: 'Customer not found' })
+  const validated = validateProjectionInput(req.body)
+  if ('error' in validated) return res.status(400).json({ error: validated.error })
+  const goalId = typeof req.body?.goal_id === 'string' ? req.body.goal_id : undefined
+  res.json(projectGoal(customer.customer_id, validated.input, goalId))
 })
 
 // GET /customers/:customerId/risk - illustrative demo risk score.

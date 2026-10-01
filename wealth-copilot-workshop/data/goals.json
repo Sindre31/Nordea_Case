@@ -1,0 +1,16 @@
+[
+  {
+    "goal_id": "GOAL-0001",
+    "customer_id": "CUST-00103",
+    "type": "financial_independence",
+    "name": "Financial freedom by 39",
+    "target_amount": 1500000,
+    "target_date": "2036-09-01",
+    "created_at": "2025-09-01",
+    "plan": {
+      "starting_amount": 120000,
+      "monthly_contribution": 7000,
+      "assumed_annual_return_pct": 4
+    }
+  }
+]

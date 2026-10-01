@@ -66,3 +66,20 @@ export interface Instrument {
   current_price: number
   currency: string
 }
+
+export interface Goal {
+  goal_id: string
+  customer_id: string
+  type: 'financial_independence' | 'home' | 'retirement' | 'other'
+  name: string
+  target_amount: number
+  target_date: string
+  created_at: string
+  // The plan the customer agreed on when the goal was registered. Used to
+  // answer "am I ahead or behind my plan?".
+  plan: {
+    starting_amount: number
+    monthly_contribution: number
+    assumed_annual_return_pct: number
+  }
+}

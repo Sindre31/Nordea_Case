@@ -1098,5 +1098,38 @@
     "investment_horizon": "3-5 years",
     "annual_income": 1690000,
     "customer_since": "2006-12-18"
+  },
+  {
+    "customer_id": "CUST-00101",
+    "first_name": "Anne",
+    "last_name": "Lie",
+    "age": 52,
+    "country": "Norway",
+    "risk_profile": "Balanced",
+    "investment_horizon": "10-20 years",
+    "annual_income": 1150000,
+    "customer_since": "2004-03-15"
+  },
+  {
+    "customer_id": "CUST-00102",
+    "first_name": "Jonas",
+    "last_name": "Berg",
+    "age": 36,
+    "country": "Norway",
+    "risk_profile": "Moderate",
+    "investment_horizon": "5-10 years",
+    "annual_income": 780000,
+    "customer_since": "2013-08-02"
+  },
+  {
+    "customer_id": "CUST-00103",
+    "first_name": "Maria",
+    "last_name": "Dahl",
+    "age": 29,
+    "country": "Norway",
+    "risk_profile": "Growth",
+    "investment_horizon": "5-10 years",
+    "annual_income": 620000,
+    "customer_since": "2019-01-10"
   }
 ]

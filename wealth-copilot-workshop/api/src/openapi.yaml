@@ -20,6 +20,11 @@ tags:
     description: Customer profile and derived financial data
   - name: Wealth Copilot
     description: Deterministic, rule-based chat assistant over a customer's own data
+  - name: Explanations
+    description: >
+      Workshop cases A-C. Explain portfolio development, investment risk and
+      progress towards financial goals. Every response includes the
+      assumptions and data limitations behind the numbers.
 
 paths:
   /health:
@@ -289,6 +294,119 @@ paths:
                 $ref: "#/components/schemas/CopilotReply"
         "400":
           description: Missing or empty message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /customers/{customerId}/performance/explain:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
+    get:
+      tags: [Explanations]
+      summary: "Case A: explain what drove the portfolio's development"
+      description: >
+        Contribution per holding, sector and asset type; the result split into
+        a market effect (reference mix for the customer's risk profile) and
+        the effect of the customer's own choices; and whether the result is
+        within a normal range for the risk profile.
+      parameters:
+        - name: days
+          in: query
+          required: false
+          schema:
+            type: integer
+            enum: [30, 60, 90]
+            default: 90
+      responses:
+        "200":
+          description: Performance explanation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceExplanation"
+        "400":
+          description: Unsupported period
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /customers/{customerId}/risk/explain:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
+    get:
+      tags: [Explanations]
+      summary: "Case B: explain where the investment risk comes from"
+      description: >
+        Expected yearly swings compared with the risk-profile band, each
+        holding's share of the risk, a "bad month" in NOK, stress tests,
+        price-driven drift and an illustrative what-if. Educational model
+        only - not a real risk or suitability assessment.
+      responses:
+        "200":
+          description: Risk explanation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RiskExplanation"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /customers/{customerId}/goals:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
+    get:
+      tags: [Explanations]
+      summary: List the customer's registered financial goals
+      responses:
+        "200":
+          description: Registered goals (may be empty)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customer_id:
+                    type: string
+                  goals:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Goal"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /customers/{customerId}/goals/projection:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
+    post:
+      tags: [Explanations]
+      summary: "Case C: project progress towards a financial goal"
+      description: >
+        Scenario-based projection (seeded simulation, so results are
+        reproducible). All fields are optional; missing values come from the
+        registered goal, the customer's own data or labelled assumptions, and
+        the response states the source of each. Amounts are in today's money.
+        Scenarios are not forecasts or promises.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectionInput"
+      responses:
+        "200":
+          description: Goal projection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GoalProjection"
+        "400":
+          description: Invalid input
           content:
             application/json:
               schema:
@@ -623,3 +741,319 @@ components:
         matched_intent:
           type: string
           example: performance
+        sources:
+          type: array
+          description: The customer data the answer was built from ("Why am I seeing this?").
+          items:
+            type: string
+        follow_ups:
+          type: array
+          items:
+            type: string
+
+    DataQuality:
+      type: object
+      description: Assumptions and known data gaps behind the numbers.
+      properties:
+        assumptions:
+          type: array
+          items:
+            type: string
+        limitations:
+          type: array
+          items:
+            type: string
+
+    PerformanceExplanation:
+      type: object
+      properties:
+        customer_id:
+          type: string
+        period:
+          type: object
+          properties:
+            start_date:
+              type: string
+            end_date:
+              type: string
+            days:
+              type: integer
+            max_days_available:
+              type: integer
+        start_value:
+          type: number
+        end_value:
+          type: number
+        change_value:
+          type: number
+        change_pct:
+          type: number
+        contributions:
+          type: array
+          items:
+            type: object
+            properties:
+              ticker:
+                type: string
+              name:
+                type: string
+              change_value:
+                type: number
+              return_pct:
+                type: number
+              contribution_pct_points:
+                type: number
+              weight_start_pct:
+                type: number
+        by_asset_type:
+          type: array
+          items:
+            $ref: "#/components/schemas/GroupContribution"
+        by_sector:
+          type: array
+          items:
+            $ref: "#/components/schemas/GroupContribution"
+        market_vs_choices:
+          type: object
+          properties:
+            market_return_pct:
+              type: number
+            choices_effect_pct_points:
+              type: number
+            market_effect_value:
+              type: number
+            choices_effect_value:
+              type: number
+            verdict:
+              type: string
+              enum: [mostly_market, mostly_choices, mixed]
+        expected_range:
+          type: object
+          properties:
+            risk_profile:
+              type: string
+            low_pct:
+              type: number
+            expected_pct:
+              type: number
+            high_pct:
+              type: number
+            verdict:
+              type: string
+              enum: [within, above, below]
+        summary:
+          type: array
+          items:
+            type: string
+        data_quality:
+          $ref: "#/components/schemas/DataQuality"
+
+    GroupContribution:
+      type: object
+      properties:
+        label:
+          type: string
+        change_value:
+          type: number
+        contribution_pct_points:
+          type: number
+
+    RiskExplanation:
+      type: object
+      properties:
+        customer_id:
+          type: string
+        total_value:
+          type: number
+        portfolio_volatility_pct:
+          type: number
+          description: Expected yearly swings (annualised standard deviation).
+        risk_profile:
+          type: string
+        profile_band_pct:
+          type: object
+          properties:
+            min:
+              type: number
+            max:
+              type: number
+        alignment:
+          type: string
+          enum: [within, above, below]
+        contributions:
+          type: array
+          items:
+            type: object
+            properties:
+              ticker:
+                type: string
+              name:
+                type: string
+              weight_pct:
+                type: number
+              risk_contribution_pct:
+                type: number
+        by_sector:
+          type: array
+          items:
+            $ref: "#/components/schemas/GroupRisk"
+        bad_month:
+          type: object
+          properties:
+            loss_value:
+              type: number
+            loss_pct:
+              type: number
+            frequency:
+              type: string
+        stress_tests:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              impact_value:
+                type: number
+              impact_pct:
+                type: number
+        summary:
+          type: array
+          items:
+            type: string
+        data_quality:
+          $ref: "#/components/schemas/DataQuality"
+
+    GroupRisk:
+      type: object
+      properties:
+        label:
+          type: string
+        weight_pct:
+          type: number
+        risk_contribution_pct:
+          type: number
+
+    Goal:
+      type: object
+      properties:
+        goal_id:
+          type: string
+        customer_id:
+          type: string
+        type:
+          type: string
+        name:
+          type: string
+        target_amount:
+          type: number
+        target_date:
+          type: string
+        created_at:
+          type: string
+        plan:
+          type: object
+          properties:
+            starting_amount:
+              type: number
+            monthly_contribution:
+              type: number
+            assumed_annual_return_pct:
+              type: number
+
+    ProjectionInput:
+      type: object
+      properties:
+        goal_id:
+          type: string
+        target_amount:
+          type: number
+          example: 1500000
+        years:
+          type: number
+          example: 10
+        monthly_contribution:
+          type: number
+          example: 7000
+        starting_amount:
+          type: number
+        annual_return_pct:
+          type: number
+          description: Expected return before inflation.
+        annual_volatility_pct:
+          type: number
+
+    GoalProjection:
+      type: object
+      properties:
+        customer_id:
+          type: string
+        inputs:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: number
+              source:
+                type: string
+                enum: [your_input, registered_goal, your_data, assumption]
+              explanation:
+                type: string
+        probability_pct:
+          type: number
+        status:
+          type: string
+          enum: [likely, possible, at_risk, unlikely]
+        outcomes:
+          type: object
+          properties:
+            pessimistic:
+              type: number
+            median:
+              type: number
+            optimistic:
+              type: number
+        timeline:
+          type: array
+          items:
+            type: object
+            properties:
+              year:
+                type: number
+              p10:
+                type: number
+              p50:
+                type: number
+              p90:
+                type: number
+              contributed:
+                type: number
+        required_monthly_contribution:
+          type: number
+        plan_check:
+          type: object
+          nullable: true
+        levers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              label:
+                type: string
+              probability_pct:
+                type: number
+              delta_probability_pct:
+                type: number
+        summary:
+          type: array
+          items:
+            type: string
+        data_quality:
+          $ref: "#/components/schemas/DataQuality"
